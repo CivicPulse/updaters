@@ -26,6 +26,11 @@ jobs:
           python3 .github/scripts/test-chart.py
           python3 .github/scripts/test-monitor.py
           python3 .github/scripts/test-supabase-bootstrap.py
+          python3 .github/scripts/test-supabase-render.py
+      - name: Parse rendered byte caps using the real Rust admission code
+        run: |
+          cargo build --locked -p civpulse-results-collector --example check_admission
+          python3 .github/scripts/test-chart-admission.py
       - name: Verify config initialization with the pinned Supabase image
         run: |
           python3 .github/scripts/test-supabase-init-image.py

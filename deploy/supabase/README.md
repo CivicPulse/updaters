@@ -43,6 +43,19 @@ printed.
 Collector pods use the stricter non-root,
 read-only-root policy. All services are internal ClusterIP with no Ingress.
 
+Storage and REST use single-replica `Recreate` upgrades. Storage's ReadWriteOnce
+volume must detach from the old pod before a replacement starts; REST also avoids
+a temporary second memory request on the shared small nodes. These upgrades have
+brief API downtime. Auth/Kong and the ordered database StatefulSet retain their
+upstream rollout behavior. The pinned community chart has no Storage/REST strategy
+value. Bootstrap verifies the upstream archive SHA, then derives a temporary
+archive with exactly two reviewed template insertions. Original and patched
+Storage/REST template hashes and unique anchors are checked; every other member's
+bytes remain unchanged. The patch adds `Recreate` with `rollingUpdate: null` to
+clear previous surge defaults during upgrades. It is compatible with Helm 3 and
+4 without plugins. An upstream chart update requires reviewing these hashes and
+insertions again; an unexpected archive/template fails before cluster writes.
+
 ## Review and bootstrap
 
 ```sh
