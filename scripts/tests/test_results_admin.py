@@ -39,6 +39,30 @@ class AdminTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     admin.plan(request)
 
+    def test_preactivation_acceptance_does_not_require_future_production_publication(self):
+        record = json.loads((Path(__file__).parents[2] / "docs/operations/results-acceptance.template.json").read_text())
+        request = args(action="resume", starts_at="2026-11-03T19:00:00Z", ends_at=admin.STOP_AT, expected_source_url=admin.SOURCE)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "record.json"
+            request.acceptance_record = path
+            record["starts_at"] = request.starts_at
+            path.write_text(json.dumps(record))
+            with self.assertRaises(ValueError):
+                admin.plan(request)
+            # Simulated completed preactivation review only; production milestones
+            # have not happened and must not be required to authorize activation.
+            record["accepted"] = True
+            record["checks"] = {name: True for name in admin.ACCEPTANCE_CHECKS}
+            path.write_text(json.dumps(record))
+            self.assertIsNone(record["actual_activation_at"])
+            self.assertIsNone(record["post_activation"]["first_production_publication_revision"])
+            self.assertFalse(record["post_activation"]["checks"]["production_browser_readback"])
+            self.assertTrue(admin.plan(request)[1]["p_enabled"])
+            record["checks"]["ballot_live_readback"] = False
+            path.write_text(json.dumps(record))
+            with self.assertRaises(ValueError):
+                admin.plan(request)
+
     def test_dev_resume_still_requires_exact_url_and_window(self):
         with self.assertRaises(ValueError):
             admin.plan(args(action="resume", environment="dev"))

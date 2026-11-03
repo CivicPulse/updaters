@@ -1,0 +1,63 @@
+{
+  "disabled_deployment": {
+    "checked_at": "2026-11-03T21:59:44.825272+00:00",
+    "source_revision": "6b98d565bfdd74c3de0639aa19bea409c80ba096",
+    "environments": [
+      {
+        "environment": "dev",
+        "image_id": "registry.digitalocean.com/hatchk8s/civpulse-results-collector@sha256:34347050d7fa52aa23c06cde7ad4af400349e56adb9e31d71b523518559ddc65",
+        "ready": true,
+        "restart_count": 0,
+        "collection_enabled": false,
+        "caps": {
+          "download": 134217728,
+          "scope": 16777216
+        }
+      },
+      {
+        "environment": "test",
+        "image_id": "registry.digitalocean.com/hatchk8s/civpulse-results-collector@sha256:34347050d7fa52aa23c06cde7ad4af400349e56adb9e31d71b523518559ddc65",
+        "ready": true,
+        "restart_count": 0,
+        "collection_enabled": false,
+        "caps": {
+          "download": 134217728,
+          "scope": 16777216
+        }
+      },
+      {
+        "environment": "prod",
+        "image_id": "registry.digitalocean.com/hatchk8s/civpulse-results-collector@sha256:34347050d7fa52aa23c06cde7ad4af400349e56adb9e31d71b523518559ddc65",
+        "ready": true,
+        "restart_count": 0,
+        "collection_enabled": false,
+        "caps": {
+          "download": 134217728,
+          "scope": 16777216
+        }
+      }
+    ]
+  },
+  "mailbox": {
+    "approved_sender": "results@alerts.civpulse.org",
+    "recipient": "kerry@kerryhatcher.com",
+    "subject": "CivicPulse prod: alert route verification",
+    "message_id": "Rea3gwy6AWisWmOB4JNbuOKyCnvlh6bOHatI@alerts.civpulse.org",
+    "received_at": "2026-11-03T19:35:27Z",
+    "verification": "actual Inbox read under explicit user delegation; not personal manual acknowledgement",
+    "component_binding": "mailer/monitor/config bytes unchanged 0e42ca2 through 6b98d565",
+    "additional_email_sent_by_this_evidence_change": false
+  },
+  "main_first_migrations": {
+    "count": 139,
+    "latest_suffix": "038",
+    "service_only_download_authorization_verified": true,
+    "source": "https://github.com/CivicPulse/updaters/issues/9#issuecomment-6615516937"
+  },
+  "runtime_checks": {
+    "ci": "https://github.com/CivicPulse/updaters/actions/runs/41725765131",
+    "helm": "https://github.com/CivicPulse/updaters/actions/runs/41725765182",
+    "monitoring_recovery": "https://github.com/CivicPulse/updaters/actions/runs/41725765127",
+    "publish": "https://github.com/CivicPulse/updaters/actions/runs/41725765226"
+  }
+}

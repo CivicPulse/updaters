@@ -3,6 +3,17 @@
 environment: prod
 collection:
   enabled: false
+  maxDownloadBytes: 134217728
+  maxScopeBytes: 16777216
+  electionId: 295d864d-80c8-4a87-ab16-3f4f3fa5ddb7
+  electionDate: '2026-11-03'
+  sourceUrl: https://results.sos.ga.gov/cdn/results/Georgia/export-11032026GeneralAndSpecialElection.json
+  expectedJurisdictions: 160
+  expectedItems: 4178
 acceptance:
   approved: false
   reference: ""
+monitoring:
+  initialIntervalSeconds: 3600
+  intervalSeconds: 300
+  transitionAt: '2026-11-03T22:00:00Z'

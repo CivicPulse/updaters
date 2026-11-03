@@ -4,7 +4,8 @@ Parent feature: [updaters #1](https://github.com/CivicPulse/updaters/issues/1).
 Operational acceptance remains tracked in [#9](https://github.com/CivicPulse/updaters/issues/9).
 The operator is **Kerry Hatcher**; actionable email alerts go only to
 **kerry@kerryhatcher.com**. Production collection stays disabled until the reviewed
-acceptance record is complete. A healthy process, merged PR, public object, or
+preactivation acceptance record is complete. Actual production import and browser
+readback are separate postactivation milestones and remain pending until observed. A healthy process, merged PR, public object, or
 successful email test alone does not establish acceptance.
 
 ## Identity, host and window
@@ -45,7 +46,9 @@ checks the SOS source, stages data, changes feed configuration, or triggers buil
 ## Evidence before activation
 
 Copy [the acceptance template](results-acceptance.template.json) into the reviewed
-release evidence location. Keep `accepted:false` until each required check links
+release evidence location. The [November 3 preactivation record](results-acceptance-20261103.json)
+records the completed preactivation checks; production milestones remain pending.
+For a new release keep `accepted:false` until each required preactivation check links
 to actual results, including reviewed reference commits, compatible Rust
 fingerprints/assets, official and enlarged-feed measurements, selected host/cost,
 and main-first migration/Edge Function deployment.
@@ -65,6 +68,16 @@ unperformed checks pending. Do not claim production source import/browser
 readback before it has happened. After approved activation, verify the immediate
 first import and public readback promptly; pause on failure and retain issue #9
 until its acceptance criteria are actually satisfied.
+
+`ballot_live_readback` in the helper's existing acceptance-check contract means the
+isolated native-browser proof above, including corrections/replay and visibility
+gates. It does not require a production import before the activation that permits
+that import. `accepted:true` authorizes activation only after all preactivation
+gates pass and are reviewed; it never certifies the pending production milestones.
+Keep `actual_activation_at`, first source-check/publication/browser timestamps and
+the `post_activation` checks unset/false until each real event is observed. A failed
+first production import/readback requires pause and investigation, not fabricated
+completion of the preactivation record.
 
 Production schema changes must first reach the website repository's `main` and
 use its guarded approved migration path. Never apply feature-branch SQL, repair
@@ -254,13 +267,13 @@ feature open until the complete acceptance criteria are met.
 
 Run `kubectl --context k8s-1-37-0-do-2-atl1-1793724241236 -n civpulse-test exec <collector-pod> -- /usr/local/bin/civpulse-tool resources` during and after each controlled single-job run. The command reads only its own container cgroup and fixed spool directories. JSON null means unsupported, not zero. Cgroup current/peak include page cache; process RSS measures the command itself. Record anon/file/shmem, OOM counters, CPU usage/throttling, logical and allocated scratch, pod restart count, elapsed runtime, and node capacity/headroom alongside both dev/test databases. Cgroup peak is lifetime peak, so use a fresh pod per case. Resource measurement does not need Metrics Server or a shell.
 
-The 174 MB uniform fixture alone does not prove the configured 512 MiB raw / 64 MiB scope envelope. Before activation, exercise a near-cap raw case with concentrated near-cap scope and archive replay, recording rejection behavior and successful cleanup. Alternatively select lower admission limits only after equivalent near-selected-cap tests. `collection.maxDownloadBytes` / `collection.maxScopeBytes` map to `SOS_MAX_DOWNLOAD_BYTES` / `SOS_MAX_SCOPE_BYTES`; both must be positive and can only lower the fixed caps, with scope no larger than raw. Defaults retain the full contract. Candidate 128 MiB / 16 MiB limits are not an accepted resource envelope until measured. Download and archived replay enforce these limits before parsing; oversized feeds fail closed and require an operator capacity review rather than silent truncation or automatic limit increases. Record the exact selected limits and evidence in acceptance.
+The 174 MB uniform fixture alone does not prove the configured 512 MiB raw / 64 MiB scope envelope. Before activation, exercise a near-cap raw case with concentrated near-cap scope and archive replay, recording rejection behavior and successful cleanup. Alternatively select lower admission limits only after equivalent near-selected-cap tests. `collection.maxDownloadBytes` / `collection.maxScopeBytes` map to `SOS_MAX_DOWNLOAD_BYTES` / `SOS_MAX_SCOPE_BYTES`; both must be positive and can only lower the fixed caps, with scope no larger than raw. The generic chart defaults retain the full contract, but all three committed environment overlays select 128 MiB raw / 16 MiB scope (134217728 / 16777216 bytes). These selected limits are not final-runtime acceptance until measured on the final reviewed guarded digest. Download and archived replay enforce these limits before parsing; oversized feeds fail closed and require an operator capacity review rather than silent truncation or automatic limit increases. Record the exact selected limits and evidence in acceptance.
 
 Cost evidence must include block storage separately from the node baseline: dev/test each allocate 10 GiB database + 1 GiB pgsodium + 1 GiB storage PVCs, 24 GiB total before monitor PVCs. These volumes are billable; use the actual provider rate/invoice rather than treating them as free or asserting an unverified rate.
 
 ### Reproducible concentrated resource cases
 
-Generate each case outside the cluster, one jurisdiction at a time. The generator preserves all original IDs, 160 jurisdictions and 4,178 items, adds explicit synthetic ASCII padding in one appended precinct-detail row per item (unique ID, null vote count, existing rows/fields unchanged), validates output with the real parser, and prints exact bytes/hash. It creates a new output only. Full-cap candidate: `cargo run --release -p civpulse-results-collector --example resource_case -- OFFICIAL.json resource-fixture.json 524288000 62914560` (500 MiB raw / 60 MiB county). Lower-cap candidate: use `125829120 15728640` (120 MiB raw / 15 MiB county) for selected 128/16 MiB admission. Precinct detail is omitted from compact assets; the 4 MiB compact-asset limit remains unchanged. An impossible target or unsafe per-item size fails instead of silently changing counts or overflowing a scope. These are synthetic resource cases, never public election results.
+Generate each case outside the cluster, one jurisdiction at a time. The generator preserves all original IDs, 160 jurisdictions and 4,178 items, adds explicit synthetic ASCII padding in one appended precinct-detail row per item (unique ID, null vote count, existing rows/fields unchanged), validates output with the real parser, and prints exact bytes/hash. It creates a new output only. Full-cap candidate: `cargo run --release -p civpulse-results-collector --example resource_case -- OFFICIAL.json resource-fixture.json 524288000 62914560` (500 MiB raw / 60 MiB county). Lower-cap candidate: use `133169152 16515072` (127 MiB raw / 15.75 MiB county) for selected 128/16 MiB admission. Precinct detail is omitted from compact assets; the 4 MiB compact-asset limit remains unchanged. An impossible target or unsafe per-item size fails instead of silently changing counts or overflowing a scope. These are synthetic resource cases, never public election results.
 
 The scanned collector image includes `/usr/local/bin/civpulse-measure` as an auxiliary binary; the production daemon entrypoint remains unchanged. Other legacy tool images do not contain the auxiliary binary. Do not substitute another harness image for actual digest evidence. With the test collector daemon disabled and no running job, use `python3 scripts/results-resource-job.py --pod EXACT-FRESH-TEST-POD --image-digest sha256:DIGEST --fixture resource-fixture.json` for a dry run, then `--apply` only for the controlled resource case. The wrapper verifies the actual running collector image and requires a fresh, ready, zero-restart test pod. It streams the fixture through `kubectl exec -i` directly to the auxiliary binary, without a shell, tar, credentials in arguments, new source scheduler or separate harness image. Input is bounded by the deployment admission cap and stored in a temporary file with automatic cleanup. The real Publisher uses only loopback fenced RPC and local disk object-store adapters; it never loads the pod's Supabase/R2 credentials or performs external writes. The daemon stays disabled throughout.
 
@@ -276,3 +289,67 @@ fresh-source acceptance. This honest stable identifier does not change the exact
 URL allowlist, TLS/redirect policy, conditional validators, identity encoding or
 download/deadline limits. Header tests capture the actual HTTP request. A failed
 fresh-source attempt is not acceptance; repeat the lane with the reviewed image.
+
+## Reviewed release evidence
+
+The [preactivation record](results-acceptance-20261103.json) leads
+with selected source `6b98d565` and immutable image
+`sha256:34347050d7fa52aa23c06cde7ad4af400349e56adb9e31d71b523518559ddc65`.
+Preactivation evidence is accepted under delegated operator review; independent
+repository review and automated checks remain required before merge/activation.
+Collection/approval defaults remain false. Production's saved start
+`2026-11-03T19:14:40Z` is configuration time, not activation; after the 22:00 UTC
+transition activation uses the effective five-minute interval. Actual production
+activation/check/publication/browser readback remain separate pending milestones.
+The future November 11 stop is configured and boundary-tested, not yet observed.
+
+The selected image completed an actual isolated fresh official GET and unseeded
+import after normal administrator retry of the original unarchived failed job.
+All 323 raw/manifest/pointer/summary/detail objects passed public SHA/size/JSON/
+cache/CORS and signed-S3 streaming verification. Actual runtime: 162.719 seconds,
+peak cgroup memory 322,002,944 bytes, zero restarts; TEST was paused and its disabled
+standby restored. Retained raw SHA is
+`d475b216f455e8fd54bf369d4d0b12df701f4a35b896c73971c81a60d358bde0`
+(46,362,705 bytes). The pinned `0408add` Bun oracle independently matched Rust
+fingerprint `0614cf53ea737d3442020ca7c44cc46e44e8d213cf7ba8300906dfb075baa92e`
+and all ordered 160 jurisdiction ID/name/item counts (4,178 items), using retained
+raw without another upstream fetch.
+
+Resource and crash-recovery support was measured on guarded image `80329628...`.
+Its parser/canonical/archive/staging/pointer/lease/window code is byte-identical to
+selected `34347050...`; the runtime difference is the source-client User-Agent.
+Keep the results explicitly attributed to 803. The hosted near-127-MiB/15.75-MiB
+scope harness completed full assets/archive replay with loopback RPC/disk doubles,
+peak cgroup memory 533,032,960 bytes under 1 GiB, and zero OOM/kills. It is not real
+Supabase/R2 transport. Sampled local disk (10 ms) was 535,384,042 bytes excluding
+133,169,152-byte input: approximately 668,553,194 bytes before other overhead.
+CPU counters are cumulative for the same pod, not per-case CPU time. NoPressure
+is an after-run node snapshot. Actual isolated DB/R2 recovery separately proved
+partial-stage resume, stale-lease rejection, pointer-only repair without another
+commit, and formatting replay without another dirty increment.
+
+The earlier 795 browser receipt proves reactive DOM/source/unmatched/private
+behavior, not visible mapped cards. Latest 341 UI/fixed fixture metadata and the persistent
+observer proved visible revision 4 (115/85 and missing question count) to revision
+5 (110/90 and zero) in the same Document, with both mapped cards, four metrics,
+bars and correct profile anchors visible. Source/unmatched disclosure and private
+anonymous/real-ordinary isolation passed. No visible 3-to-4 transition is claimed.
+The actual 343 Job completed in 2.988 seconds with zero restarts; all seven public
+objects passed readback. Normal-admin pause, no pending job, disabled standby one
+and healthy DB/S3 revision 5 were verified after the test.
+
+Production controls exercised only two retained `_acceptance` objects: immutable
+checksums/collision and conditional writes, then curl HTTP/2 GET/HEAD CORS/cache
+readback for both approved origins. These are not production election imports.
+The alert inbox was checked under user delegation; unchanged mailer/monitor/config
+bytes support that component proof. Actual immediate mismatch grace and automated
+threshold tests do not claim a sustained fifteen-minute alert drill. Main-first
+139 migrations/latest 038 and service-only source-STOP authorization are verified.
+
+Production has zero curated `sos_ballot_links` for this election. This content
+curation limitation does not block source collection. First production readback
+must show real source/unmatched provenance and no false profile links; curated
+production cards remain pending reviewed mappings. Keep private fixture records,
+credentials and local helper state outside Git. Earlier measurements and failed
+attempts remain in preserved external evidence and issue history rather than
+being promoted to current release claims.
