@@ -338,6 +338,16 @@ mod pipeline_scenarios {
                 .join("../../crates/civpulse-results-contract/tests/fixtures/base.json"),
         )
         .unwrap();
+        let raw = if fault == "metadata" {
+            let mut source: Value = serde_json::from_slice(&raw).unwrap();
+            source["results"]["sourceSequence"] = json!(9_007_199_254_740_993_u64);
+            source["results"]["ballotItems"][0]["sourceSequence"] =
+                json!(9_007_199_254_740_993_u64);
+            serde_json::to_vec(&source).unwrap()
+        } else {
+            raw
+        };
+        let metadata_case = fault == "metadata";
         let hash = sha256(&raw);
         let raw_key = format!("elections/{ELECTION}/raw/{hash}.json");
         let store = Arc::new(Memory::default());
@@ -399,12 +409,30 @@ mod pipeline_scenarios {
                         "renew_sos_results_job" => json!(true),
                         "begin_sos_results_job" => {
                             assert_eq!(args["p_receipt"], server_state.receipt);
+                            if metadata_case {
+                                // Pinned Bun JSON.parse/JSON.stringify rounds this raw u64.
+                                assert_eq!(
+                                    args["p_jurisdictions"][0]["sourceSequence"],
+                                    json!(9_007_199_254_740_992_u64)
+                                );
+                                assert!(
+                                    !std::str::from_utf8(&bytes[end..])
+                                        .unwrap()
+                                        .contains("9007199254740993")
+                                );
+                            }
                             json!({"snapshot_id":SNAPSHOT,"published":false,"receipt":server_state.receipt})
                         }
                         "stage_sos_results_job" => {
                             assert_eq!(args["p_snapshot_id"], SNAPSHOT);
                             assert_ne!(args["p_items"].as_array().unwrap().len(), 0);
-                            if *fault == Some("stage") {
+                            if metadata_case && args["p_items"][0]["jurisdiction_index"] == 0 {
+                                assert_eq!(
+                                    args["p_items"][0]["data"]["sourceSequence"],
+                                    json!(9_007_199_254_740_992_u64)
+                                );
+                            }
+                            if matches!(*fault, Some("stage" | "metadata")) {
                                 *fault = None;
                                 status = 500;
                             }
@@ -470,7 +498,7 @@ mod pipeline_scenarios {
         );
         let pointer_key = format!("elections/{ELECTION}/latest.json");
         let prior = store.get(&pointer_key, 4096).await.unwrap();
-        if fault == "stage" || fault == "assets" {
+        if matches!(fault, "stage" | "assets" | "metadata") {
             assert_eq!(prior.status, 404);
             assert!(
                 !state
@@ -509,7 +537,24 @@ mod pipeline_scenarios {
             assert_eq!(prior.etag, actual.etag);
         }
         assert_eq!(store.get(&raw_key, 4096).await.unwrap().body, raw);
+        if metadata_case {
+            let asset_key = format!("elections/{ELECTION}/revisions/{SNAPSHOT}/state.json");
+            let asset = store.get(&asset_key, 4096).await.unwrap();
+            let public: Value = serde_json::from_slice(&asset.body).unwrap();
+            assert_eq!(
+                public["jurisdiction"]["sourceSequence"],
+                json!(9_007_199_254_740_992_u64)
+            );
+            assert_eq!(
+                public["items"][0]["data"]["sourceSequence"],
+                json!(9_007_199_254_740_992_u64)
+            );
+        }
         server.abort();
+    }
+    #[tokio::test]
+    async fn begin_metadata_and_staged_items_match_bun_rounding_and_public_assets_on_resume() {
+        run("metadata").await;
     }
     #[tokio::test]
     async fn interrupted_staging_resumes_original_archive_and_receipt() {

@@ -104,8 +104,33 @@ pub fn stringify(value: &Value) -> Result<Vec<u8>> {
     Ok(bytes)
 }
 
+/// Serialize a validated source-derived envelope with bounded wrapper overhead.
+///
+/// Source validation retains its 40-level limit. RPC and projection wrappers may
+/// add at most four levels around already validated source fields.
+///
+/// # Errors
+/// Rejects more than four wrapper levels, excessive nesting, or invalid numbers.
+pub fn stringify_envelope(value: &Value, wrapper_levels: usize) -> Result<Vec<u8>> {
+    if wrapper_levels > 4 {
+        return Err(Error::Invalid("envelope nesting allowance exceeds limit"));
+    }
+    let mut bytes = Vec::new();
+    write_json_bounded(value, &mut bytes, 0, 40 + wrapper_levels)?;
+    Ok(bytes)
+}
+
 pub(crate) fn write_json(value: &Value, out: &mut impl Write, depth: usize) -> Result<()> {
-    if depth > 40 {
+    write_json_bounded(value, out, depth, 40)
+}
+
+fn write_json_bounded(
+    value: &Value,
+    out: &mut impl Write,
+    depth: usize,
+    limit: usize,
+) -> Result<()> {
+    if depth > limit {
         return Err(Error::Invalid("source nesting exceeds limit"));
     }
     match value {
@@ -124,7 +149,7 @@ pub(crate) fn write_json(value: &Value, out: &mut impl Write, depth: usize) -> R
                 }
                 serde_json::to_writer(&mut *out, key)?;
                 out.write_all(b":")?;
-                write_json(&map[key], out, depth + 1)?;
+                write_json_bounded(&map[key], out, depth + 1, limit)?;
             }
             out.write_all(b"}")?;
         }
@@ -134,7 +159,7 @@ pub(crate) fn write_json(value: &Value, out: &mut impl Write, depth: usize) -> R
                 if index > 0 {
                     out.write_all(b",")?;
                 }
-                write_json(value, out, depth + 1)?;
+                write_json_bounded(value, out, depth + 1, limit)?;
             }
             out.write_all(b"]")?;
         }
