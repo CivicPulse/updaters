@@ -19,6 +19,10 @@ fn expected() -> Value {
 #[test]
 fn oracle_receipts_and_assets_are_exact_bytes() {
     let expected = expected();
+    assert_eq!(
+        format!("{:x}", Sha256::digest(fixture("canonical-scope.json"))),
+        expected["canonical_scope_sha256"]
+    );
     for (name, case) in expected["cases"].as_object().unwrap() {
         let hash = format!("{:x}", Sha256::digest(fixture(&format!("{name}.json"))));
         assert_eq!(hash, case["raw_sha256"]);
@@ -62,6 +66,7 @@ fn pointer_and_scope_round_trip_without_losing_source_evidence() {
         "assets/state.json",
         "assets/state-detail.json",
         "assets/counties/001.json",
+        "assets/counties/001-detail.json",
     ] {
         let bytes = fixture(file);
         let asset: ScopeAsset = serde_json::from_slice(&bytes).unwrap();
@@ -72,7 +77,7 @@ fn pointer_and_scope_round_trip_without_losing_source_evidence() {
         let options = asset.items[0].data["ballotOptions"].as_array().unwrap();
         assert_eq!(options[0]["voteCount"], 12);
         assert_eq!(options[1]["voteCount"], 0);
-        assert!(options[2]["voteCount"].is_null());
+        assert_eq!(options[2].get("voteCount"), Some(&Value::Null));
         assert!(options[3].get("voteCount").is_none());
         assert!(asset.jurisdiction["reportingStatuses"].is_null());
         assert_eq!(

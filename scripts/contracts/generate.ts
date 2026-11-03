@@ -49,7 +49,9 @@ try {
       expected.assets.push({key,file,sha256:new Bun.CryptoHasher("sha256").update(body).digest("hex")});
     }
     await Bun.write(`${output}/latest.json`,JSON.stringify({...manifest,schema_version:1,revision:"9007199254740993",published_at:"2026-11-03T10:00:20Z"}));
-    await Bun.write(`${output}/canonical-scope.json`,canonical(source.results));
+    const canonicalScope = canonical(source.results);
+    await Bun.write(`${output}/canonical-scope.json`,canonicalScope);
+    expected.canonical_scope_sha256 = new Bun.CryptoHasher("sha256").update(canonicalScope).digest("hex");
   }
   await Bun.write(`${output}/expected.json`,JSON.stringify(expected,null,2)+"\n");
 } finally { await rm(temp,{recursive:true,force:true}); }

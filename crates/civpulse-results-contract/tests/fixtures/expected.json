@@ -123,5 +123,6 @@
       "file": "assets/manifest.json",
       "sha256": "d9157ebb10b145787ecf7577e4cb3a6679d3cea4d0332c3c3f949a0388f05dbc"
     }
-  ]
+  ],
+  "canonical_scope_sha256": "85a81a0dc1638a06a854cb564ec2f2f4460bb425821cc3c4cad54e930bc2ff36"
 }
