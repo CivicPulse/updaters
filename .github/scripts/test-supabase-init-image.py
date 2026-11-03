@@ -16,7 +16,10 @@ assert image.endswith("@sha256:7374d196da7e301512cc5329e18040e0f7bb856287b323777
 command = init["args"][0].replace("/mnt/pgsodium", "/tmp/test-pgsodium")
 setup = """
 mkdir -p /tmp/test-pgsodium/lost+found
+chown root:root /tmp/test-pgsodium
+chmod 0755 /tmp/test-pgsodium
 printf '%s' 'existing private key' > /tmp/test-pgsodium/existing-private-key
+chmod 0600 /tmp/test-pgsodium/existing-private-key
 """
 verify_initial = """
 for config in auto_explain.conf custom_overrides.conf generated_optimizations.conf pg_cron.conf pg_net.conf; do
@@ -34,6 +37,7 @@ ln -s /tmp/custom-optimizations.conf /tmp/test-pgsodium/conf.d/generated_optimiz
 """
 verify_rerun = """
 test "$(cat /tmp/test-pgsodium/existing-private-key)" = 'existing private key'
+test "$(stat -c '%u:%g:%a' /tmp/test-pgsodium/existing-private-key)" = '0:0:600'
 test "$(cat /tmp/test-pgsodium/conf.d/pgsodium.key)" = 'existing private key'
 test "$(cat /tmp/test-pgsodium/wal-g.conf)" = 'existing custom configuration'
 cmp /etc/postgresql-custom/conf.d/pg_cron.conf /tmp/test-pgsodium/conf.d/pg_cron.conf

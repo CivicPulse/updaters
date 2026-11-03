@@ -79,6 +79,9 @@ deployment:
             cp -a "$source" "$target"
           fi
         )
+        # CSI volume roots start root-owned. Postgres must create its root key;
+        # change only the mount directory owner, preserving every persisted file.
+        chown postgres:postgres /mnt/pgsodium
         copy_missing /etc/postgresql-custom /mnt/pgsodium
         test -d /mnt/pgsodium/conf.d
         test -f /mnt/pgsodium/wal-g.conf
