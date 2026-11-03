@@ -64,7 +64,22 @@ deployment:
       command: [/bin/sh, -ec]
       args:
       - |
-        cp -an /etc/postgresql-custom/. /mnt/pgsodium/
+        # BusyBox cp -n skips an existing directory as a whole. Walk entries
+        # explicitly, filling absent paths without replacing persisted keys.
+        copy_missing() (
+          source=$1
+          target=$2
+          if [ -d "$source" ] && [ ! -L "$source" ] && [ -d "$target" ] && [ ! -L "$target" ]; then
+            for entry in "$source"/* "$source"/.[!.]* "$source"/..?*; do
+              if [ -e "$entry" ] || [ -L "$entry" ]; then
+                copy_missing "$entry" "$target/${entry##*/}"
+              fi
+            done
+          elif [ ! -e "$target" ] && [ ! -L "$target" ]; then
+            cp -a "$source" "$target"
+          fi
+        )
+        copy_missing /etc/postgresql-custom /mnt/pgsodium
         test -d /mnt/pgsodium/conf.d
         test -f /mnt/pgsodium/wal-g.conf
         test -f /mnt/pgsodium/read-replica.conf
