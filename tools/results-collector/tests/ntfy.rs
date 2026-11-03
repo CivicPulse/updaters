@@ -203,3 +203,28 @@ fn route_verification_defaults_disabled_without_source_credentials() {
     assert!(!output.status.success());
     assert_eq!(output.stdout.len(), 0);
 }
+
+#[tokio::test]
+async fn mixed_alerts_send_only_public_eligible_conditions() {
+    let sender = Sender::default();
+    let private = Uuid::from_u128(1);
+    let report = Report {
+        checked_at: Utc::now(),
+        feeds: vec![],
+        alerts: [private, PUBLIC_ELECTION, Uuid::nil()]
+            .into_iter()
+            .map(|election_id| Alert {
+                election_id,
+                kind: AlertKind::RepeatedErrors,
+            })
+            .collect(),
+    };
+    ntfy::deliver(&report, "prod", &sender, &mut State::default())
+        .await
+        .unwrap();
+    let messages = sender.messages.lock().unwrap();
+    assert_eq!(messages.len(), 1);
+    assert!(messages[0].1.contains(&PUBLIC_ELECTION.to_string()));
+    assert!(messages[0].1.contains("deployment monitor:"));
+    assert!(!messages[0].1.contains(&private.to_string()));
+}

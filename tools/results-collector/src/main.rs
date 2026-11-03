@@ -163,15 +163,7 @@ async fn operational_command(command: &str, rpc: &Rpc) -> Result<()> {
         monitoring::render(&report, monitoring::Format::Json)?;
         let outcome = email?;
         let push = push?;
-        if outcome == alerting::Outcome::Disabled
-            && push == alerting::Outcome::Disabled
-            && !report.alerts.is_empty()
-        {
-            return Err(Error::Source(
-                "Alerts disabled while monitoring has actionable conditions",
-            ));
-        }
-        Ok(())
+        ensure_alert_coverage(&report, outcome, push)
     } else {
         monitoring::command(
             rpc,
@@ -183,6 +175,24 @@ async fn operational_command(command: &str, rpc: &Rpc) -> Result<()> {
         )
         .await
     }
+}
+
+fn ensure_alert_coverage(
+    report: &monitoring::Report,
+    email: alerting::Outcome,
+    push: alerting::Outcome,
+) -> Result<()> {
+    if email == alerting::Outcome::Disabled
+        && report.alerts.iter().any(|alert| {
+            push == alerting::Outcome::Disabled
+                || !civpulse_results_collector::ntfy::public_alert(alert)
+        })
+    {
+        return Err(Error::Source(
+            "Alerts disabled while monitoring has actionable conditions",
+        ));
+    }
+    Ok(())
 }
 
 async fn service_health(rpc: &Rpc) -> Result<()> {
@@ -219,4 +229,78 @@ fn rpc_for_mode(config: &Config, command: &str) -> Result<Option<Rpc>> {
         None
     };
     Ok(client)
+}
+
+#[cfg(test)]
+mod notification_coverage_tests {
+    use super::*;
+    use civpulse_results_collector::{
+        monitoring::{Alert, AlertKind, Report},
+        ntfy::PUBLIC_ELECTION,
+    };
+    use uuid::Uuid;
+
+    fn report(ids: &[Uuid]) -> Report {
+        Report {
+            checked_at: chrono::Utc::now(),
+            feeds: vec![],
+            alerts: ids
+                .iter()
+                .map(|id| Alert {
+                    election_id: *id,
+                    kind: AlertKind::RepeatedErrors,
+                })
+                .collect(),
+        }
+    }
+
+    #[test]
+    fn enabled_public_push_cannot_cover_private_or_mixed_alerts_without_email() {
+        let private = Uuid::from_u128(1);
+        for ids in [
+            vec![private],
+            vec![PUBLIC_ELECTION, private],
+            vec![Uuid::nil(), private],
+        ] {
+            assert!(
+                ensure_alert_coverage(
+                    &report(&ids),
+                    alerting::Outcome::Disabled,
+                    alerting::Outcome::Quiet
+                )
+                .is_err()
+            );
+        }
+        for ids in [
+            vec![],
+            vec![PUBLIC_ELECTION],
+            vec![Uuid::nil()],
+            vec![PUBLIC_ELECTION, Uuid::nil()],
+        ] {
+            assert!(
+                ensure_alert_coverage(
+                    &report(&ids),
+                    alerting::Outcome::Disabled,
+                    alerting::Outcome::Quiet
+                )
+                .is_ok()
+            );
+        }
+        assert!(
+            ensure_alert_coverage(
+                &report(&[private]),
+                alerting::Outcome::Quiet,
+                alerting::Outcome::Quiet
+            )
+            .is_ok()
+        );
+        assert!(
+            ensure_alert_coverage(
+                &report(&[PUBLIC_ELECTION]),
+                alerting::Outcome::Disabled,
+                alerting::Outcome::Disabled
+            )
+            .is_err()
+        );
+    }
 }

@@ -137,6 +137,12 @@ fn confirmed(report: &Report) -> Option<Publication> {
         fingerprint: fingerprint.clone(),
     })
 }
+/// Whether an alert may be sent to the fixed public topic.
+#[must_use]
+pub fn public_alert(alert: &Alert) -> bool {
+    alert.election_id == PUBLIC_ELECTION || alert.election_id.is_nil()
+}
+
 /// Deliver independent actionable conditions and semantic publication advances.
 /// First confirmed observation silently establishes a baseline. A failed send retries next run;
 /// crashes after provider acceptance may duplicate a notification (at-least-once delivery).
@@ -170,7 +176,7 @@ pub async fn deliver(
         alerts: report
             .alerts
             .iter()
-            .filter(|alert| alert.election_id == PUBLIC_ELECTION || alert.election_id.is_nil())
+            .filter(|alert| public_alert(alert))
             .map(|alert| Alert {
                 election_id: alert.election_id,
                 kind: alert.kind,
