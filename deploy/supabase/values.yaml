@@ -56,6 +56,27 @@ deployment:
       periodSeconds: 5
       timeoutSeconds: 3
   db:
+    # Upstream skips the whole config copy when a fresh block volume contains
+    # lost+found. Fill only missing defaults; never replace existing config/keys.
+    extraInitContainers:
+    - name: complete-pgsodium-config
+      image: supabase/postgres:17.11.0.003@sha256:7374d196da7e301512cc5329e18040e0f7bb856287b323777cdadecccbc6c7e4
+      command: [/bin/sh, -ec]
+      args:
+      - |
+        cp -an /etc/postgresql-custom/. /mnt/pgsodium/
+        test -d /mnt/pgsodium/conf.d
+        test -f /mnt/pgsodium/wal-g.conf
+        test -f /mnt/pgsodium/read-replica.conf
+        test -f /mnt/pgsodium/supautils.conf
+      volumeMounts:
+      - mountPath: /mnt/pgsodium
+        name: pgsodium
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: [ALL]
+          add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
     enabled: true
     automountServiceAccountToken: false
     resources:

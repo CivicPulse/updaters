@@ -26,7 +26,11 @@ The chart's default older database tag is overridden. Data, pgsodium keys and lo
 Storage data use separate persistent volumes. Do not delete them to recover an
 application import. The upstream Postgres entrypoint initializes filesystem
 ownership as root and drops to the database account; its limited bootstrap
-capabilities are documented in values. Collector pods use the stricter non-root,
+capabilities are documented in values. An additional pinned init container fills missing configuration defaults after the
+upstream initializer: fresh DigitalOcean block volumes contain `lost+found`, which
+causes upstream’s empty-directory guard to skip its copy. The additional copy never
+overwrites existing files, including pgsodium keys or customized configuration.
+Collector pods use the stricter non-root,
 read-only-root policy. All services are internal ClusterIP with no Ingress.
 
 ## Review and bootstrap

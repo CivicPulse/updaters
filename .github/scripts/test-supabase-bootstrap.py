@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
+import yaml
 from unittest.mock import patch
 
 sys.dont_write_bytecode = True
@@ -32,3 +34,28 @@ except RuntimeError:
 else:
     raise AssertionError("corrupted pinned migration accepted")
 print("Bootstrap production/context/download guards passed")
+
+# Execute the actual values command against filesystem states matching a fresh
+# DO block volume and a previously initialized volume; preserve existing keys.
+values = yaml.safe_load((ROOT / "deploy/supabase/values.yaml").read_text())
+init = values["deployment"]["db"]["extraInitContainers"][0]
+assert init["name"] == "complete-pgsodium-config"
+assert init["image"].endswith("@sha256:7374d196da7e301512cc5329e18040e0f7bb856287b323777cdadecccbc6c7e4")
+with tempfile.TemporaryDirectory() as directory:
+    source, target = Path(directory)/"source", Path(directory)/"target"
+    source.mkdir(); target.mkdir(); (target/"lost+found").mkdir()
+    (source/"conf.d").mkdir()
+    for name in ("wal-g.conf", "read-replica.conf", "supautils.conf", "conf.d/pgsodium.key"):
+        (source/name).write_text("image default")
+    command = init["args"][0].replace("/etc/postgresql-custom", str(source)).replace("/mnt/pgsodium", str(target))
+    subprocess.run([*init["command"], command], check=True)
+    assert (target/"wal-g.conf").read_text() == "image default"
+    (target/"conf.d/pgsodium.key").write_text("existing private key")
+    (target/"wal-g.conf").write_text("existing custom configuration")
+    (target/"read-replica.conf").unlink()
+    subprocess.run([*init["command"], command], check=True)
+    assert (target/"conf.d/pgsodium.key").read_text() == "existing private key"
+    assert (target/"wal-g.conf").read_text() == "existing custom configuration"
+    assert (target/"read-replica.conf").read_text() == "image default"
+    assert (target/"lost+found").is_dir()
+print("Fresh block-volume and existing key/config preservation checks passed")
