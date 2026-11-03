@@ -12,6 +12,12 @@ use tokio::io::AsyncWriteExt;
 
 use crate::{Error, Limits, Result};
 
+const SOURCE_USER_AGENT: &str = concat!(
+    "CivicPulse-results-collector/",
+    env!("CARGO_PKG_VERSION"),
+    " (+https://github.com/CivicPulse/updaters)"
+);
+
 /// Validators from the durable job's preceding source receipt.
 #[derive(Clone, Debug, Default)]
 pub struct Validators {
@@ -112,6 +118,7 @@ async fn transfer(
 ) -> Result<Download> {
     let operation = async {
         let client = Client::builder()
+            .user_agent(SOURCE_USER_AGENT)
             .redirect(reqwest::redirect::Policy::none())
             .connect_timeout(Duration::from_secs(30))
             .timeout(limits.download_timeout)
@@ -285,7 +292,22 @@ mod tests {
         assert_eq!(receipt.sha256, hex::encode(Sha256::digest(&bytes)));
         assert_eq!(receipt.bytes, 10);
         assert_eq!(receipt.etag.as_deref(), Some("\"new\""));
-        let request = request.recv().unwrap().to_lowercase();
+        let request = request.recv().unwrap();
+        assert_eq!(
+            request
+                .lines()
+                .filter_map(|line| line.split_once(':'))
+                .filter(|(name, _)| name.eq_ignore_ascii_case("user-agent"))
+                .map(|(_, value)| value.trim())
+                .collect::<Vec<_>>(),
+            vec![concat!(
+                "CivicPulse-results-collector/",
+                env!("CARGO_PKG_VERSION"),
+                " (+https://github.com/CivicPulse/updaters)"
+            )]
+        );
+        let request = request.to_lowercase();
+        assert!(request.contains("accept: application/json"));
         assert!(request.contains("if-none-match: \"old\""));
         assert!(!request.contains("if-modified-since"));
         assert!(request.contains("accept-encoding: identity"));
