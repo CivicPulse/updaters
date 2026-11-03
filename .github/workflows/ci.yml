@@ -1,0 +1,25 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install workspace toolchain
+        run: rustup show
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --locked --workspace --all-targets -- -D warnings
+      - run: cargo test --locked --workspace
+  containers:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tool: [civpulse-download, civpulse-process, civpulse-upload]
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --build-arg TOOL=${{ matrix.tool }} -t ${{ matrix.tool }}:ci .
+      - run: docker run --rm --read-only --cap-drop=ALL --security-opt=no-new-privileges ${{ matrix.tool }}:ci --check
