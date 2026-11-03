@@ -45,7 +45,7 @@ with tempfile.TemporaryDirectory() as directory:
     source, target = Path(directory)/"source", Path(directory)/"target"
     source.mkdir(); target.mkdir(); (target/"lost+found").mkdir()
     (source/"conf.d").mkdir()
-    for name in ("wal-g.conf", "read-replica.conf", "supautils.conf", "conf.d/pgsodium.key"):
+    for name in ("wal-g.conf", "read-replica.conf", "supautils.conf", "conf.d/pgsodium.key", "conf.d/pg_cron.conf", ".image-default"):
         (source/name).write_text("image default")
     command = init["args"][0].replace("/etc/postgresql-custom", str(source)).replace("/mnt/pgsodium", str(target))
     subprocess.run([*init["command"], command], check=True)
@@ -53,9 +53,14 @@ with tempfile.TemporaryDirectory() as directory:
     (target/"conf.d/pgsodium.key").write_text("existing private key")
     (target/"wal-g.conf").write_text("existing custom configuration")
     (target/"read-replica.conf").unlink()
+    (target/"conf.d/pg_cron.conf").unlink()
+    (target/"dangling-custom-link").symlink_to("missing-custom-target")
     subprocess.run([*init["command"], command], check=True)
     assert (target/"conf.d/pgsodium.key").read_text() == "existing private key"
     assert (target/"wal-g.conf").read_text() == "existing custom configuration"
     assert (target/"read-replica.conf").read_text() == "image default"
+    assert (target/"conf.d/pg_cron.conf").read_text() == "image default"
+    assert (target/".image-default").read_text() == "image default"
+    assert (target/"dangling-custom-link").is_symlink()
     assert (target/"lost+found").is_dir()
 print("Fresh block-volume and existing key/config preservation checks passed")

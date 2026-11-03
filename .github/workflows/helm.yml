@@ -25,6 +25,8 @@ jobs:
         run: |
           python3 .github/scripts/test-chart.py
           python3 .github/scripts/test-supabase-bootstrap.py
+      - name: Verify config initialization with the pinned Supabase image
+        run: python3 .github/scripts/test-supabase-init-image.py
       - name: Render disabled environment manifests
         run: |
           mkdir -p "$RUNNER_TEMP/collector-manifests"

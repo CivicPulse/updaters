@@ -29,7 +29,12 @@ ownership as root and drops to the database account; its limited bootstrap
 capabilities are documented in values. An additional pinned init container fills missing configuration defaults after the
 upstream initializer: fresh DigitalOcean block volumes contain `lost+found`, which
 causes upstream’s empty-directory guard to skip its copy. The additional copy never
-overwrites existing files, including pgsodium keys or customized configuration.
+overwrites existing files or symlinks, including pgsodium keys or customized
+configuration. It walks missing entries recursively because the pinned image’s
+BusyBox `cp -n` skips an already-existing target directory as a whole. Helm CI
+executes the actual init command inside that exact database image, checking fresh
+`lost+found` volumes, missing nested defaults, and preservation of existing keys
+and custom settings.
 Collector pods use the stricter non-root,
 read-only-root policy. All services are internal ClusterIP with no Ingress.
 
