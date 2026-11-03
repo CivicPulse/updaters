@@ -271,9 +271,13 @@ async fn shutdown_drains_then_cancels_and_stops_renewing() {
     let (url, mut requests, task) = server(move |request| {
         if request.contains("/claim_sos_results_job ") {
             response(&job())
-        } else {
+        } else if request.contains("/renew_sos_results_job ") {
             counts.fetch_add(1, Ordering::SeqCst);
             response("true")
+        } else {
+            // A cancelled connection can reach the listener without a request;
+            // neither it nor the explicit health barrier is a lease renewal.
+            response("[]")
         }
     })
     .await;
@@ -296,6 +300,14 @@ async fn shutdown_drains_then_cancels_and_stops_renewing() {
     tx.send(true).unwrap();
     assert_eq!(daemon.await.unwrap().unwrap_err(), Error::Shutdown);
     assert!(cancelled.load(Ordering::SeqCst));
+    // The server accepts connections sequentially. A read-only request acts as a
+    // network barrier for renewals sent before cancellation but not yet handled;
+    // cancellation cannot recall bytes already queued in the TCP listener.
+    let health: Vec<Value> = client(&url)
+        .call("get_sos_collection_health", json!({}))
+        .await
+        .unwrap();
+    assert_eq!(health, Vec::<Value>::new());
     let count = renewals.load(Ordering::SeqCst);
     assert!(count > 0);
     tokio::time::sleep(Duration::from_millis(30)).await;

@@ -205,7 +205,7 @@ pub fn prepare(
                 return Err(Error::Invalid("unknown feed header schema"));
             }
             header.insert(key, reader.value(limits.max_header)?);
-            if serde_json::to_vec(&header)?.len() > limits.max_header {
+            if crate::stringify(&Value::Object(header.clone()))?.len() > limits.max_header {
                 return Err(Error::Invalid("feed header exceeds limit"));
             }
         }
@@ -366,14 +366,17 @@ fn process_scope(
     *item_count = item_count
         .checked_add(items.len())
         .ok_or(Error::Invalid("source item count overflow"))?;
-    object.insert("item_count".to_owned(), json!(items.len()));
-    if serde_json::to_vec(&object)?.len() > limits.max_metadata {
+    // The reference bounds source metadata before adding the derived item count,
+    // using JSON.stringify bytes rather than serde's scientific number notation.
+    let mut metadata = Value::Object(std::mem::take(object));
+    if crate::stringify(&metadata)?.len() > limits.max_metadata {
         return Err(Error::Invalid("jurisdiction metadata exceeds limit"));
     }
+    metadata["item_count"] = json!(items.len());
     scopes.push(Scope {
         index,
         path,
-        metadata: Value::Object(std::mem::take(object)),
+        metadata,
     });
     Ok(())
 }

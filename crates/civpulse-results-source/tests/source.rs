@@ -68,6 +68,87 @@ fn stringify_matches_javascript_numbers_escaping_and_index_properties() {
 }
 
 #[test]
+fn metadata_cap_measures_javascript_bytes_before_derived_item_count() {
+    let mut value = base();
+    value["results"]["sourceNumericMetadata"] = json!(vec![1e20; 7_000]);
+    let mut metadata = value["results"].clone();
+    metadata.as_object_mut().unwrap().remove("ballotItems");
+    assert_eq!(stringify(&metadata).unwrap().len(), 154_080);
+    assert!(serde_json::to_vec(&metadata).unwrap().len() < Limits::default().max_metadata);
+    assert!(!run(
+        &serde_json::to_vec(&value).unwrap(),
+        &Limits::default(),
+        &expectations()
+    ));
+
+    // Exactly 128 KiB of source metadata is valid even though adding the derived
+    // item_count makes the eventual jurisdiction manifest entry larger.
+    let mut value = base();
+    value["results"]["sourcePadding"] = json!("");
+    let mut metadata = value["results"].clone();
+    metadata.as_object_mut().unwrap().remove("ballotItems");
+    let capacity = Limits::default().max_metadata - stringify(&metadata).unwrap().len();
+    value["results"]["sourcePadding"] = json!("x".repeat(capacity));
+    metadata["sourcePadding"] = value["results"]["sourcePadding"].clone();
+    assert_eq!(
+        stringify(&metadata).unwrap().len(),
+        Limits::default().max_metadata
+    );
+    assert!(run(
+        &serde_json::to_vec(&value).unwrap(),
+        &Limits::default(),
+        &expectations()
+    ));
+    value["results"]["sourcePadding"] = json!("x".repeat(capacity + 1));
+    assert!(!run(
+        &serde_json::to_vec(&value).unwrap(),
+        &Limits::default(),
+        &expectations()
+    ));
+}
+
+#[test]
+fn header_cap_measures_javascript_bytes_and_accepts_the_exact_boundary() {
+    let mut value = base();
+    value["electionName"] = json!("");
+    let mut header = value.clone();
+    header.as_object_mut().unwrap().remove("results");
+    header.as_object_mut().unwrap().remove("localResults");
+    let capacity = Limits::default().max_header - stringify(&header).unwrap().len();
+    value["electionName"] = json!("x".repeat(capacity));
+    assert!(run(
+        &serde_json::to_vec(&value).unwrap(),
+        &Limits::default(),
+        &expectations()
+    ));
+    value["electionName"] = json!("x".repeat(capacity + 1));
+    assert!(!run(
+        &serde_json::to_vec(&value).unwrap(),
+        &Limits::default(),
+        &expectations()
+    ));
+
+    // Header fields must ultimately be strings, but their size check runs before
+    // identity validation. Numeric expansion must fail the bound at that stage.
+    value["electionName"] = json!(vec![1e20; 50_000]);
+    let temp = tempfile::tempdir().unwrap();
+    let input = temp.path().join("source.json");
+    fs::write(&input, serde_json::to_vec(&value).unwrap()).unwrap();
+    let error = prepare(
+        &input,
+        &temp.path().join("scopes"),
+        &expectations(),
+        &Limits::default(),
+        &AtomicBool::new(false),
+    )
+    .unwrap_err();
+    assert!(matches!(
+        error,
+        civpulse_results_source::Error::Invalid("feed header exceeds limit")
+    ));
+}
+
+#[test]
 fn invalid_schema_duplicates_counts_and_completeness_fail_closed() {
     let limits = Limits::default();
     let mutate: Vec<fn(&mut Value)> = vec![
