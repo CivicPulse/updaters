@@ -323,7 +323,7 @@ fn harness_hash() -> String {
         hash.update(bytes.len().to_le_bytes());
         hash.update(bytes);
     }
-    format!("{:x}", hash.finalize())
+    hex::encode(hash.finalize())
 }
 
 fn receive_stdin(root: &Path) -> Result<tempfile::NamedTempFile> {

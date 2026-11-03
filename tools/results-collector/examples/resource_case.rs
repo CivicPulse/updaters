@@ -41,7 +41,7 @@ fn hash(path: &Path) -> Result<String, Box<dyn std::error::Error>> {
         }
         digest.update(&chunk[..n]);
     }
-    Ok(format!("{:x}", digest.finalize()))
+    Ok(hex::encode(digest.finalize()))
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();

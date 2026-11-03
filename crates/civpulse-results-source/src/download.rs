@@ -193,7 +193,7 @@ async fn transfer(
         drop(file);
         partial.keep = true;
         Ok(Download::Downloaded(Receipt {
-            sha256: format!("{:x}", hash.finalize()),
+            sha256: hex::encode(hash.finalize()),
             bytes,
             retrieved_at,
             etag,
@@ -282,7 +282,7 @@ mod tests {
         };
         let bytes = std::fs::read(&path).unwrap();
         assert_eq!(bytes, b"\xef\xbb\xbf {}  \n ");
-        assert_eq!(receipt.sha256, format!("{:x}", Sha256::digest(&bytes)));
+        assert_eq!(receipt.sha256, hex::encode(Sha256::digest(&bytes)));
         assert_eq!(receipt.bytes, 10);
         assert_eq!(receipt.etag.as_deref(), Some("\"new\""));
         let request = request.recv().unwrap().to_lowercase();

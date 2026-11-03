@@ -44,7 +44,7 @@ pub async fn digest(path: &Path) -> Result<(String, u64)> {
         hash.update(&buffer[..n]);
         count += n as u64;
     }
-    Ok((format!("{:x}", hash.finalize()), count))
+    Ok((hex::encode(hash.finalize()), count))
 }
 async fn precondition(path: &Path, c: &Conditions) -> Result<bool> {
     let exists = tokio::fs::try_exists(path)
