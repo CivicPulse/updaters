@@ -9,10 +9,7 @@ RUN case "$TOOL" in civpulse-download|civpulse-process|civpulse-upload) ;; *) ex
     && cargo build --locked --release --package "$TOOL" \
     && cp "target/release/$TOOL" /usr/local/bin/civpulse-tool
 
-FROM debian:bookworm-slim AS runtime
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+FROM gcr.io/distroless/cc-debian13:nonroot@sha256:08476c244888bfb425bae1ae4dd7c17f093e972aab8426883d97f3c6f280f7c1 AS runtime
 COPY --from=build /usr/local/bin/civpulse-tool /usr/local/bin/civpulse-tool
 USER 65532:65532
 ENV RUST_LOG=info

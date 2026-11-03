@@ -58,6 +58,8 @@ docker run --rm --read-only civpulse-download:dev --check
 
 The same Dockerfile builds one selected binary per image. Images include CA
 certificates for future HTTPS clients and run as an unprivileged numeric user.
+The runtime is a digest-pinned distroless Debian 13 image with no shell or package
+manager; probes and diagnostics must invoke the executable directly.
 CI builds and checks all three images without pushing them.
 
 Job manifests are examples, suspended by default, with `--check` arguments. Set
