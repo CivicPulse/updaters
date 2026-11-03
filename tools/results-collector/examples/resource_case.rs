@@ -16,6 +16,10 @@ struct Scope {
 }
 fn padded(path: &Path, extra: usize) -> Result<Value, Box<dyn std::error::Error>> {
     let mut value: Value = serde_json::from_reader(File::open(path)?)?;
+    pad_scope(&mut value, extra)?;
+    Ok(value)
+}
+fn pad_scope(value: &mut Value, extra: usize) -> Result<(), Box<dyn std::error::Error>> {
     let items = value["ballotItems"].as_array_mut().ok_or("missing items")?;
     let count = items.len();
     if count == 0 && extra != 0 {
@@ -23,12 +27,28 @@ fn padded(path: &Path, extra: usize) -> Result<Value, Box<dyn std::error::Error>
     }
     for (index, item) in items.iter_mut().enumerate() {
         let size = extra / count + usize::from(index < extra % count);
-        item["resourceTestPadding"] = Value::String("x".repeat(size));
+        // Precinct details are omitted by the real compact asset projection.
+        // Keep every original row and choose an identity that cannot collide.
+        let option = item["ballotOptions"]
+            .as_array_mut()
+            .and_then(|options| options.first_mut())
+            .ok_or("cannot pad item without choices")?;
+        if option.get("precinctResults").is_none_or(Value::is_null) {
+            option["precinctResults"] = Value::Array(Vec::new());
+        }
+        let rows = option["precinctResults"]
+            .as_array_mut()
+            .ok_or("invalid precinct rows")?;
+        let mut identity = "resource-test-padding".to_owned();
+        while rows.iter().any(|row| row["id"].as_str() == Some(&identity)) {
+            identity.push('-');
+        }
+        rows.push(serde_json::json!({"id":identity,"voteCount":null,"resourceTestPadding":"x".repeat(size)}));
         if stringify(item)?.len() > 2 * 1024 * 1024 - 4096 {
             return Err("synthetic item exceeds safe RPC batch bound".into());
         }
     }
-    Ok(value)
+    Ok(())
 }
 fn hash(path: &Path) -> Result<String, Box<dyn std::error::Error>> {
     let mut file = File::open(path)?;
@@ -174,8 +194,107 @@ fn distribute(
 }
 
 #[cfg(test)]
+#[path = "support/disk.rs"]
+mod disk;
+
+#[cfg(test)]
 mod tests {
     use super::*;
+    #[tokio::test]
+    async fn large_detail_preserves_source_rows_and_publishes_small_compact_assets() {
+        use civpulse_results_collector::{pipeline::write_assets, storage::Store};
+        let scratch = tempfile::tempdir().unwrap();
+        let mut document: Value = serde_json::from_str(include_str!(
+            "../../../crates/civpulse-results-contract/tests/fixtures/base.json"
+        ))
+        .unwrap();
+        let mut original = document["localResults"][0].clone();
+        // Exercise collision avoidance and preserve null/zero/absent counts.
+        original["ballotItems"][0]["ballotOptions"][0]["precinctResults"][0]["id"] =
+            Value::String("resource-test-padding".into());
+        let template = original["ballotItems"][0].clone();
+        original["ballotItems"] = Value::Array(
+            (0..5)
+                .map(|index| {
+                    let mut item = template.clone();
+                    item["id"] = Value::String(format!("race-{index}"));
+                    item
+                })
+                .collect(),
+        );
+        let mut padded = original.clone();
+        pad_scope(&mut padded, 5 * 1024 * 1024).unwrap();
+        for (item, before) in padded["ballotItems"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .zip(original["ballotItems"].as_array().unwrap())
+        {
+            assert!(stringify(item).unwrap().len() < 2 * 1024 * 1024 - 4096);
+            let mut restored = item.clone();
+            let rows = restored["ballotOptions"][0]["precinctResults"]
+                .as_array_mut()
+                .unwrap();
+            let added = rows.pop().unwrap();
+            assert_eq!(added["id"], "resource-test-padding-");
+            assert!(added["voteCount"].is_null());
+            assert_eq!(
+                restored, *before,
+                "All original fields, IDs and counts survive"
+            );
+        }
+        document["localResults"][0] = padded;
+        let source = scratch.path().join("source.json");
+        std::fs::write(&source, stringify(&document).unwrap()).unwrap();
+        let prepared = prepare(
+            &source,
+            &scratch.path().join("scopes"),
+            &Expectations {
+                election_date: "2026-11-03".into(),
+                expected_jurisdictions: Some(2),
+                expected_items: Some(6),
+            },
+            &Limits::default(),
+            &AtomicBool::new(false),
+        )
+        .unwrap();
+        let store = disk::DiskStore::new(scratch.path().join("objects"));
+        let manifest = write_assets(
+            &store,
+            "00000000-0000-4000-8000-000000000001",
+            "00000000-0000-4000-8000-000000000002",
+            &prepared,
+            &serde_json::json!({}),
+            &AtomicBool::new(false),
+        )
+        .await
+        .unwrap();
+        assert_eq!(manifest["jurisdictions"][1]["item_count"], 5);
+        let prefix = "elections/00000000-0000-4000-8000-000000000001/revisions/00000000-0000-4000-8000-000000000002/counties/001";
+        let detail = store
+            .get(&format!("{prefix}-detail.json"), 8 * 1024 * 1024)
+            .await
+            .unwrap();
+        let compact = store
+            .get(&format!("{prefix}.json"), 4 * 1024 * 1024)
+            .await
+            .unwrap();
+        assert!(detail.body.len() > 4 * 1024 * 1024);
+        assert!(compact.body.len() < 16 * 1024);
+        let detail: Value = serde_json::from_slice(&detail.body).unwrap();
+        let compact: Value = serde_json::from_slice(&compact.body).unwrap();
+        assert_eq!(detail["items"].as_array().unwrap().len(), 5);
+        assert_eq!(compact["items"].as_array().unwrap().len(), 5);
+        for (index, item) in compact["items"].as_array().unwrap().iter().enumerate() {
+            assert_eq!(item["data"]["id"], original["ballotItems"][index]["id"]);
+            assert_eq!(item["data"]["ballotOptions"][0]["voteCount"], 12);
+            assert!(
+                item["data"]["ballotOptions"][0]
+                    .get("precinctResults")
+                    .is_none()
+            );
+        }
+    }
     #[test]
     fn distribution_respects_scope_capacity_and_preserves_concentrated_scope() {
         let scopes = vec![
