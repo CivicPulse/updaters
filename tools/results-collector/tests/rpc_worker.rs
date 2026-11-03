@@ -328,3 +328,155 @@ fn configuration_is_disabled_by_default_and_bounded() {
         .is_err()
     );
 }
+
+#[derive(Clone, Copy)]
+enum RetainMode {
+    Success,
+    Fail,
+    Pending,
+}
+struct RetainLease {
+    leases: mpsc::UnboundedSender<Lease>,
+    mode: RetainMode,
+}
+impl JobProcessor for RetainLease {
+    fn process<'a>(&'a self, _: &'a Job, lease: Lease) -> JobFuture<'a> {
+        Box::pin(async move {
+            self.leases.send(lease).unwrap();
+            match self.mode {
+                RetainMode::Success => Ok(()),
+                RetainMode::Fail => Err(Error::Unsupported),
+                RetainMode::Pending => std::future::pending().await,
+            }
+        })
+    }
+}
+
+#[tokio::test]
+async fn retained_leases_are_revoked_on_success_and_failure_without_losing_failure_report() {
+    for mode in [RetainMode::Success, RetainMode::Fail] {
+        let (url, mut requests, task) = server(|request| {
+            if request.contains("/claim_sos_results_job ") {
+                response(&job())
+            } else {
+                response("null")
+            }
+        })
+        .await;
+        let (leases, mut retained) = mpsc::unbounded_channel();
+        let result = worker::once(
+            &client(&url),
+            Arc::new(RetainLease { leases, mode }),
+            &Options {
+                enabled: true,
+                ..Options::default()
+            },
+        )
+        .await;
+        match mode {
+            RetainMode::Success => assert_eq!(result, Ok(true)),
+            RetainMode::Fail => assert_eq!(result, Err(Error::Unsupported)),
+            RetainMode::Pending => unreachable!(),
+        }
+        assert!(
+            requests
+                .recv()
+                .await
+                .unwrap()
+                .contains("/claim_sos_results_job ")
+        );
+        if matches!(mode, RetainMode::Fail) {
+            assert!(
+                requests
+                    .recv()
+                    .await
+                    .unwrap()
+                    .contains("/fail_sos_results_job ")
+            );
+        }
+        let lease = retained.recv().await.unwrap();
+        assert!(lease.is_lost());
+        assert!(*lease.cancellation().borrow());
+        assert_eq!(
+            lease
+                .call::<Value>("stage_sos_results_job", json!({}))
+                .await,
+            Err(Error::LeaseLost)
+        );
+        assert!(
+            tokio::time::timeout(Duration::from_millis(30), requests.recv())
+                .await
+                .is_err()
+        );
+        task.abort();
+    }
+}
+
+#[tokio::test]
+async fn forced_drain_revokes_retained_leases_and_cancels_waiting_mutation() {
+    let (url, mut requests, task) = server(|request| {
+        if request.contains("/claim_sos_results_job ") {
+            response(&job())
+        } else if request.contains("/stage_sos_results_job ") {
+            let (body, _) = response("null");
+            (body, Duration::from_secs(1))
+        } else {
+            response("true")
+        }
+    })
+    .await;
+    let (leases, mut retained) = mpsc::unbounded_channel();
+    let (shutdown, receiver) = watch::channel(false);
+    let daemon = tokio::spawn(worker::daemon(
+        Some(client(&url)),
+        Arc::new(RetainLease {
+            leases,
+            mode: RetainMode::Pending,
+        }),
+        Options {
+            enabled: true,
+            drain_timeout: Duration::from_millis(20),
+            ..Options::default()
+        },
+        receiver,
+    ));
+    let lease = retained.recv().await.unwrap();
+    let in_flight = lease.clone();
+    let waiting = tokio::spawn(async move {
+        in_flight
+            .call::<Value>("stage_sos_results_job", json!({}))
+            .await
+    });
+    assert!(
+        requests
+            .recv()
+            .await
+            .unwrap()
+            .contains("/claim_sos_results_job ")
+    );
+    assert!(
+        requests
+            .recv()
+            .await
+            .unwrap()
+            .contains("/stage_sos_results_job ")
+    );
+    shutdown.send(true).unwrap();
+    assert_eq!(daemon.await.unwrap(), Err(Error::Shutdown));
+    assert!(lease.is_lost());
+    assert!(*lease.cancellation().borrow());
+    assert_eq!(
+        tokio::time::timeout(Duration::from_millis(100), waiting)
+            .await
+            .unwrap()
+            .unwrap(),
+        Err(Error::LeaseLost)
+    );
+    assert_eq!(
+        lease
+            .call::<Value>("stage_sos_results_job", json!({}))
+            .await,
+        Err(Error::LeaseLost)
+    );
+    task.abort();
+}

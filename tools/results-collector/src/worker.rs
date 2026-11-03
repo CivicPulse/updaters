@@ -151,6 +151,7 @@ async fn run_job(
     // CPU parsing must run in a cancellation-aware blocking task in the later pipeline.
     let renewal_rpc = rpc.clone();
     let args = job.lease_args();
+    let renewal_lost = lost_tx.clone();
     let mut renewal = tokio::spawn(async move {
         loop {
             tokio::time::sleep(renewal_interval).await;
@@ -160,21 +161,26 @@ async fn run_job(
                     .await,
                 Ok(true)
             ) {
-                let _ = lost_tx.send(true);
+                renewal_lost.send_replace(true);
                 return Err(Error::LeaseLost);
             }
         }
     });
-    let _renewal_guard = AbortOnDrop(renewal.abort_handle());
+    let mut lifecycle = LeaseLifecycle {
+        lost: lost_tx,
+        renewal: renewal.abort_handle(),
+    };
     let result = tokio::select! {
         biased;
         renewed = &mut renewal => renewed.unwrap_or(Err(Error::Task)),
         processed = processor.process(&job, lease.clone()) => processed,
     };
-    renewal.abort();
-    // Aborting the outer job must also stop renewal (guard below owns its abort handle).
+    // Record validity before revoking local processor handles. Failure reporting
+    // uses the same database-fenced IDs, but retained processors must stop now.
+    let report_failure = !lease.is_lost();
+    lifecycle.stop();
     if let Err(error) = &result {
-        if !lease.is_lost() {
+        if report_failure {
             let mut args = job.lease_args();
             args["p_error"] = json!(error.to_string());
             args["p_retry_after"] = match error {
@@ -190,10 +196,20 @@ async fn run_job(
     }
     result
 }
-struct AbortOnDrop(tokio::task::AbortHandle);
-impl Drop for AbortOnDrop {
+struct LeaseLifecycle {
+    lost: watch::Sender<bool>,
+    renewal: tokio::task::AbortHandle,
+}
+impl LeaseLifecycle {
+    fn stop(&mut self) {
+        // Revoke synchronously: aborting renewal alone only schedules its drop.
+        self.lost.send_replace(true);
+        self.renewal.abort();
+    }
+}
+impl Drop for LeaseLifecycle {
     fn drop(&mut self) {
-        self.0.abort();
+        self.stop();
     }
 }
 async fn write_heartbeat(path: Option<&Path>) -> Result<()> {

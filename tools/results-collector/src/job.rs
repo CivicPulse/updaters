@@ -45,7 +45,7 @@ impl Lease {
     }
     #[must_use]
     pub fn is_lost(&self) -> bool {
-        *self.lost.borrow()
+        *self.lost.borrow() || self.lost.has_changed().is_err()
     }
     /// Subscribe to lease cancellation. A closed channel also means stop.
     #[must_use]
@@ -69,7 +69,18 @@ impl Lease {
         }
         args.insert("p_job_id".into(), json!(self.job.job_id));
         args.insert("p_lease_id".into(), json!(self.job.lease_id));
-        self.rpc.call(name, Value::Object(args)).await
+        let mut cancellation = self.lost.clone();
+        tokio::select! {
+            biased;
+            () = async {
+                loop {
+                    if *cancellation.borrow() || cancellation.changed().await.is_err() {
+                        break;
+                    }
+                }
+            } => Err(Error::LeaseLost),
+            result = self.rpc.call(name, Value::Object(args)) => result,
+        }
     }
 }
 pub type JobFuture<'a> = Pin<Box<dyn Future<Output = Result<()>> + Send + 'a>>;
@@ -82,5 +93,46 @@ pub struct UnsupportedProcessor;
 impl JobProcessor for UnsupportedProcessor {
     fn process<'a>(&'a self, _: &'a Job, _: Lease) -> JobFuture<'a> {
         Box::pin(async { Err(Error::Unsupported) })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::Duration;
+
+    #[tokio::test]
+    async fn closed_cancellation_channel_is_a_lost_lease_even_without_true_value() {
+        let (sender, receiver) = watch::channel(false);
+        drop(sender);
+        let job = Job {
+            job_id: Uuid::nil(),
+            lease_id: Uuid::nil(),
+            election_id: Uuid::nil(),
+            election_date: "2026-11-03".into(),
+            source_url: String::new(),
+            etag: None,
+            last_modified: None,
+            snapshot_id: None,
+            phase: Phase::Import,
+            revision: None,
+            manifest_key: None,
+            receipt: None,
+        };
+        let rpc = Rpc::new(
+            "http://127.0.0.1:1",
+            "test",
+            Duration::from_millis(20),
+            4096,
+        )
+        .unwrap();
+        let lease = Lease::new(rpc, job, receiver);
+        assert!(lease.is_lost());
+        assert_eq!(
+            lease
+                .call::<Value>("stage_sos_results_job", json!({}))
+                .await,
+            Err(Error::LeaseLost)
+        );
     }
 }
