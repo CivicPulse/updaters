@@ -30,7 +30,15 @@ Sampling can miss brief peaks and directory metadata is excluded. The simulator
 retains raw/immutable objects locally, whereas production keeps those objects in
 R2; size the pod from **worker scratch**, not total simulator disk usage.
 
-`results.sh` writes a JSON report and GNU `/usr/bin/time -v` CPU/wall/RSS report.
+`results.sh` requires Python 3 and writes a JSON report plus a GNU
+`/usr/bin/time -v` CPU/wall/RSS report. Choose a fresh output prefix: either existing
+report path is rejected before build/measurement, including source aliases, symlinks
+and hard links. Output files are reserved create-only with exclusive descriptors;
+GNU time writes through its reserved descriptor rather than reopening a source
+pathname. Failed runs remove only their own incomplete reports. Do not read a
+report until the command succeeds. Existing source and report evidence is never
+overwritten by this wrapper. The Rust harness and recorded measurement receipts
+are unchanged by this report-publication safeguard.
 Build time is excluded. Total measured time includes an initial exact-byte hash
 and validation, followed by a second validation inside the simulated pipeline.
 The pipeline measures streaming archive copies/hashes, original-receipt replay,
