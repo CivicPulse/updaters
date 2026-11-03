@@ -13,6 +13,8 @@ import uuid
 SOURCE = "https://results.sos.ga.gov/cdn/results/Georgia/export-11032026GeneralAndSpecialElection.json"
 STOP_AT = "2026-11-11T00:00:00Z"
 TRANSITION_AT = "2026-11-03T22:00:00Z"
+# Preactivation gates only. ballot_live_readback means the isolated native
+# browser proof; actual production publication/readback is recorded afterward.
 ACCEPTANCE_CHECKS = {
     "contracts", "resource_envelope", "main_first_migrations", "isolated_e2e",
     "production_secret_isolation", "production_r2_checksums", "production_r2_conditional_writes",

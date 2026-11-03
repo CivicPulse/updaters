@@ -3,6 +3,8 @@
 environment: dev
 collection:
   enabled: false
+  maxDownloadBytes: 134217728
+  maxScopeBytes: 16777216
 acceptance:
   approved: false
   reference: ""

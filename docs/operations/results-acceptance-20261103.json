@@ -1,0 +1,375 @@
+{
+  "accepted": true,
+  "acceptance_phase": "preactivation",
+  "status": "preactivation_accepted_pending_repository_review",
+  "environment": "prod",
+  "operator": "Kerry Hatcher",
+  "selected_runtime": {
+    "rust_revision": "6b98d565bfdd74c3de0639aa19bea409c80ba096",
+    "image_digest": "sha256:34347050d7fa52aa23c06cde7ad4af400349e56adb9e31d71b523518559ddc65"
+  },
+  "election_id": "295d864d-80c8-4a87-ab16-3f4f3fa5ddb7",
+  "election_date": "2026-11-03",
+  "source_url": "https://results.sos.ga.gov/cdn/results/Georgia/export-11032026GeneralAndSpecialElection.json",
+  "expected_jurisdictions": 160,
+  "expected_items": 4178,
+  "starts_at": "2026-11-03T19:14:40Z",
+  "ends_at": "2026-11-11T00:00:00Z",
+  "poll_transition_at": "2026-11-03T22:00:00Z",
+  "initial_poll_interval_seconds": 3600,
+  "poll_interval_seconds": 300,
+  "source_policy": {
+    "starts_at_meaning": "persisted configuration window, not actual activation",
+    "effective_interval_if_activated_after_transition_seconds": 300,
+    "scheduler": "existing single Supabase Cron HEAD coordinator",
+    "fresh_download_guard": "database-clock authorization immediately before GET; inclusive start/exclusive end; conservative client deadline",
+    "after_stop": "no fresh source download; archived imports and committed pointer recovery may drain",
+    "actual_future_end_observed": false
+  },
+  "actual_activation_at": null,
+  "first_source_check_at": null,
+  "first_production_publication_revision": null,
+  "first_production_browser_readback_at": null,
+  "checks": {
+    "contracts": true,
+    "resource_envelope": true,
+    "main_first_migrations": true,
+    "isolated_e2e": true,
+    "production_secret_isolation": true,
+    "production_r2_checksums": true,
+    "production_r2_conditional_writes": true,
+    "production_cors_cache": true,
+    "ballot_live_readback": true,
+    "monitoring_alert_route": true,
+    "recovery_drills": true,
+    "cutover_rollback": true,
+    "operator_review": true
+  },
+  "resource_admission": {
+    "max_download_bytes": 134217728,
+    "max_scope_bytes": 16777216,
+    "accepted": true,
+    "evidence": "qualified_guarded_resource_support"
+  },
+  "evidence": {
+    "contracts": [
+      "independent_official_source_oracle"
+    ],
+    "resource_envelope": [
+      "qualified_guarded_resource_support",
+      "selected_runtime_fresh_official_import"
+    ],
+    "main_first_migrations": [
+      "database_and_source_stop"
+    ],
+    "isolated_e2e": [
+      "selected_runtime_visible_native_cards",
+      "selected_runtime_fresh_official_import"
+    ],
+    "production_secret_isolation": [
+      "disabled_deployment_binding",
+      "reviewed namespace/bucket/credential isolation in issue #9"
+    ],
+    "production_r2_checksums": [
+      "production_storage_controls"
+    ],
+    "production_r2_conditional_writes": [
+      "production_storage_controls"
+    ],
+    "production_cors_cache": [
+      "production_cors_cache_control"
+    ],
+    "ballot_live_readback": [
+      "selected_runtime_visible_native_cards"
+    ],
+    "monitoring_alert_route": [
+      "monitoring_alert_route"
+    ],
+    "recovery_drills": [
+      "qualified_recovery_support",
+      "selected_runtime_visible_native_cards"
+    ],
+    "cutover_rollback": [
+      "selected_runtime_fresh_official_import",
+      "selected_runtime_visible_native_cards",
+      "reviewed pause/rollback procedure in results-runbook.md"
+    ],
+    "operator_review": [
+      "user-authorized conditional rollout and delegated coordinator review; independent repository review and checks required before merge"
+    ]
+  },
+  "preactivation_evidence": {
+    "selected_runtime_fresh_official_import": {
+      "environment": "test",
+      "election_id": "993acd9a-542b-436b-880e-6fd1a88d9792",
+      "source_url": "https://results.sos.ga.gov/cdn/results/Georgia/export-11032026GeneralAndSpecialElection.json",
+      "rust_revision": "6b98d565bfdd74c3de0639aa19bea409c80ba096",
+      "image_digest": "sha256:34347050d7fa52aa23c06cde7ad4af400349e56adb9e31d71b523518559ddc65",
+      "revision": "1",
+      "snapshot_id": "2087094e-6055-4e73-8c0e-7c0a559757ef",
+      "raw_sha256": "d475b216f455e8fd54bf369d4d0b12df701f4a35b896c73971c81a60d358bde0",
+      "raw_bytes": 46362705,
+      "jurisdictions": 160,
+      "items": 4178,
+      "verified_objects": 323,
+      "raw_and_scoped_signed_S3_streaming_verified": true,
+      "public_hash_cache_CORS_verified": true,
+      "feed_paused": true,
+      "production_acceptance": false,
+      "status": "actual_test_fresh_official_publication_pass",
+      "receipt": "civpulse-official-test-ua-final/official-readback-receipt.json",
+      "job_uid": "a023ddc5-61d1-44d9-bdc6-2ce060ae5cca",
+      "job_name": "results-official-ua-20261103-2155",
+      "completed_at": "2026-11-03T22:02:42Z",
+      "duration_ms": 162719,
+      "cgroup_memory_peak_bytes": 322002944,
+      "pod_restarts": 0,
+      "manual_retry": "normal administrator retry of the same previously unarchived job; no raw receipt/snapshot seeded",
+      "standby_restored_disabled": true
+    },
+    "independent_official_source_oracle": {
+      "oracle_commit": "0408add4c47a8549c9ad76c680d9a5779a58a050",
+      "oracle_bun_version": "1.4.3",
+      "rust_revision": "6b98d565bfdd74c3de0639aa19bea409c80ba096",
+      "rust_image_digest": "sha256:34347050d7fa52aa23c06cde7ad4af400349e56adb9e31d71b523518559ddc65",
+      "election_id": "993acd9a-542b-436b-880e-6fd1a88d9792",
+      "snapshot_id": "2087094e-6055-4e73-8c0e-7c0a559757ef",
+      "raw_bytes": 46362705,
+      "raw_sha256": "d475b216f455e8fd54bf369d4d0b12df701f4a35b896c73971c81a60d358bde0",
+      "oracle_fingerprint": "0614cf53ea737d3442020ca7c44cc46e44e8d213cf7ba8300906dfb075baa92e",
+      "rust_published_fingerprint": "0614cf53ea737d3442020ca7c44cc46e44e8d213cf7ba8300906dfb075baa92e",
+      "fingerprint_equal": true,
+      "jurisdictions": 160,
+      "items": 4178,
+      "ordered_jurisdiction_id_name_item_count_projection_equal": true,
+      "header_election_date": "2026-11-03",
+      "header_election_name": "November 3, 2026 - General & Special Elections",
+      "header_source_created_at": "2026-11-03T20:04:03.352971Z",
+      "manifest_source_created_at_equal": true,
+      "full_header_and_metadata_comparison_limit": "Manifest contains source_created_at plus jurisdiction id/name/item_count; full prepared header/jurisdiction metadata preserved separately. No absent manifest fields claimed compared.",
+      "local_only": true,
+      "no_official_source_request": true,
+      "not_resource_measurement": true,
+      "receipt": "new-official-oracle/receipt.json"
+    },
+    "qualified_guarded_resource_support": {
+      "status": "observed_pass_on_qualified_previous_image",
+      "measured_image_digest": "sha256:80329628ad1aa0e8bdb0a9d2aa622c7c0d44368da1fa81d7431681828efde51c",
+      "measured_source_revision": "ac524e7f6940b8d113ebecd96bd34a28bed29a77",
+      "qualification": "Actual guarded hosted-image parser/Publisher/worker::once archive replay used loopback RPC and disk Store doubles. The only runtime change to selected 343 is source-client User-Agent; parser/canonical/archive/staging/pointer/lease/window paths are byte-identical. These are 803 measurements, not reruns on 343 or actual Supabase/R2 transport.",
+      "official": {
+        "receipt": "hosted-official-ac524e7.jsonl",
+        "raw_bytes": 46363141,
+        "raw_sha256": "f464d3b037a82d594c893aef072042530a84b6b1cb3edb76b1e3873bed2dc3ba",
+        "duration_ms": 18155,
+        "process_peak_rss_bytes": 355794944,
+        "cgroup_memory_peak_bytes": 395976704,
+        "worker_scratch_bytes": 92725959,
+        "sampled_total_local_bytes_excluding_input": 188072972
+      },
+      "near_selected_cap": {
+        "receipt": "hosted-near127-detail-ac524e7.jsonl",
+        "raw_bytes": 133169152,
+        "raw_sha256": "a699b38ad3f78a928ac74a16e8e64ec8760f62e4572db2375ac008240ad6e3ef",
+        "largest_scope_bytes": 16515072,
+        "jurisdictions": 160,
+        "items": 4178,
+        "staged_items": 4178,
+        "staged_batches": 177,
+        "largest_rpc_batch_bytes": 2096065,
+        "duration_ms": 42130,
+        "process_peak_rss_bytes": 493142016,
+        "cgroup_memory_peak_bytes": 533032960,
+        "worker_scratch_bytes": 266337981,
+        "sampled_total_local_bytes_excluding_input": 535384042,
+        "total_local_bytes_including_input_before_other_overhead": 668553194
+      },
+      "limits": {
+        "memory_bytes": 1073741824,
+        "cpu": "1",
+        "scratch_mount": "2Gi",
+        "ephemeral_storage": "3Gi"
+      },
+      "oom_events": 0,
+      "oom_kill_events": 0,
+      "scratch_filesystem": "ext4",
+      "scratch_sampling_interval_ms": 10,
+      "cpu_counters": "same-pod cumulative; not per-case CPU time",
+      "independent_harness_sha256": "821c845a8e94f7687238c48096a5de262b05b061e4049f46c6d8170ac8ea18b1",
+      "internal_harness_revision": "unrecorded; independent reconstruction plus external image/publishing binding verifies provenance",
+      "independent_fixture_reinspection": "exact raw/scope bytes and all 4178 padding rows; original fields/IDs/counts preserved",
+      "node_pressure_evidence": "all three nodes Ready/no pressure in after-run snapshot, not a continuous guarantee"
+    },
+    "qualified_recovery_support": {
+      "status": "observed_actual_isolated_db_r2_recovery_pass_on_803",
+      "receipt": "civpulse-test-replay-final/summary.json",
+      "qualification": "Same unchanged archive/staging/pointer/lease/window code; no claim this 803 recovery run executed on 343.",
+      "interrupted_import": "one staged item; stale lease rejected; normal-admin retry resumed original snapshot",
+      "pointer_repair": "actual collector Pointer phase only; no import/stage/commit; counts/dirty unchanged during repair",
+      "format_only": "revision advanced to 3 with different raw SHA/same semantic fingerprint; dirty stayed 33",
+      "public_objects_verified_each_phase": 7,
+      "earlier_browser": "795 proof established same-Document reactive DOM/source/unmatched/private checks only; mapped-card visibility was not proven"
+    },
+    "selected_runtime_visible_native_cards": {
+      "status": "observed_pass_actual_visible_revision_4_to_5_same_document",
+      "receipt": "civpulse-visible-acceptance-final/visible-receipt.json",
+      "phase_receipt": "civpulse-visible-acceptance-final/visible-two-proof.json",
+      "summary": "civpulse-visible-acceptance-final/summary.json",
+      "website_revision": "341aa510af996998404ed9df4fd96e327d778b74",
+      "fixed_build_sha256": "d81b6301b2995d07b3c345a6b72d6062f1c8bb79bd6f5eeaefd0670325426ab9",
+      "ui_binding": "341 apps/web runtime byte-identical to deployed 3837 UI; subsequent source HEAD change was server/docs only",
+      "image_digest": "sha256:34347050d7fa52aa23c06cde7ad4af400349e56adb9e31d71b523518559ddc65",
+      "baseline_revision": "4",
+      "baseline_counts": [
+        115,
+        85
+      ],
+      "baseline_question_yes": null,
+      "target_revision": "5",
+      "target_counts": [
+        110,
+        90
+      ],
+      "target_question_yes": 0,
+      "observations": [
+        {
+          "stage": "visible-baseline-four",
+          "revision": "4",
+          "sourceCreatedAt": "2026-11-03T10:40:00Z",
+          "snapshotId": "fc57e5c1-0fd9-4911-92f5-afd1f1dbe8b5",
+          "checkedAt": "2026-11-03T22:13:38.559Z",
+          "documentUnchanged": true,
+          "contestVisible": true,
+          "questionVisible": true,
+          "metricsVisible": 4
+        },
+        {
+          "stage": "visible-two",
+          "revision": "5",
+          "sourceCreatedAt": "2026-11-03T10:45:00Z",
+          "snapshotId": "0062de0c-f999-441e-8526-aba95b2b8867",
+          "checkedAt": "2026-11-03T22:16:21.057Z",
+          "documentUnchanged": true,
+          "contestVisible": true,
+          "questionVisible": true,
+          "metricsVisible": 4
+        }
+      ],
+      "visible_metric_assertions": true,
+      "profile_links_visible": true,
+      "private_anonymous_and_real_ordinary_isolation": true,
+      "private_pointer_404": true,
+      "no_browser_raw_source_download": true,
+      "unexpected_network_or_script_errors": 0,
+      "job_uid": "e7818aea-f997-4be0-a317-6103a1707ec0",
+      "job_duration_ms": 2988,
+      "cgroup_memory_peak_bytes": 6836224,
+      "pod_restarts": 0,
+      "dirty_before": 37,
+      "dirty_after": 38,
+      "public_objects_verified": 7,
+      "final_state": "normal-admin paused, source checks not expected, no pending job, disabled standby replica one, DB/S3 revision 5 and healthy monitor",
+      "final_state_receipts": [
+        "final-paused-health.json",
+        "final-paused-monitor.json"
+      ],
+      "qualification": "Visible same-Document claim is only revision 4 to 5. Earlier 795 DOM assertions and revision 3 to 4 do not prove visible-card reactivity."
+    },
+    "production_storage_controls": {
+      "status": "control_pass_only",
+      "scope": "two retained _acceptance objects; no election objects, DB calls or activation",
+      "receipt": "prod-r2-control.receipt.json",
+      "immutable_create_status": 200,
+      "immutable_collision_status": 412,
+      "same_content_idempotent": true,
+      "changed_content_rejected": true,
+      "wrong_size_rejected": true,
+      "conditional_wrong_if_match_status": 412,
+      "conditional_correct_if_match_status": 200
+    },
+    "production_cors_cache_control": {
+      "status": "control_pass_only",
+      "receipt": "prod-r2-cors-curl-approved.receipt.json",
+      "client": "curl HTTP/2",
+      "approved_origins": [
+        "https://www.civpulse.org",
+        "https://civpulse.org"
+      ],
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "responses": 200,
+      "exact_allow_origin": true,
+      "exposed_headers": [
+        "ETag",
+        "Cache-Control"
+      ],
+      "immutable_cache": "public, max-age=31536000, immutable",
+      "pointer_cache": "public, max-age=15, s-maxage=15, must-revalidate",
+      "unapproved_origin_no_allow_origin": "reported_verified_by_coordinator",
+      "supersedes": "earlier urllib 403 receipt is failed historical evidence"
+    },
+    "monitoring_alert_route": {
+      "status": "delegated_inbox_delivery_verified",
+      "received_at": "2026-11-03T19:35:27Z",
+      "verification": "user-delegated inbox check, not personal manual acknowledgement",
+      "component_binding": "Mailer/monitor/config bytes unchanged from 0e42ca2 through 6b98d565; qualified deployed-component delivery proof",
+      "sustained_fifteen_minute_mismatch_alert_observed": false,
+      "qualification": "Actual immediate mismatch grace and automated threshold tests; no fabricated sustained-alert claim"
+    },
+    "database_and_source_stop": {
+      "status": "coordinator_verified_main_first_deployed",
+      "applied_migrations": 139,
+      "latest_suffix": "038",
+      "website_source_identification_merge": "3837e492",
+      "service_only_download_authorization_verified": true,
+      "window_boundaries": "automated inclusive-start/exclusive-end tests pass",
+      "actual_november_11_stop_observed": false,
+      "evidence": "https://github.com/CivicPulse/updaters/issues/9#issuecomment-6615516937"
+    },
+    "disabled_deployment_binding": {
+      "status": "coordinator_verified_disabled_ready",
+      "receipt": "civpulse-ua-disabled-image-receipt.json",
+      "image_digest": "sha256:34347050d7fa52aa23c06cde7ad4af400349e56adb9e31d71b523518559ddc65",
+      "helm_revision": 5,
+      "environments": [
+        "dev",
+        "test",
+        "prod"
+      ],
+      "restarts": 0,
+      "collection_enabled": false
+    },
+    "production_mapping_limitation": {
+      "curated_sos_ballot_links": 0,
+      "collection_blocker": false,
+      "meaning": "Production profile identity mappings remain unreviewed. Isolated curated-card proof does not invent production mappings.",
+      "first_production_readback": "verify real source/unmatched provenance and no false profile links; curated cards remain pending reviewed content mappings"
+    }
+  },
+  "post_activation": {
+    "status": "pending",
+    "actual_activation_at": null,
+    "first_source_check_at": null,
+    "first_production_publication_revision": null,
+    "first_production_browser_readback_at": null,
+    "checks": {
+      "immediate_source_check": false,
+      "production_import": false,
+      "production_browser_readback": false,
+      "scheduled_cadence": false,
+      "actual_future_stop": false,
+      "stop_window_configuration_and_guard_verified": true
+    },
+    "evidence": "record actual observations separately in issue #9",
+    "actual_stop_at": null
+  },
+  "notes": [
+    "Preactivation acceptance is complete; committed collection/approval defaults remain false. Repository review and passing automated checks must precede merge/activation.",
+    "ballot_live_readback means the isolated visible native-browser proof, not a production import before activation.",
+    "No production collection, activation, publication or browser readback is claimed. Actual production milestones remain null until observed and recorded separately in issue #9.",
+    "The configured future stop and automated boundary tests verify the guard; the actual future end has not been observed."
+  ],
+  "decision_scope": "Preactivation checks complete under delegated operator review; repository review/checks/merge still required. No production activation or publication is claimed."
+}

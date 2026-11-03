@@ -31,8 +31,8 @@ def main():
         config = next(doc["data"] for doc in docs if doc["kind"] == "ConfigMap")
         assert config["CIVPULSE_ENV"] == environment
         assert config["SOS_COLLECTOR_ENABLED"] == "false"
-        assert config["SOS_MAX_DOWNLOAD_BYTES"] == "536870912"
-        assert config["SOS_MAX_SCOPE_BYTES"] == "67108864"
+        assert config["SOS_MAX_DOWNLOAD_BYTES"] == "134217728"
+        assert config["SOS_MAX_SCOPE_BYTES"] == "16777216"
         assert config["R2_BUCKET"] == "civpulse-files" + ("" if environment == "prod" else "-"+environment)
         assert config["R2_PUBLIC_ORIGIN"] == "https://files" + ("" if environment == "prod" else "-"+environment) + ".civpulse.org"
         pod = deployment["spec"]["template"]["spec"]
@@ -60,6 +60,17 @@ def main():
         assert policy["ingress"] == []
         if environment == "prod":
             assert len(policy["egress"]) == 2
+            assert config["SOS_ELECTION_ID"] == "295d864d-80c8-4a87-ab16-3f4f3fa5ddb7"
+            assert config["SOS_ELECTION_DATE"] == "2026-11-03"
+            assert config["SOS_SOURCE_URL"] == "https://results.sos.ga.gov/cdn/results/Georgia/export-11032026GeneralAndSpecialElection.json"
+            assert config["SOS_EXPECTED_JURISDICTIONS"] == "160"
+            assert config["SOS_EXPECTED_ITEMS"] == "4178"
+            monitor = render("prod", ["monitoring.enabled=true"])
+            cron = next(doc for doc in monitor if doc["kind"] == "CronJob")
+            monitor_env = {entry["name"]: entry.get("value") for entry in cron["spec"]["jobTemplate"]["spec"]["template"]["spec"]["containers"][0]["env"]}
+            assert monitor_env["SOS_POLL_INITIAL_INTERVAL_SECONDS"] == "3600"
+            assert monitor_env["SOS_POLL_INTERVAL_SECONDS"] == "300"
+            assert monitor_env["SOS_POLL_TRANSITION_AT"] == "2026-11-03T22:00:00Z"
         # Database health must not be a liveness/readiness restart dependency.
         assert "health" not in json.dumps(container)
     reviewed = ["collection.enabled=true", "collection.electionId=00000000-0000-4000-8000-000000000001",

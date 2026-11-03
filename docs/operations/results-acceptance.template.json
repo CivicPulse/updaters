@@ -31,14 +31,33 @@
   "evidence": {},
   "notes": [
     "Template only: false checks are not acceptance evidence.",
-    "Production source URL was NULL on the initial read; verify the approved admin save rather than assuming configuration.",
-    "Record actual activation, immediate source check and first production browser readback separately in issue #9.",
+    "accepted means preactivation review is complete; it does not claim production import or browser readback.",
+    "ballot_live_readback is the isolated native-browser import/correction/replay proof required before activation.",
+    "Record actual production activation, source check, publication and browser readback separately under post_activation and issue #9; these remain pending until observed.",
+    "The approved identity/source/window must be read back before activation.",
     "Do not extend the stop window or token lifetime without operator review."
   ],
   "resource_admission": {
-    "max_download_bytes": 536870912,
-    "max_scope_bytes": 67108864,
+    "max_download_bytes": 134217728,
+    "max_scope_bytes": 16777216,
     "accepted": false,
     "evidence": null
+  },
+  "acceptance_phase": "preactivation",
+  "first_production_browser_readback_at": null,
+  "post_activation": {
+    "status": "pending",
+    "actual_activation_at": null,
+    "first_source_check_at": null,
+    "first_production_publication_revision": null,
+    "first_production_browser_readback_at": null,
+    "checks": {
+      "immediate_source_check": false,
+      "production_import": false,
+      "production_browser_readback": false,
+      "scheduled_cadence": false,
+      "stop_window_configuration_and_guard_verified": false
+    },
+    "actual_stop_at": null
   }
 }
