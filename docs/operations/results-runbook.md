@@ -71,6 +71,15 @@ use its guarded approved migration path. Never apply feature-branch SQL, repair
 migration history, use production execute-SQL to bypass the guard, or invent
 collector-owned tables to work around a missing coordinator operation.
 
+Before any fresh-source test of the download-window guarded image, merge and
+deploy the approved website migration `20261125003800_sos_download_stop.sql`.
+The worker fails closed without its service-only authorization RPC. Deploy the
+new image disabled and record its actual digest and migration version. Disaster
+recovery/resource evidence from an earlier image remains evidence for that prior
+version; rerun the relevant proofs on the final guarded digest before acceptance.
+Read back the explicit production stop at `2026-11-11T00:00:00Z`; legacy null-end
+compatibility does not change this rollout's reviewed finite stop.
+
 ## Read-only observation and notifications
 
 `health` reads the service operational RPC. `monitor` emits sanitized JSON and

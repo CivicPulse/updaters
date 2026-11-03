@@ -8,10 +8,11 @@ CloudNativePG is unnecessary for this stack: the chart's Supabase Postgres image
 provides the platform initialization and extension support the contracts need.
 
 `chart.lock.json` pins the exact published chart archive and checksum.
-`migrations.lock.json` pins all 137 website migration files at reviewed commit
-`52b32714b5c5ce633060381ee16fdde2b063341d`. This includes prerequisite application
+`migrations.lock.json` pins all 139 website migration files at reviewed commit
+`bd47dc6126d0a7103f80b60940da4e396294790f`. This includes prerequisite application
 schemas as well as the collector queue, fencing, publication guards, mapping
-contracts and reviewed hourly-to-five-minute cadence; there is no competing worker database model.
+contracts, reviewed hourly-to-five-minute cadence and fresh-source STOP guards;
+there is no competing worker database model.
 
 The lean stack enables Postgres, Auth, Storage, PostgREST and Kong. Auth/Storage
 create schemas referenced by application migrations. Studio, Meta, Realtime,

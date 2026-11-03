@@ -43,6 +43,28 @@ No dependency error chain, response payload or credential URL is logged.
 
 ## Ordering and recovery
 
+Fresh downloads require the website's service-only
+`authorize_sos_results_download(p_job_id,p_lease_id)` RPC immediately before the
+GET. Deploy its approved website migration through the main-first path before
+running this worker against a fresh source job; a missing/denied RPC fails closed.
+The required website migration is `20261125003800_sos_download_stop.sql`.
+The worker validates schema version, job/election/source identity and authoritative
+server timestamps. For a finite end, the remaining server interval is anchored
+at the local monotonic RPC start, conservatively subtracting the entire round
+trip. That absolute deadline cancels request setup and the complete streamed
+body, with one additional millisecond reserved for timestamp precision. Local
+wall-clock skew cannot extend it. An expired, malformed or denied
+authorization constructs no fresh request. A legacy explicit null end retains
+the existing bounded source timeout; it does not authorize an unlimited download.
+
+The current production rollout still requires the explicit reviewed stop at
+`2026-11-11T00:00:00Z`, with persisted configuration read back before activation.
+Collection remains disabled until acceptance. Archive replay and committed
+pointer recovery never request new SOS authorization or fetch the live source;
+they can drain the original durable receipt after the source window ends, subject
+to the existing enabled/public/source/lease guards. Supabase remains the only
+source scheduler.
+
 Downloads are validated before public upload. Exact raw bytes are archived under
 their SHA-256 key; create-only collisions are verified by streaming hash and size
 readback through S3. A resumed import downloads its original archived source,
