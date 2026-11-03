@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "collector.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "collector.labels" . | nindent 4 }}
+data:
+  CIVPULSE_ENV: {{ .Values.environment | quote }}
+  SOS_COLLECTOR_ENABLED: {{ .Values.collection.enabled | quote }}
+  SOS_COLLECTOR_CONCURRENCY: {{ .Values.collection.concurrency | quote }}
+  SOS_COLLECTOR_HEARTBEAT: /tmp/civpulse-results-heartbeat
+  SOS_SPOOL_ROOT: /tmp
+  RUST_LOG: info
+  R2_BUCKET: {{ if eq .Values.environment "prod" }}civpulse-files{{ else }}civpulse-files-{{ .Values.environment }}{{ end }}
+  R2_PUBLIC_ORIGIN: https://files{{ if ne .Values.environment "prod" }}-{{ .Values.environment }}{{ end }}.civpulse.org
+  SOS_ELECTION_ID: {{ .Values.collection.electionId | quote }}
+  SOS_ELECTION_DATE: {{ .Values.collection.electionDate | quote }}
+  SOS_SOURCE_URL: {{ .Values.collection.sourceUrl | quote }}
+  SOS_EXPECTED_JURISDICTIONS: {{ .Values.collection.expectedJurisdictions | quote }}
+  SOS_EXPECTED_ITEMS: {{ .Values.collection.expectedItems | quote }}

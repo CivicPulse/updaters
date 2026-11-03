@@ -4,6 +4,7 @@ use std::{path::PathBuf, time::Duration};
 
 #[derive(Clone)]
 pub struct Config {
+    pub environment: String,
     pub enabled: bool,
     pub concurrency: usize,
     pub heartbeat_path: PathBuf,
@@ -13,7 +14,7 @@ pub struct Config {
 impl Config {
     /// Read environment values without mutating global process state.
     /// # Errors
-    /// Rejects malformed enable flags and concurrency outside 1..=4.
+    /// Rejects unknown environments, malformed enable flags and concurrency outside 1..=4.
     pub fn read(mut value: impl FnMut(&str) -> Option<String>) -> Result<Self> {
         let enabled = match value("SOS_COLLECTOR_ENABLED").as_deref() {
             None | Some("false") => false,
@@ -27,7 +28,12 @@ impl Config {
         if !(1..=4).contains(&concurrency) {
             return Err(Error::Config("Concurrency must be 1..=4"));
         }
+        let environment = value("CIVPULSE_ENV").unwrap_or_else(|| "prod".to_owned());
+        if !matches!(environment.as_str(), "dev" | "test" | "prod") {
+            return Err(Error::Config("CIVPULSE_ENV must be dev, test or prod"));
+        }
         Ok(Self {
+            environment,
             enabled,
             concurrency,
             heartbeat_path: value("SOS_COLLECTOR_HEARTBEAT").map_or_else(

@@ -54,7 +54,8 @@ async fn execute() -> Result<()> {
     }
     initialize_logging()?;
     let rpc = if config.enabled || command == "health" {
-        Some(Rpc::new(
+        Some(Rpc::for_environment(
+            &config.environment,
             config
                 .rpc_url
                 .as_deref()

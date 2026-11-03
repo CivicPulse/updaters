@@ -1,0 +1,306 @@
+# Supabase community chart 0.8.0; isolated dev/test only.
+secret:
+  jwt:
+    secretRef: supabase-jwt
+  db:
+    secretRef: supabase-db
+    secretRefKey:
+      database: database
+      password: password
+      passwordEncoded: password_encoded
+  analytics:
+    secretRef: supabase-analytics
+  bigquery:
+    secretRef: supabase-bigquery
+  smtp:
+    secretRef: supabase-smtp
+  dashboard:
+    secretRef: supabase-dashboard
+  s3:
+    secretRef: supabase-s3
+  realtime:
+    secretRef: supabase-realtime
+  meta:
+    secretRef: supabase-meta
+  minio:
+    secretRef: supabase-minio
+deployment:
+  analytics:
+    enabled: false
+    automountServiceAccountToken: false
+  auth:
+    enabled: true
+    automountServiceAccountToken: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 64Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+    podSecurityContext:
+      seccompProfile:
+        type: RuntimeDefault
+      fsGroup: 1000
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+    readinessProbe:
+      tcpSocket:
+        port: 9999
+      periodSeconds: 5
+      timeoutSeconds: 3
+  db:
+    enabled: true
+    automountServiceAccountToken: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 768Mi
+    podSecurityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+        add:
+        - CHOWN
+        - DAC_OVERRIDE
+        - FOWNER
+        - SETGID
+        - SETUID
+    readinessProbe:
+      exec:
+        command:
+        - pg_isready
+        - -U
+        - postgres
+        - -d
+        - postgres
+      initialDelaySeconds: 10
+      periodSeconds: 5
+      timeoutSeconds: 3
+    startupProbe:
+      exec:
+        command:
+        - pg_isready
+        - -U
+        - postgres
+        - -d
+        - postgres
+      periodSeconds: 5
+      failureThreshold: 60
+      timeoutSeconds: 3
+  functions:
+    enabled: false
+    automountServiceAccountToken: false
+  imgproxy:
+    enabled: false
+    automountServiceAccountToken: false
+  kong:
+    enabled: true
+    automountServiceAccountToken: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 64Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+    podSecurityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+    readinessProbe:
+      tcpSocket:
+        port: 8000
+      periodSeconds: 5
+      timeoutSeconds: 3
+  meta:
+    enabled: false
+    automountServiceAccountToken: false
+  minio:
+    enabled: false
+    automountServiceAccountToken: false
+  realtime:
+    enabled: false
+    automountServiceAccountToken: false
+  rest:
+    enabled: true
+    automountServiceAccountToken: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 64Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+    podSecurityContext:
+      seccompProfile:
+        type: RuntimeDefault
+      fsGroup: 1000
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+    readinessProbe:
+      tcpSocket:
+        port: 3000
+      periodSeconds: 5
+      timeoutSeconds: 3
+  storage:
+    enabled: true
+    automountServiceAccountToken: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 64Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+    podSecurityContext:
+      seccompProfile:
+        type: RuntimeDefault
+      fsGroup: 1000
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+    readinessProbe:
+      tcpSocket:
+        port: 5000
+      periodSeconds: 5
+      timeoutSeconds: 3
+  studio:
+    enabled: false
+    automountServiceAccountToken: false
+  vector:
+    enabled: false
+    automountServiceAccountToken: false
+persistence:
+  db:
+    enabled: true
+    storageClassName: do-block-storage
+    size: 10Gi
+  functions:
+    enabled: false
+  imgproxy:
+    enabled: false
+  minio:
+    enabled: false
+  snippets:
+    enabled: false
+  storage:
+    enabled: true
+    storageClassName: do-block-storage
+    size: 1Gi
+  deno:
+    enabled: false
+  pgsodium:
+    enabled: true
+    storageClassName: do-block-storage
+    size: 1Gi
+ingress:
+  enabled: false
+image:
+  db:
+    tag: 17.11.0.003@sha256:7374d196da7e301512cc5329e18040e0f7bb856287b323777cdadecccbc6c7e4
+  auth:
+    tag: v2.189.0@sha256:385184459f57569c54c25209f51f3b2be99ddd7c4ce9e3555b5d3eea8447b7cf
+  storage:
+    tag: v1.60.4@sha256:c8eb9858eafec891a97c27125470aaad54703c3f4eb4d55ca7f1bf6c6411febf
+  rest:
+    tag: v14.12@sha256:54000f24847d01a2c2302e0041cf0618b875c57fb48507d743cfa9aaa50bf43c
+  kong:
+    tag: 3.9.1@sha256:6addf50e6bd8d578314cb9ce4f2d2d1e3781d2edecef59f707e00c6e05d384f5
+  initDb:
+    tag: 17-alpine@sha256:266d3c257594e195b309ae9d1805e54c788f1d7b375f56bf6c367aac6c917e7b
+networkPolicy:
+  db:
+    enabled: true
+    ingressRules:
+    - from:
+        podSelector: {}
+environment:
+  storage:
+  - name: ENABLE_IMAGE_TRANSFORMATION
+    value: 'false'
+  - name: FILE_SIZE_LIMIT
+    value: '52428800'
+  - name: FILE_STORAGE_BACKEND_PATH
+    value: /var/lib/storage
+  - name: TENANT_ID
+    value: stub
+  - name: REGION
+    value: stub
+  - name: GLOBAL_S3_BUCKET
+    value: stub
+  auth:
+  - name: API_EXTERNAL_URL
+    value: http://localhost:8000
+  - name: GOTRUE_API_HOST
+    value: 0.0.0.0
+  - name: GOTRUE_API_PORT
+    value: '9999'
+  - name: GOTRUE_SITE_URL
+    value: http://localhost:3000
+  - name: GOTRUE_URI_ALLOW_LIST
+    value: '*'
+  - name: GOTRUE_DISABLE_SIGNUP
+    value: 'true'
+  - name: GOTRUE_JWT_DEFAULT_GROUP_NAME
+    value: authenticated
+  - name: GOTRUE_JWT_ADMIN_ROLES
+    value: service_role
+  - name: GOTRUE_JWT_AUD
+    value: authenticated
+  - name: GOTRUE_JWT_EXP
+    value: '3600'
+  - name: GOTRUE_EXTERNAL_EMAIL_ENABLED
+    value: 'false'
+  - name: GOTRUE_MAILER_AUTOCONFIRM
+    value: 'false'
+  - name: GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED
+    value: 'false'
+  - name: GOTRUE_SMTP_ADMIN_EMAIL
+    value: SMTP_ADMIN_MAIL
+  - name: GOTRUE_SMTP_HOST
+    value: SMTP_HOST
+  - name: GOTRUE_SMTP_PORT
+    value: '123'
+  - name: GOTRUE_EXTERNAL_PHONE_ENABLED
+    value: 'false'
+  - name: GOTRUE_SMS_AUTOCONFIRM
+    value: 'false'
+  - name: GOTRUE_SMTP_SENDER_NAME
+    value: SMTP_SENDER_NAME
+  - name: GOTRUE_MAILER_URLPATHS_INVITE
+    value: /auth/v1/verify
+  - name: GOTRUE_MAILER_URLPATHS_CONFIRMATION
+    value: /auth/v1/verify
+  - name: GOTRUE_MAILER_URLPATHS_RECOVERY
+    value: /auth/v1/verify
+  - name: GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE
+    value: /auth/v1/verify

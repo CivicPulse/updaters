@@ -193,3 +193,19 @@ fn sigterm_joins_active_parser_and_removes_task_owned_spool() {
         "task-owned spool remains after shutdown"
     );
 }
+
+#[test]
+fn production_health_rejects_http_before_any_network_request() {
+    let output = collector()
+        .arg("health")
+        .env("CIVPULSE_ENV", "prod")
+        .env("SUPABASE_URL", "http://127.0.0.1:9")
+        .env("SUPABASE_SERVICE_ROLE_KEY", "secret-not-for-logs")
+        .output()
+        .unwrap();
+    assert!(!output.status.success());
+    assert_eq!(output.stdout, [] as [u8; 0]);
+    let error = String::from_utf8(output.stderr).unwrap();
+    assert!(error.contains("not allowed in this environment"));
+    assert!(!error.contains("secret-not-for-logs"));
+}
