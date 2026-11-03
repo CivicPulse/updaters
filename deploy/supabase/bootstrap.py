@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import secrets
 import subprocess
+import sys
 import tempfile
 import time
 import urllib.request
@@ -63,6 +64,9 @@ def main():
     if not args.apply:
         print("Dry run. Pass --apply after reviewing the chart and bootstrap.")
         return
+    # Verify and derive the reviewed chart before any cluster/secret writes.
+    lock = json.loads((HERE/"chart.lock.json").read_text())
+    chart_bytes = run([sys.executable, str(HERE/"patch-chart.py")], download(lock["url"], lock["sha256"]))
     kube = ["kubectl", "--context", args.context, "-n", ns]
     cluster = json.loads(run(["kubectl", "--context", args.context, "config", "view", "--minify", "-o", "json"]))
     if cluster["contexts"][0]["context"]["cluster"] != CONTEXT:
@@ -107,13 +111,12 @@ def main():
     actual_credentials = secret("results-supabase", collector_credentials)
     if any(actual_credentials[key] != value for key,value in collector_credentials.items()):
         raise RuntimeError("Existing collector database secret does not match this isolated Supabase")
-    lock = json.loads((HERE/"chart.lock.json").read_text())
     manifest = json.loads((HERE/"migrations.lock.json").read_text())
     with tempfile.TemporaryDirectory(prefix="civpulse-supabase-") as directory:
         os.chmod(directory, 0o700)
         directory = Path(directory)
         chart = directory/"supabase.tgz"
-        chart.write_bytes(download(lock["url"], lock["sha256"]))
+        chart.write_bytes(chart_bytes)
         run(["helm", "upgrade", "--install", "supabase", str(chart), "--kube-context", args.context,
              "--namespace", ns, "-f", str(HERE/"values.yaml"), "--wait", "--timeout", "15m"])
         # Auth and Storage services apply their own schemas before application migrations.

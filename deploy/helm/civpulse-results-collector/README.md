@@ -142,3 +142,9 @@ validated image without rebuilding it. CI scans rendered manifests with Trivy an
 runs against a digest-pinned Kubernetes 1.37 Kind cluster. That API validation does not establish a
 running collector or production acceptance; the real-cluster disabled rollout and
 controlled recovery/readback checks remain release gates.
+
+Byte-cap values (`collection.maxDownloadBytes` and `maxScopeBytes`) remain numeric
+integers in Helm values. The ConfigMap explicitly formats them as decimal integer
+strings, including defaults and lower admission overrides; the Rust parser stays
+strict and rejects scientific notation. CI renders YAML overrides and passes the
+resulting strings through the worker’s actual admission implementation.

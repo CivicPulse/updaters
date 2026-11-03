@@ -31,6 +31,8 @@ def main():
         config = next(doc["data"] for doc in docs if doc["kind"] == "ConfigMap")
         assert config["CIVPULSE_ENV"] == environment
         assert config["SOS_COLLECTOR_ENABLED"] == "false"
+        assert config["SOS_MAX_DOWNLOAD_BYTES"] == "536870912"
+        assert config["SOS_MAX_SCOPE_BYTES"] == "67108864"
         assert config["R2_BUCKET"] == "civpulse-files" + ("" if environment == "prod" else "-"+environment)
         assert config["R2_PUBLIC_ORIGIN"] == "https://files" + ("" if environment == "prod" else "-"+environment) + ".civpulse.org"
         pod = deployment["spec"]["template"]["spec"]

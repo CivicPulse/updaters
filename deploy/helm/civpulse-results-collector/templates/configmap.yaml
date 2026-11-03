@@ -11,8 +11,8 @@ data:
   SOS_COLLECTOR_CONCURRENCY: {{ .Values.collection.concurrency | quote }}
   SOS_COLLECTOR_HEARTBEAT: /tmp/civpulse-results-heartbeat
   SOS_SPOOL_ROOT: /tmp
-  SOS_MAX_DOWNLOAD_BYTES: {{ .Values.collection.maxDownloadBytes | quote }}
-  SOS_MAX_SCOPE_BYTES: {{ .Values.collection.maxScopeBytes | quote }}
+  SOS_MAX_DOWNLOAD_BYTES: {{ .Values.collection.maxDownloadBytes | int64 | quote }}
+  SOS_MAX_SCOPE_BYTES: {{ .Values.collection.maxScopeBytes | int64 | quote }}
   RUST_LOG: info
   R2_BUCKET: {{ if eq .Values.environment "prod" }}civpulse-files{{ else }}civpulse-files-{{ .Values.environment }}{{ end }}
   R2_PUBLIC_ORIGIN: https://files{{ if ne .Values.environment "prod" }}-{{ .Values.environment }}{{ end }}.civpulse.org
