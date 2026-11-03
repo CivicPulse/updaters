@@ -1,6 +1,7 @@
 name: CI
 on:
   push:
+    branches: [main]
   pull_request:
   merge_group:
   schedule:
@@ -45,7 +46,7 @@ jobs:
           skip-dirs: .git,target
           timeout: 10m
       - name: Install pinned RustSec client
-        run: cargo install cargo-audit --version 0.22.2 --locked
+        run: bash .github/scripts/install-cargo-audit.sh
       - name: Audit all locked Rust dependencies
         run: cargo audit --deny warnings
   containers:

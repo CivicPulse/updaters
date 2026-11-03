@@ -95,3 +95,61 @@ status must reflect incomplete work.
 Before enabling data operations, add source-specific configuration validation,
 provenance contracts, bounded network timeouts, and tests at the real I/O boundary.
 There are no database/API adapters or production deployment assumptions yet.
+
+## Georgia SOS durable worker
+
+`tools/results-collector` adds the queue/lease lifecycle for issue #1. Its source
+and publication adapters are deliberately unavailable in this implementation
+step: an enabled worker receiving a job records a bounded durable failure and
+exits nonzero in `once` mode. It never reports an unimplemented import as success.
+Production collection must remain disabled until the complete pipeline and
+controlled acceptance pass.
+
+```sh
+cargo run --locked -p civpulse-results-collector -- --check
+cargo run --locked -p civpulse-results-collector -- daemon
+cargo run --locked -p civpulse-results-collector -- liveness
+# Server-side credentials required; reads operational state without claiming work:
+cargo run --locked -p civpulse-results-collector -- health
+```
+
+Commands are `daemon` (the default), `once`, `health`, `liveness`, `validate`,
+`--check`, and `--help`. `--check` performs no I/O. `validate` returns an explicit
+unavailable error until the bounded parser is implemented. `once` claims at most
+one durable job; an empty queue is a normal successful check. `health` calls the
+service-only `get_sos_collection_health` RPC without requiring R2 credentials or
+an enabled collector. It checks connectivity/access, not whether source counts
+have changed. `liveness` checks only a recent local heartbeat, so a Supabase
+outage must not trigger pod restart loops.
+
+Configuration:
+
+| Variable | Default / purpose |
+| --- | --- |
+| `SOS_COLLECTOR_ENABLED` | `false`; only the exact strings `true` and `false` are accepted |
+| `SOS_COLLECTOR_CONCURRENCY` | `1`, restricted to `1..=4` |
+| `SOS_COLLECTOR_HEARTBEAT` | `/tmp/civpulse-results-heartbeat` |
+| `SUPABASE_URL` | Required for enabled collection and dependency health; HTTPS except explicit loopback development services |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only secret; never logged |
+| `RUST_LOG` | `info`; JSON logs go to stderr |
+
+A disabled daemon stays alive, writes a local heartbeat, and performs **no RPC
+calls**, even with credentials present. Feed pause/resume remains the existing
+admin `configure_sos_results_feed` operation; stopping a worker does not disable
+the Supabase source schedule. Queue checks every 15 seconds are separate from
+the existing authenticated five-minute SOS polling schedule.
+
+The worker renews five-minute fenced leases every 30 seconds independently of
+asynchronous processing. Lease loss cancels processing and prevents subsequent
+mutations through the fenced interface. SIGTERM/Ctrl-C stops new claims, drains
+existing work for at most 90 seconds while renewing leases, and cancels remaining
+work after that deadline. Deployment termination grace must exceed this drain
+plus process shutdown overhead. Durable Postgres/R2 receipts own recovery; local
+scratch and heartbeats are disposable. Processor implementations must be
+cancellation-safe and must observe the lease cancellation receiver during
+blocking parsing; dropping an async future does not stop an uncontrolled thread.
+
+RPC requests reject redirects, set both `apikey` and bearer headers, have a
+60-second total deadline, and accept at most 4 MiB of response bytes. Errors are
+classified without exposing URLs, headers, database bodies, or dependency error
+chains. Durable retry timing and quarantine remain owned by the database.
