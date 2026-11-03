@@ -427,10 +427,11 @@ fn validate_scope(scope: &Value, reader: &Reader<'_>) -> Result<()> {
                 return Err(Error::Invalid("duplicate choice ID"));
             }
             for field in ["groupResults", "precinctResults"] {
-                if let Some(value) = option.get(field) {
-                    if !value.is_null() && !value.is_array() {
-                        return Err(Error::Invalid("invalid nested result array"));
-                    }
+                if let Some(value) = option.get(field)
+                    && !value.is_null()
+                    && !value.is_array()
+                {
+                    return Err(Error::Invalid("invalid nested result array"));
                 }
             }
         }
@@ -450,22 +451,22 @@ fn validate_counts(value: &Value, depth: usize, reader: &Reader<'_>) -> Result<(
         }
         Value::Object(values) => {
             for (key, child) in values {
-                if ["precinctResults", "groupResults"].contains(&key.as_str()) {
-                    if let Some(entries) = child.as_array() {
-                        let identity = if key == "precinctResults" {
-                            "id"
-                        } else {
-                            "groupName"
-                        };
-                        let mut ids = HashSet::new();
-                        for entry in entries {
-                            let id = entry
-                                .get(identity)
-                                .and_then(Value::as_str)
-                                .ok_or(Error::Invalid("invalid nested result identity"))?;
-                            if !ids.insert(id) {
-                                return Err(Error::Invalid("duplicate nested result identity"));
-                            }
+                if ["precinctResults", "groupResults"].contains(&key.as_str())
+                    && let Some(entries) = child.as_array()
+                {
+                    let identity = if key == "precinctResults" {
+                        "id"
+                    } else {
+                        "groupName"
+                    };
+                    let mut ids = HashSet::new();
+                    for entry in entries {
+                        let id = entry
+                            .get(identity)
+                            .and_then(Value::as_str)
+                            .ok_or(Error::Invalid("invalid nested result identity"))?;
+                        if !ids.insert(id) {
+                            return Err(Error::Invalid("duplicate nested result identity"));
                         }
                     }
                 }
