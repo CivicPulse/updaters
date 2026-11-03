@@ -71,8 +71,18 @@ The runtime is a digest-pinned distroless Debian 13 image with no shell or packa
 manager; probes and diagnostics must invoke the executable directly.
 Pull-request CI builds and checks all four images, including the real disabled
 collector entry point, heartbeat, scratch permissions and bounded SIGTERM. A
-separate main-only workflow scans and publishes that same collector image to
-`registry.digitalocean.com/hatchk8s`; it deploys nothing.
+separate workflow builds, checks, scans, and publishes all four images on every
+push to `main` (including merged pull requests). It can also be run manually from
+`main`. Images are published as
+`registry.digitalocean.com/hatchk8s/<tool>:sha-<full-commit-sha>`, and each job
+records its immutable digest reference in the run summary. It deploys nothing.
+
+Before the first publish, configure the repository Actions secret `DOCR_CONFIG`
+with a Docker authentication JSON object containing push-capable credentials for
+`registry.digitalocean.com` (the contents of a Docker `config.json`, not a
+base64-encoded Kubernetes Secret). Credentials must have access to the `hatchk8s`
+registry. The workflow loads credentials only for the push step into a temporary
+directory and removes it afterward. Use the emitted image digest for deployment.
 
 Job manifests are examples, suspended by default, with `--check` arguments. Set
 an image available to your cluster (prefer a digest), namespace, resource sizing,
