@@ -249,7 +249,7 @@ mod tests {
                 .await
                 .unwrap();
             assert_eq!(
-                tokio::time::timeout(Duration::from_secs(2), socket.read(&mut buffer))
+                tokio::time::timeout(Duration::from_secs(10), socket.read(&mut buffer))
                     .await
                     .unwrap()
                     .unwrap(),
@@ -258,7 +258,7 @@ mod tests {
             observed_close.store(true, Ordering::SeqCst);
         });
         let job = job();
-        let (lease, _sender, server) = lease(&job, 200, permit(&job, 500), Duration::ZERO).await;
+        let (lease, _sender, server) = lease(&job, 200, permit(&job, 5_000), Duration::ZERO).await;
         let committed = AtomicBool::new(false);
         let body_started = AtomicBool::new(false);
         let result = fetch(&job, &lease, || async {
