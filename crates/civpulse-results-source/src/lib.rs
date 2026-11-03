@@ -3,7 +3,7 @@ mod canonical;
 mod download;
 mod parse;
 
-pub use canonical::{canonical, stringify};
+pub use canonical::{canonical, stringify, stringify_envelope};
 pub use download::{Download, Receipt, Validators, download, retry_after};
 pub use parse::{Expectations, Limits, Prepared, Scope, prepare};
 

@@ -2,7 +2,7 @@
 use crate::{Error, Result};
 use reqwest::{
     Client, Url,
-    header::{AUTHORIZATION, HeaderMap, HeaderValue},
+    header::{AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue},
 };
 use serde::de::DeserializeOwned;
 use serde_json::Value;
@@ -74,7 +74,14 @@ impl Rpc {
                 .client
                 .post(url)
                 .headers((*self.headers).clone())
-                .json(&args)
+                // Source fields must round/serialize exactly like the Bun reference.
+                // Four bounded levels cover RPC args, batch arrays and data wrappers;
+                // the independently validated source still has its 40-level cap.
+                .header(CONTENT_TYPE, "application/json")
+                .body(
+                    civpulse_results_source::stringify_envelope(&args, 4)
+                        .map_err(|_| Error::InvalidResponse)?,
+                )
                 .send()
                 .await
                 .map_err(|error| transport(&error))?;

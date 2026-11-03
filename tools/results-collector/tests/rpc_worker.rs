@@ -492,3 +492,56 @@ async fn forced_drain_revokes_retained_leases_and_cancels_waiting_mutation() {
     );
     task.abort();
 }
+
+#[tokio::test]
+async fn actual_rpc_wire_uses_javascript_numbers_for_all_source_payload_fields() {
+    let (url, mut requests, task) = server(|_| response("null")).await;
+    let raw: Value = serde_json::from_str(r#"{"p_header":{"sourceSequence":9007199254740993,"negativeZero":-0.0},"p_jurisdictions":[{"unknownCounter":9007199254740993}],"p_items":[{"data":{"unknownCounter":9007199254740993}}],"p_revision":"9007199254740993"}"#).unwrap();
+    client(&url)
+        .call::<Value>("begin_sos_results_job", raw)
+        .await
+        .unwrap();
+    let request = requests.recv().await.unwrap();
+    assert!(
+        request
+            .to_lowercase()
+            .contains("content-type: application/json\r\n")
+    );
+    // Expected bytes from the reference's JSON.stringify(JSON.parse(raw)). Decimal
+    // revision strings retain every digit while source numbers use binary64.
+    assert_eq!(
+        request.split("\r\n\r\n").nth(1).unwrap(),
+        r#"{"p_header":{"sourceSequence":9007199254740992,"negativeZero":0},"p_jurisdictions":[{"unknownCounter":9007199254740992}],"p_items":[{"data":{"unknownCounter":9007199254740992}}],"p_revision":"9007199254740993"}"#
+    );
+    task.abort();
+}
+#[tokio::test]
+async fn rpc_wrapper_allowance_is_bounded_without_reducing_source_depth() {
+    let (url, mut requests, task) = server(|_| response("null")).await;
+    let mut source = Value::Null;
+    for _ in 0..40 {
+        source = json!([source]);
+    }
+    assert!(civpulse_results_source::stringify(&source).is_ok());
+    let args = json!({"p_header":source});
+    assert!(civpulse_results_source::stringify(&args).is_err());
+    client(&url)
+        .call::<Value>("begin_sos_results_job", args)
+        .await
+        .unwrap();
+    requests.recv().await.unwrap();
+    let mut too_deep = Value::Null;
+    for _ in 0..45 {
+        too_deep = json!([too_deep]);
+    }
+    assert_eq!(
+        client(&url)
+            .call::<Value>("begin_sos_results_job", too_deep)
+            .await
+            .unwrap_err(),
+        Error::InvalidResponse
+    );
+    assert!(requests.try_recv().is_err());
+    assert!(civpulse_results_source::stringify_envelope(&Value::Null, 5).is_err());
+    task.abort();
+}

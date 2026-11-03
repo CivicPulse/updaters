@@ -179,20 +179,20 @@ async fn run_job(
     // uses the same database-fenced IDs, but retained processors must stop now.
     let report_failure = !lease.is_lost();
     lifecycle.stop();
-    if let Err(error) = &result {
-        if report_failure {
-            let mut args = job.lease_args();
-            args["p_error"] = json!(error.to_string());
-            args["p_retry_after"] = match error {
-                Error::SourceHttp {
-                    retry_after: Some(seconds),
-                    ..
-                } => json!(seconds.clamp(&1, &3600)),
-                _ => Value::Null,
-            };
-            // A failed failure-report is safe: durable lease expiry permits recovery.
-            let _ = rpc.call::<Value>("fail_sos_results_job", args).await;
-        }
+    if let Err(error) = &result
+        && report_failure
+    {
+        let mut args = job.lease_args();
+        args["p_error"] = json!(error.to_string());
+        args["p_retry_after"] = match error {
+            Error::SourceHttp {
+                retry_after: Some(seconds),
+                ..
+            } => json!(seconds.clamp(&1, &3600)),
+            _ => Value::Null,
+        };
+        // A failed failure-report is safe: durable lease expiry permits recovery.
+        let _ = rpc.call::<Value>("fail_sos_results_job", args).await;
     }
     result
 }

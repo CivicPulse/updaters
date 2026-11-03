@@ -341,3 +341,14 @@ fn local_sources_must_be_regular_files() {
         .is_err()
     );
 }
+
+#[test]
+fn unknown_root_header_numbers_remain_rejected_before_publication() {
+    let mut source = base();
+    source["sourceSequence"] = json!(9_007_199_254_740_993_u64);
+    assert!(!run(
+        &serde_json::to_vec(&source).unwrap(),
+        &Limits::default(),
+        &expectations()
+    ));
+}

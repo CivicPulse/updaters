@@ -1,7 +1,8 @@
 use civpulse_results_collector::{
     Error, Result,
     config::{Config, RPC_DEADLINE, RPC_RESPONSE_LIMIT},
-    job::UnsupportedProcessor,
+    job::{JobProcessor, UnsupportedProcessor},
+    pipeline::Publisher,
     rpc::Rpc,
     validate,
     worker::{self, Options},
@@ -51,19 +52,7 @@ async fn execute() -> Result<()> {
     if command == "liveness" {
         return worker::liveness(&config.heartbeat_path).await;
     }
-    let filter = EnvFilter::try_from_default_env().or_else(|_| {
-        if std::env::var_os("RUST_LOG").is_none() {
-            Ok(EnvFilter::new("info"))
-        } else {
-            Err(Error::Config("Invalid logging filter"))
-        }
-    })?;
-    tracing_subscriber::fmt()
-        .json()
-        .with_writer(std::io::stderr)
-        .with_env_filter(filter)
-        .try_init()
-        .map_err(|_| Error::Config("Cannot initialize logging"))?;
+    initialize_logging()?;
     let rpc = if config.enabled || command == "health" {
         Some(Rpc::new(
             config
@@ -107,16 +96,21 @@ async fn execute() -> Result<()> {
             let _ = shutdown_tx.send(true);
         }
     });
+    let processor: Arc<dyn JobProcessor> = if config.enabled {
+        Arc::new(Publisher::from_environment(|key| std::env::var(key).ok())?)
+    } else {
+        Arc::new(UnsupportedProcessor)
+    };
     let result = if command == "once" {
         let rpc = rpc.as_ref().ok_or(Error::Disabled)?;
-        let once = worker::once(rpc, Arc::new(UnsupportedProcessor), &options);
+        let once = worker::once(rpc, processor.clone(), &options);
         tokio::pin!(once);
         tokio::select! {
             result = &mut once => result.map(|_| ()),
             _ = shutdown_rx.changed() => tokio::time::timeout(options.drain_timeout, &mut once).await.map_err(|_| Error::Shutdown)?.map(|_| ()),
         }
     } else {
-        worker::daemon(rpc, Arc::new(UnsupportedProcessor), options, shutdown_rx).await
+        worker::daemon(rpc, processor, options, shutdown_rx).await
     };
     signal.abort();
     result
@@ -129,4 +123,21 @@ async fn shutdown_signal() -> std::io::Result<()> {
 #[cfg(not(unix))]
 async fn shutdown_signal() -> std::io::Result<()> {
     tokio::signal::ctrl_c().await
+}
+
+fn initialize_logging() -> Result<()> {
+    let filter = EnvFilter::try_from_default_env().or_else(|_| {
+        if std::env::var_os("RUST_LOG").is_none() {
+            Ok(EnvFilter::new("info"))
+        } else {
+            Err(Error::Config("Invalid logging filter"))
+        }
+    })?;
+    tracing_subscriber::fmt()
+        .json()
+        .with_writer(std::io::stderr)
+        .with_env_filter(filter)
+        .try_init()
+        .map_err(|_| Error::Config("Cannot initialize logging"))?;
+    Ok(())
 }
