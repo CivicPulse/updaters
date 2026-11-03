@@ -1,0 +1,109 @@
+{
+  "scope": "two approved _acceptance control objects only; no production election object/DB/activation",
+  "election_objects_touched": false,
+  "database_calls": false,
+  "collection_activated": false,
+  "immutable": {
+    "create_status": 200,
+    "collision_status": 412,
+    "same_content_idempotent": true,
+    "changed_content_rejected": true,
+    "wrong_size_rejected": true,
+    "bytes": 107,
+    "sha256": "c3253e6d662de2e4b50be3946bd6d6decacdd4ea02373748ed2c70deab90189b"
+  },
+  "conditional": {
+    "create_status": 200,
+    "wrong_if_match_status": 412,
+    "correct_if_match_status": 200,
+    "bytes": 107,
+    "sha256": "58b0921d315f7f1c913c3b089f31da0683c525989f7b20ac6a3cd0134b7b35cc"
+  },
+  "cors": {
+    "client": "curl HTTP/2",
+    "all_pass": true,
+    "results": [
+      {
+        "kind": "immutable",
+        "origin": "https://www.civpulse.org",
+        "method": "GET",
+        "status": 200,
+        "allow_origin": "https://www.civpulse.org",
+        "expose_headers": "ETag,Cache-Control",
+        "cache_control": "public, max-age=31536000, immutable",
+        "pass": true
+      },
+      {
+        "kind": "immutable",
+        "origin": "https://www.civpulse.org",
+        "method": "HEAD",
+        "status": 200,
+        "allow_origin": "https://www.civpulse.org",
+        "expose_headers": "ETag,Cache-Control",
+        "cache_control": "public, max-age=31536000, immutable",
+        "pass": true
+      },
+      {
+        "kind": "immutable",
+        "origin": "https://civpulse.org",
+        "method": "GET",
+        "status": 200,
+        "allow_origin": "https://civpulse.org",
+        "expose_headers": "ETag,Cache-Control",
+        "cache_control": "public, max-age=31536000, immutable",
+        "pass": true
+      },
+      {
+        "kind": "immutable",
+        "origin": "https://civpulse.org",
+        "method": "HEAD",
+        "status": 200,
+        "allow_origin": "https://civpulse.org",
+        "expose_headers": "ETag,Cache-Control",
+        "cache_control": "public, max-age=31536000, immutable",
+        "pass": true
+      },
+      {
+        "kind": "conditional",
+        "origin": "https://www.civpulse.org",
+        "method": "GET",
+        "status": 200,
+        "allow_origin": "https://www.civpulse.org",
+        "expose_headers": "ETag,Cache-Control",
+        "cache_control": "public, max-age=15, s-maxage=15, must-revalidate",
+        "pass": true
+      },
+      {
+        "kind": "conditional",
+        "origin": "https://www.civpulse.org",
+        "method": "HEAD",
+        "status": 200,
+        "allow_origin": "https://www.civpulse.org",
+        "expose_headers": "ETag,Cache-Control",
+        "cache_control": "public, max-age=15, s-maxage=15, must-revalidate",
+        "pass": true
+      },
+      {
+        "kind": "conditional",
+        "origin": "https://civpulse.org",
+        "method": "GET",
+        "status": 200,
+        "allow_origin": "https://civpulse.org",
+        "expose_headers": "ETag,Cache-Control",
+        "cache_control": "public, max-age=15, s-maxage=15, must-revalidate",
+        "pass": true
+      },
+      {
+        "kind": "conditional",
+        "origin": "https://civpulse.org",
+        "method": "HEAD",
+        "status": 200,
+        "allow_origin": "https://civpulse.org",
+        "expose_headers": "ETag,Cache-Control",
+        "cache_control": "public, max-age=15, s-maxage=15, must-revalidate",
+        "pass": true
+      }
+    ]
+  },
+  "unapproved_origin_allow_origin": "absent, coordinator verified; no claim from the older failed urllib receipt"
+}

@@ -53,45 +53,45 @@
   },
   "evidence": {
     "contracts": [
-      "independent_official_source_oracle"
+      "evidence/2026-11-03/official.json"
     ],
     "resource_envelope": [
-      "qualified_guarded_resource_support",
-      "selected_runtime_fresh_official_import"
+      "evidence/2026-11-03/qualified-resource-recovery.json",
+      "evidence/2026-11-03/official.json"
     ],
     "main_first_migrations": [
-      "database_and_source_stop"
+      "evidence/2026-11-03/deployment-mail.json"
     ],
     "isolated_e2e": [
-      "selected_runtime_visible_native_cards",
-      "selected_runtime_fresh_official_import"
+      "evidence/2026-11-03/visible.json",
+      "evidence/2026-11-03/official.json"
     ],
     "production_secret_isolation": [
-      "disabled_deployment_binding",
+      "evidence/2026-11-03/deployment-mail.json",
       "reviewed namespace/bucket/credential isolation in issue #9"
     ],
     "production_r2_checksums": [
-      "production_storage_controls"
+      "evidence/2026-11-03/production-controls.json"
     ],
     "production_r2_conditional_writes": [
-      "production_storage_controls"
+      "evidence/2026-11-03/production-controls.json"
     ],
     "production_cors_cache": [
-      "production_cors_cache_control"
+      "evidence/2026-11-03/production-controls.json"
     ],
     "ballot_live_readback": [
-      "selected_runtime_visible_native_cards"
+      "evidence/2026-11-03/visible.json"
     ],
     "monitoring_alert_route": [
-      "monitoring_alert_route"
+      "evidence/2026-11-03/deployment-mail.json"
     ],
     "recovery_drills": [
-      "qualified_recovery_support",
-      "selected_runtime_visible_native_cards"
+      "evidence/2026-11-03/qualified-resource-recovery.json",
+      "evidence/2026-11-03/visible.json"
     ],
     "cutover_rollback": [
-      "selected_runtime_fresh_official_import",
-      "selected_runtime_visible_native_cards",
+      "evidence/2026-11-03/official.json",
+      "evidence/2026-11-03/visible.json",
       "reviewed pause/rollback procedure in results-runbook.md"
     ],
     "operator_review": [
@@ -125,7 +125,8 @@
       "cgroup_memory_peak_bytes": 322002944,
       "pod_restarts": 0,
       "manual_retry": "normal administrator retry of the same previously unarchived job; no raw receipt/snapshot seeded",
-      "standby_restored_disabled": true
+      "standby_restored_disabled": true,
+      "repository_receipt": "evidence/2026-11-03/official.json"
     },
     "independent_official_source_oracle": {
       "oracle_commit": "0408add4c47a8549c9ad76c680d9a5779a58a050",
@@ -150,7 +151,8 @@
       "local_only": true,
       "no_official_source_request": true,
       "not_resource_measurement": true,
-      "receipt": "new-official-oracle/receipt.json"
+      "receipt": "new-official-oracle/receipt.json",
+      "repository_receipt": "evidence/2026-11-03/official.json"
     },
     "qualified_guarded_resource_support": {
       "status": "observed_pass_on_qualified_previous_image",
@@ -198,7 +200,8 @@
       "independent_harness_sha256": "821c845a8e94f7687238c48096a5de262b05b061e4049f46c6d8170ac8ea18b1",
       "internal_harness_revision": "unrecorded; independent reconstruction plus external image/publishing binding verifies provenance",
       "independent_fixture_reinspection": "exact raw/scope bytes and all 4178 padding rows; original fields/IDs/counts preserved",
-      "node_pressure_evidence": "all three nodes Ready/no pressure in after-run snapshot, not a continuous guarantee"
+      "node_pressure_evidence": "all three nodes Ready/no pressure in after-run snapshot, not a continuous guarantee",
+      "repository_receipt": "evidence/2026-11-03/qualified-resource-recovery.json"
     },
     "qualified_recovery_support": {
       "status": "observed_actual_isolated_db_r2_recovery_pass_on_803",
@@ -208,7 +211,8 @@
       "pointer_repair": "actual collector Pointer phase only; no import/stage/commit; counts/dirty unchanged during repair",
       "format_only": "revision advanced to 3 with different raw SHA/same semantic fingerprint; dirty stayed 33",
       "public_objects_verified_each_phase": 7,
-      "earlier_browser": "795 proof established same-Document reactive DOM/source/unmatched/private checks only; mapped-card visibility was not proven"
+      "earlier_browser": "795 proof established same-Document reactive DOM/source/unmatched/private checks only; mapped-card visibility was not proven",
+      "repository_receipt": "evidence/2026-11-03/qualified-resource-recovery.json"
     },
     "selected_runtime_visible_native_cards": {
       "status": "observed_pass_actual_visible_revision_4_to_5_same_document",
@@ -273,7 +277,8 @@
         "final-paused-health.json",
         "final-paused-monitor.json"
       ],
-      "qualification": "Visible same-Document claim is only revision 4 to 5. Earlier 795 DOM assertions and revision 3 to 4 do not prove visible-card reactivity."
+      "qualification": "Visible same-Document claim is only revision 4 to 5. Earlier 795 DOM assertions and revision 3 to 4 do not prove visible-card reactivity.",
+      "repository_receipt": "evidence/2026-11-03/visible.json"
     },
     "production_storage_controls": {
       "status": "control_pass_only",
@@ -285,7 +290,8 @@
       "changed_content_rejected": true,
       "wrong_size_rejected": true,
       "conditional_wrong_if_match_status": 412,
-      "conditional_correct_if_match_status": 200
+      "conditional_correct_if_match_status": 200,
+      "repository_receipt": "evidence/2026-11-03/production-controls.json"
     },
     "production_cors_cache_control": {
       "status": "control_pass_only",
@@ -308,7 +314,8 @@
       "immutable_cache": "public, max-age=31536000, immutable",
       "pointer_cache": "public, max-age=15, s-maxage=15, must-revalidate",
       "unapproved_origin_no_allow_origin": "reported_verified_by_coordinator",
-      "supersedes": "earlier urllib 403 receipt is failed historical evidence"
+      "supersedes": "earlier urllib 403 receipt is failed historical evidence",
+      "repository_receipt": "evidence/2026-11-03/production-controls.json"
     },
     "monitoring_alert_route": {
       "status": "delegated_inbox_delivery_verified",
@@ -316,7 +323,8 @@
       "verification": "user-delegated inbox check, not personal manual acknowledgement",
       "component_binding": "Mailer/monitor/config bytes unchanged from 0e42ca2 through 6b98d565; qualified deployed-component delivery proof",
       "sustained_fifteen_minute_mismatch_alert_observed": false,
-      "qualification": "Actual immediate mismatch grace and automated threshold tests; no fabricated sustained-alert claim"
+      "qualification": "Actual immediate mismatch grace and automated threshold tests; no fabricated sustained-alert claim",
+      "repository_receipt": "evidence/2026-11-03/deployment-mail.json"
     },
     "database_and_source_stop": {
       "status": "coordinator_verified_main_first_deployed",
@@ -326,7 +334,8 @@
       "service_only_download_authorization_verified": true,
       "window_boundaries": "automated inclusive-start/exclusive-end tests pass",
       "actual_november_11_stop_observed": false,
-      "evidence": "https://github.com/CivicPulse/updaters/issues/9#issuecomment-6615516937"
+      "evidence": "https://github.com/CivicPulse/updaters/issues/9#issuecomment-6615516937",
+      "repository_receipt": "evidence/2026-11-03/deployment-mail.json"
     },
     "disabled_deployment_binding": {
       "status": "coordinator_verified_disabled_ready",
@@ -339,7 +348,8 @@
         "prod"
       ],
       "restarts": 0,
-      "collection_enabled": false
+      "collection_enabled": false,
+      "repository_receipt": "evidence/2026-11-03/deployment-mail.json"
     },
     "production_mapping_limitation": {
       "curated_sos_ballot_links": 0,
