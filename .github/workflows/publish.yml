@@ -1,43 +1,41 @@
-name: Publish collector
+name: Publish containers
 on:
   push:
     branches: [main]
-    paths:
-      - Dockerfile
-      - Cargo.toml
-      - Cargo.lock
-      - rust-toolchain.toml
-      - crates/**
-      - tools/results-collector/**
-      - .github/workflows/publish.yml
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: publish-collector-${{ github.ref }}
+  group: publish-containers-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   publish:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        tool: [civpulse-download, civpulse-process, civpulse-upload, civpulse-results-collector]
     env:
-      COLLECTOR_IMAGE: registry.digitalocean.com/hatchk8s/civpulse-results-collector:sha-${{ github.sha }}
+      TOOL: ${{ matrix.tool }}
+      IMAGE: registry.digitalocean.com/hatchk8s/${{ matrix.tool }}:sha-${{ github.sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Build immutable commit image
-        run: docker build --pull --build-arg TOOL=civpulse-results-collector -t "$COLLECTOR_IMAGE" .
+        run: docker build --pull --build-arg TOOL="$TOOL" -t "$IMAGE" .
       - name: Verify binary startup without credentials
-        run: docker run --rm --read-only --cap-drop=ALL --security-opt=no-new-privileges "$COLLECTOR_IMAGE" --check
+        run: docker run --rm --read-only --cap-drop=ALL --security-opt=no-new-privileges "$IMAGE" --check
       - name: Exercise disabled daemon under pod constraints
-        run: bash .github/scripts/smoke-collector-container.sh "$COLLECTOR_IMAGE"
+        if: matrix.tool == 'civpulse-results-collector'
+        run: bash .github/scripts/smoke-collector-container.sh "$IMAGE"
       - name: Scan before registry publication
         uses: aquasecurity/trivy-action@8f28faec26515256b6d22074d1d2a8986f4cbd87
         with:
           version: v0.76.1
-          image-ref: ${{ env.COLLECTOR_IMAGE }}
+          image-ref: ${{ env.IMAGE }}
           scanners: vuln,secret
           severity: HIGH,CRITICAL
           exit-code: '1'
@@ -59,6 +57,6 @@ jobs:
           destination.write_text(json.dumps(config))
           destination.chmod(0o600)
           PY
-          docker push "$COLLECTOR_IMAGE"
-          immutable_ref=$(docker inspect --format '{{index .RepoDigests 0}}' "$COLLECTOR_IMAGE")
-          printf 'Scanned collector image: `%s`\n' "$immutable_ref" >> "$GITHUB_STEP_SUMMARY"
+          docker push "$IMAGE"
+          immutable_ref=$(docker inspect --format '{{index .RepoDigests 0}}' "$IMAGE")
+          printf 'Scanned image: `%s`\n' "$immutable_ref" >> "$GITHUB_STEP_SUMMARY"
