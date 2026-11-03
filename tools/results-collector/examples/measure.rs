@@ -31,7 +31,14 @@ async fn main() -> Result<()> {
             "Usage: measure INPUT DATE [--pipeline] [JURISDICTIONS ITEMS]",
         ));
     }
-    let source = PathBuf::from(&args[0]);
+    let stdin_file = if args[0] == "-" {
+        Some(receive_stdin()?)
+    } else {
+        None
+    };
+    let source = stdin_file
+        .as_ref()
+        .map_or_else(|| PathBuf::from(&args[0]), |file| file.path().to_path_buf());
     let (pipeline, counts) = match &args[2..] {
         [] => (false, None),
         [flag] if flag == "--pipeline" => (true, None),
@@ -298,4 +305,23 @@ fn harness_hash() -> String {
         hash.update(bytes);
     }
     format!("{:x}", hash.finalize())
+}
+
+fn receive_stdin() -> Result<tempfile::NamedTempFile> {
+    use std::io::Read;
+    let admission =
+        civpulse_results_collector::admission::Admission::read(|key| std::env::var(key).ok())?;
+    let mut file = tempfile::Builder::new()
+        .prefix("civpulse-results-resource-input-")
+        .tempfile_in("/tmp")
+        .map_err(|_| Error::LocalIo)?;
+    let bytes = std::io::copy(
+        &mut std::io::stdin().lock().take(admission.download_bytes + 1),
+        &mut file,
+    )
+    .map_err(|_| Error::LocalIo)?;
+    if bytes == 0 || bytes > admission.download_bytes {
+        return Err(Error::Source("Resource input outside configured admission"));
+    }
+    Ok(file)
 }

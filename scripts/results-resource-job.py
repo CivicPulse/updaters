@@ -1,35 +1,56 @@
 #!/usr/bin/env python3
-"""Render an isolated, credential-free offline resource/replay Job; never installs it."""
+"""Dry-run or stream one synthetic fixture to the deployed test image's offline harness."""
 import argparse
 import json
+from pathlib import Path
 import re
+import subprocess
+
+CONTEXT = "do-atl1-k8s-1-37-0-do-2-atl1-1793724241236"
 
 
-def manifest(digest, raw_cap, scope_cap):
+def command(pod):
+    if re.fullmatch(r"[a-z0-9][a-z0-9.-]{0,252}", pod) is None:
+        raise ValueError("exact test pod name required")
+    return ["kubectl", "--context", CONTEXT, "-n", "civpulse-test", "exec", "-i", pod, "-c", "collector", "--", "/usr/local/bin/civpulse-measure", "-", "2026-11-03", "--pipeline", "160", "4178"]
+
+
+def verify(pod, digest):
     if re.fullmatch(r"sha256:[a-f0-9]{64}", digest) is None:
-        raise ValueError("immutable reviewed resource image digest required")
-    if not 0 < scope_cap <= 67108864 or not scope_cap <= raw_cap <= 536870912:
-        raise ValueError("caps must be positive and lower-only")
-    labels = {"app.kubernetes.io/name": "civpulse-resource-acceptance"}
-    return {"apiVersion": "v1", "kind": "List", "items": [
-        {"apiVersion": "networking.k8s.io/v1", "kind": "NetworkPolicy", "metadata": {"name": "civpulse-resource-acceptance", "namespace": "civpulse-test"}, "spec": {"podSelector": {"matchLabels": labels}, "policyTypes": ["Ingress", "Egress"], "ingress": [], "egress": []}},
-        {"apiVersion": "batch/v1", "kind": "Job", "metadata": {"name": "civpulse-resource-acceptance", "namespace": "civpulse-test"}, "spec": {"backoffLimit": 0, "activeDeadlineSeconds": 900, "template": {"metadata": {"labels": labels}, "spec": {
-            "restartPolicy": "Never", "automountServiceAccountToken": False, "securityContext": {"runAsNonRoot": True, "runAsUser": 65532, "runAsGroup": 65532, "fsGroup": 65532, "seccompProfile": {"type": "RuntimeDefault"}},
-            "imagePullSecrets": [{"name": "registry-hatchk8s"}],
-            "containers": [{"name": "measure", "image": "registry.digitalocean.com/hatchk8s/civpulse-results-resource@" + digest, "args": ["/fixtures/resource-case.json", "2026-11-03", "--pipeline", "160", "4178"],
-                "securityContext": {"allowPrivilegeEscalation": False, "readOnlyRootFilesystem": True, "capabilities": {"drop": ["ALL"]}},
-                "env": [{"name": "SOS_MAX_DOWNLOAD_BYTES", "value": str(raw_cap)}, {"name": "SOS_MAX_SCOPE_BYTES", "value": str(scope_cap)}],
-                "resources": {"requests": {"cpu": "100m", "memory": "512Mi", "ephemeral-storage": "2Gi"}, "limits": {"cpu": "1", "memory": "1Gi", "ephemeral-storage": "3Gi"}},
-                "volumeMounts": [{"name": "scratch", "mountPath": "/tmp"}]}], "volumes": [{"name": "scratch", "emptyDir": {"sizeLimit": "2Gi"}}]}}}}]}
+        raise ValueError("reviewed collector digest required")
+    raw = subprocess.check_output(["kubectl", "--context", CONTEXT, "-n", "civpulse-test", "get", "pod", pod, "-o", "json"], timeout=30)
+    obj = json.loads(raw)
+    container = next(c for c in obj["spec"]["containers"] if c["name"] == "collector")
+    status = next(c for c in obj["status"]["containerStatuses"] if c["name"] == "collector")
+    if container["image"] != "registry.digitalocean.com/hatchk8s/civpulse-results-collector@" + digest or status["imageID"].split("@")[-1] != digest:
+        raise ValueError("running image differs from reviewed collector digest")
+    if not status.get("ready") or status.get("restartCount") != 0:
+        raise ValueError("fresh ready zero-restart pod required")
+    refs=container.get("envFrom", [])
+    if len(refs)!=1 or "configMapRef" not in refs[0]:
+        raise ValueError("reviewed collector ConfigMap required")
+    name=refs[0]["configMapRef"]["name"]
+    data=json.loads(subprocess.check_output(["kubectl", "--context", CONTEXT, "-n", "civpulse-test", "get", "configmap", name, "-o", "json"], timeout=30))["data"]
+    if data.get("SOS_COLLECTOR_ENABLED")!="false" or any(e.get("name")=="SOS_COLLECTOR_ENABLED" and e.get("value")!="false" for e in container.get("env", [])):
+        raise ValueError("collector must remain disabled during offline resource run")
+    return container["resources"]
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--pod", required=True)
     parser.add_argument("--image-digest", required=True)
-    parser.add_argument("--raw-cap", type=int, default=536870912)
-    parser.add_argument("--scope-cap", type=int, default=67108864)
+    parser.add_argument("--fixture", required=True, type=Path)
+    parser.add_argument("--apply", action="store_true")
     args = parser.parse_args()
-    print(json.dumps(manifest(args.image_digest, args.raw_cap, args.scope_cap), indent=2))
+    argv = command(args.pod)
+    if not args.apply:
+        print(json.dumps({"command": argv, "fixture": str(args.fixture), "expected_image_digest": args.image_digest, "production_acceptance": False}))
+        return
+    resources = verify(args.pod, args.image_digest)
+    print(json.dumps({"reviewed_image_digest": args.image_digest, "resources": resources, "fixture_bytes": args.fixture.stat().st_size}), flush=True)
+    with args.fixture.open("rb") as fixture:
+        subprocess.run(argv, stdin=fixture, check=True, timeout=900)
 
 
 if __name__ == "__main__":
