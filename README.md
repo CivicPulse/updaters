@@ -169,3 +169,7 @@ RPC requests reject redirects, set both `apikey` and bearer headers, have a
 60-second total deadline, and accept at most 4 MiB of response bytes. Errors are
 classified without exposing URLs, headers, database bodies, or dependency error
 chains. Durable retry timing and quarantine remain owned by the database.
+
+Offline real/enlarged resource measurements and acceptance evidence are documented
+in [results verification](docs/results-verification.md). These local simulations
+do not authorize production collection.
