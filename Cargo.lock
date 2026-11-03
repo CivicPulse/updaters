@@ -294,6 +294,7 @@ dependencies = [
  "civpulse-results-contract",
  "civpulse-results-source",
  "fs2",
+ "hex",
  "reqwest",
  "serde",
  "serde_json",
@@ -310,6 +311,7 @@ dependencies = [
 name = "civpulse-results-contract"
 version = "0.1.0"
 dependencies = [
+ "hex",
  "serde",
  "serde_json",
  "sha2",
@@ -320,6 +322,7 @@ name = "civpulse-results-source"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "hex",
  "httpdate",
  "icu_collator",
  "icu_collator_data",

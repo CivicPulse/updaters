@@ -241,7 +241,7 @@ impl R2Store {
                         .map_err(|_| Error::Storage("Cannot spool archived source"))?;
                 }
             }
-            if size != expected_bytes || format!("{:x}", hasher.finalize()) != expected_hash {
+            if size != expected_bytes || hex::encode(hasher.finalize()) != expected_hash {
                 return Err(Error::Storage("R2 immutable checksum mismatch"));
             }
             if let Some(file) = &mut output {
@@ -386,7 +386,7 @@ pub fn validate_key(key: &str) -> Result<()> {
 }
 #[must_use]
 pub fn sha256(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
+    hex::encode(Sha256::digest(bytes))
 }
 fn valid_hash(hash: &str) -> bool {
     hash.len() == 64

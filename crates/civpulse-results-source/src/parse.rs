@@ -272,7 +272,7 @@ pub fn prepare(
         deadline,
     };
     write_canonical(&fingerprint_value, "", &mut hash, &collator, 0)?;
-    let fingerprint = format!("{:x}", hash.hash.finalize());
+    let fingerprint = hex::encode(hash.hash.finalize());
     cleanup.keep = true;
     Ok(Prepared {
         header,
@@ -311,7 +311,7 @@ fn process_scope(
         deadline: reader.deadline,
     };
     write_canonical(&scope, "", &mut hash, collator, 0)?;
-    hashes.push(json!({"id":id,"hash":format!("{:x}",hash.hash.finalize())}));
+    hashes.push(json!({"id":id,"hash":hex::encode(hash.hash.finalize())}));
     let path = directory.join(format!("scope-{index}.json"));
     let mut output = std::io::BufWriter::new(
         fs::OpenOptions::new()

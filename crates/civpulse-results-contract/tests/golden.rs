@@ -20,19 +20,16 @@ fn expected() -> Value {
 fn oracle_receipts_and_assets_are_exact_bytes() {
     let expected = expected();
     assert_eq!(
-        format!("{:x}", Sha256::digest(fixture("canonical-scope.json"))),
+        hex::encode(Sha256::digest(fixture("canonical-scope.json"))),
         expected["canonical_scope_sha256"]
     );
     for (name, case) in expected["cases"].as_object().unwrap() {
-        let hash = format!("{:x}", Sha256::digest(fixture(&format!("{name}.json"))));
+        let hash = hex::encode(Sha256::digest(fixture(&format!("{name}.json"))));
         assert_eq!(hash, case["raw_sha256"]);
         assert_eq!(case["item_count"], 2);
     }
     for asset in expected["assets"].as_array().unwrap() {
-        let hash = format!(
-            "{:x}",
-            Sha256::digest(fixture(asset["file"].as_str().unwrap()))
-        );
+        let hash = hex::encode(Sha256::digest(fixture(asset["file"].as_str().unwrap())));
         assert_eq!(hash, asset["sha256"]);
     }
 }
