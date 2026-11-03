@@ -25,48 +25,30 @@ use tokio::sync::Mutex;
 
 #[tokio::main(worker_threads = 2)]
 async fn main() -> Result<()> {
-    let args: Vec<_> = std::env::args().skip(1).collect();
+    let mut args: Vec<_> = std::env::args().skip(1).collect();
+    let explicit_root =
+        if args.first().is_some_and(|arg| arg == "--scratch-root") && args.len() >= 2 {
+            let root = PathBuf::from(&args[1]);
+            args.drain(..2);
+            Some(root)
+        } else {
+            None
+        };
+    let (scratch, filesystem) = scratch_directory(explicit_root)?;
     if args.len() < 2 || args.len() > 5 {
         return Err(Error::Config(
             "Usage: measure INPUT DATE [--pipeline] [JURISDICTIONS ITEMS]",
         ));
     }
     let stdin_file = if args[0] == "-" {
-        Some(receive_stdin()?)
+        Some(receive_stdin(scratch.path())?)
     } else {
         None
     };
     let source = stdin_file
         .as_ref()
         .map_or_else(|| PathBuf::from(&args[0]), |file| file.path().to_path_buf());
-    let (pipeline, counts) = match &args[2..] {
-        [] => (false, None),
-        [flag] if flag == "--pipeline" => (true, None),
-        [jurisdictions, items] => (false, Some((jurisdictions, items))),
-        [flag, jurisdictions, items] if flag == "--pipeline" => {
-            (true, Some((jurisdictions, items)))
-        }
-        _ => return Err(Error::Config("Supply both jurisdiction and item counts")),
-    };
-    let (jurisdictions, items) = if let Some((jurisdictions, items)) = counts {
-        let jurisdictions = jurisdictions
-            .parse::<usize>()
-            .ok()
-            .filter(|count| (1..=160).contains(count))
-            .ok_or(Error::Config("Invalid jurisdiction count"))?;
-        let items = items
-            .parse::<usize>()
-            .map_err(|_| Error::Config("Invalid item count"))?;
-        (jurisdictions, items)
-    } else {
-        (160, 4_178)
-    };
-    let expectations = Expectations {
-        election_date: args[1].clone(),
-        expected_jurisdictions: Some(jurisdictions),
-        expected_items: Some(items),
-    };
-    let (scratch, filesystem) = scratch_directory()?;
+    let (pipeline, expectations, jurisdictions, items) = parse_expectations(&args)?;
     let peak = Arc::new(Peaks::default());
     let done = Arc::new(AtomicBool::new(false));
     let _done_guard = DoneOnDrop(done.clone());
@@ -128,6 +110,36 @@ async fn main() -> Result<()> {
         json!({"measurement":"local_offline_simulation","code_base_revision":option_env!("CIVPULSE_MEASURE_CODE_REVISION").unwrap_or("unrecorded"),"measurement_harness_sha256":harness_hash(),"source_bytes":bytes,"raw_sha256":hash,"semantic_sha256":fingerprint,"jurisdictions":jurisdictions,"items":items,"raw_hash_ms":hash_ms,"validation_ms":validation_ms,"simulated_pipeline_ms":metrics.as_ref().map(|m|m.duration_ms),"duration_ms":start.elapsed().as_millis(),"staged_items":metrics.as_ref().map(|m|m.staged),"staged_batches":metrics.as_ref().map(|m|m.batches),"largest_rpc_batch_bytes":metrics.as_ref().map(|m|m.largest_batch),"peak_rss_bytes":peak_rss,"sampled_peak_total_local_bytes":peak.total.load(Ordering::Relaxed),"sampled_peak_worker_scratch_bytes":peak.worker.load(Ordering::Relaxed),"sampled_peak_simulated_object_bytes":peak.objects.load(Ordering::Relaxed),"scratch_sample_interval_ms":10,"scratch_excludes_input":true,"scratch_filesystem":filesystem,"platform":format!("{}-{}",std::env::consts::OS,std::env::consts::ARCH),"production_acceptance":false,"container_resources":civpulse_results_collector::resources::read()})
     );
     Ok(())
+}
+fn parse_expectations(args: &[String]) -> Result<(bool, Expectations, usize, usize)> {
+    let (pipeline, counts) = match &args[2..] {
+        [] => (false, None),
+        [flag] if flag == "--pipeline" => (true, None),
+        [jurisdictions, items] => (false, Some((jurisdictions, items))),
+        [flag, jurisdictions, items] if flag == "--pipeline" => {
+            (true, Some((jurisdictions, items)))
+        }
+        _ => return Err(Error::Config("Supply both jurisdiction and item counts")),
+    };
+    let (jurisdictions, items) = if let Some((jurisdictions, items)) = counts {
+        let jurisdictions = jurisdictions
+            .parse::<usize>()
+            .ok()
+            .filter(|count| (1..=160).contains(count))
+            .ok_or(Error::Config("Invalid jurisdiction count"))?;
+        let items = items
+            .parse::<usize>()
+            .map_err(|_| Error::Config("Invalid item count"))?;
+        (jurisdictions, items)
+    } else {
+        (160, 4_178)
+    };
+    let expectations = Expectations {
+        election_date: args[1].clone(),
+        expected_jurisdictions: Some(jurisdictions),
+        expected_items: Some(items),
+    };
+    Ok((pipeline, expectations, jurisdictions, items))
 }
 fn tracker(path: PathBuf, peak: Arc<Peaks>, done: Arc<AtomicBool>) -> tokio::task::JoinHandle<()> {
     tokio::task::spawn_blocking(move || {
@@ -250,24 +262,31 @@ async fn run_pipeline(
     })
 }
 
-fn scratch_directory() -> Result<(tempfile::TempDir, String)> {
-    let scratch_root = std::env::var_os("CIVPULSE_MEASURE_SCRATCH_ROOT")
-        .map(PathBuf::from)
+fn scratch_directory(explicit: Option<PathBuf>) -> Result<(tempfile::TempDir, String)> {
+    let scratch_root = explicit
+        .or_else(|| std::env::var_os("CIVPULSE_MEASURE_SCRATCH_ROOT").map(PathBuf::from))
         .ok_or(Error::Config(
             "Set CIVPULSE_MEASURE_SCRATCH_ROOT to an existing disk-backed directory",
         ))?;
-    let filesystem = std::process::Command::new("stat")
-        .args(["-f", "-c", "%T"])
-        .arg(&scratch_root)
-        .output()
-        .map_err(|_| Error::LocalIo)?;
-    if !filesystem.status.success() {
-        return Err(Error::LocalIo);
-    }
-    let filesystem = String::from_utf8(filesystem.stdout)
-        .map_err(|_| Error::LocalIo)?
-        .trim()
-        .to_owned();
+    let root = scratch_root.canonicalize().map_err(|_| Error::LocalIo)?;
+    let mounts = std::fs::read_to_string("/proc/self/mountinfo").map_err(|_| Error::LocalIo)?;
+    let filesystem = mounts
+        .lines()
+        .filter_map(|line| {
+            let (mount, details) = line.split_once(" - ")?;
+            let path = mount.split_whitespace().nth(4)?;
+            // Decode the kernel's mountinfo escapes before matching path components.
+            let path = path
+                .replace("\\040", " ")
+                .replace("\\011", "\t")
+                .replace("\\012", "\n")
+                .replace("\\134", "\\");
+            root.starts_with(&path)
+                .then(|| (path.len(), details.split_whitespace().next().unwrap_or("")))
+        })
+        .max_by_key(|(length, _)| *length)
+        .map(|(_, kind)| kind.to_owned())
+        .ok_or(Error::LocalIo)?;
     if ["tmpfs", "ramfs"].contains(&filesystem.as_str()) {
         return Err(Error::Config(
             "Resource measurement scratch must be disk-backed",
@@ -307,13 +326,13 @@ fn harness_hash() -> String {
     format!("{:x}", hash.finalize())
 }
 
-fn receive_stdin() -> Result<tempfile::NamedTempFile> {
+fn receive_stdin(root: &Path) -> Result<tempfile::NamedTempFile> {
     use std::io::Read;
     let admission =
         civpulse_results_collector::admission::Admission::read(|key| std::env::var(key).ok())?;
     let mut file = tempfile::Builder::new()
         .prefix("civpulse-results-resource-input-")
-        .tempfile_in("/tmp")
+        .tempfile_in(root)
         .map_err(|_| Error::LocalIo)?;
     let bytes = std::io::copy(
         &mut std::io::stdin().lock().take(admission.download_bytes + 1),

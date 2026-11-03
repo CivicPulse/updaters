@@ -15,7 +15,7 @@ def manifest(environment, digest, release="results"):
         raise ValueError("Explicit environment, immutable image digest and valid release are required")
     return {
         "apiVersion": "batch/v1", "kind": "Job",
-        "metadata": {"name": NAME, "namespace": f"civpulse-{environment}"},
+        "metadata": {"generateName": NAME + "-", "namespace": f"civpulse-{environment}"},
         "spec": {"backoffLimit": 0, "activeDeadlineSeconds": 90, "ttlSecondsAfterFinished": 86400, "template": {
             "metadata": {"labels": {"app.kubernetes.io/name": "civpulse-results-monitor", "app.kubernetes.io/instance": release}},
             "spec": {"automountServiceAccountToken": False, "restartPolicy": "Never", "securityContext": {"runAsNonRoot": True, "runAsUser": 65532, "runAsGroup": 65532, "seccompProfile": {"type": "RuntimeDefault"}},
@@ -39,16 +39,22 @@ def main():
             print(json.dumps(job, indent=2))
             return 0
         command = ["kubectl", "--context", CONTEXT, "-n", f"civpulse-{args.environment}"]
-        subprocess.run(command + ["apply", "-f", "-"], input=json.dumps(job).encode(), check=True)
-        subprocess.run(command + ["wait", "--for=condition=complete", f"job/{NAME}", "--timeout=120s"], check=True)
-        output = subprocess.check_output(command + ["logs", f"job/{NAME}"], timeout=30)
+        created = json.loads(subprocess.check_output(command + ["create", "-f", "-", "-o", "json"], input=json.dumps(job).encode(), timeout=30))
+        name, uid = created["metadata"]["name"], created["metadata"]["uid"]
+        if not name.startswith(NAME + "-") or not uid:
+            raise ValueError("Invalid newly created verification Job identity")
+        subprocess.run(command + ["wait", "--for=condition=complete", f"job/{name}", "--timeout=120s"], check=True)
+        current_uid = subprocess.check_output(command + ["get", "job", name, "-o", "jsonpath={.metadata.uid}"], timeout=30).decode()
+        if current_uid != uid:
+            raise ValueError("Verification Job identity changed")
+        output = subprocess.check_output(command + ["logs", f"job/{name}"], timeout=30)
         receipt = json.loads(output)
         if receipt.get("delivery") != "delivered" or not receipt.get("message_id"):
             print("Email was not confirmed delivered; inspect provider evidence before acceptance", file=sys.stderr)
             return 1
-        print(json.dumps({"environment": args.environment, "delivery": "delivered", "message_id": receipt["message_id"], "verification_job_collection_enabled": False}))
+        print(json.dumps({"job_name": name, "job_uid": uid, "environment": args.environment, "delivery": "delivered", "message_id": receipt["message_id"], "verification_job_collection_enabled": False}))
         return 0
-    except (ValueError, OSError, subprocess.SubprocessError):
+    except (ValueError, KeyError, OSError, subprocess.SubprocessError):
         print("Alert-route verification failed; collection remains disabled", file=sys.stderr)
         return 1
 

@@ -146,6 +146,10 @@ Cloudflare message ID and `delivered` status. `queued` means accepted for deferr
 delivery and is not a delivery proof; inspect provider delivery evidence before
 marking acceptance. A previous connector email from an unrelated sender proves
 recipient connectivity only and does not satisfy deployed CivicPulse delivery.
+Each applied verification creates a fresh Job and records its name and UID; the
+wait and logs refer to that same Job. Record operator inbox acknowledgement
+separately: even a provider `delivered` receipt does not establish that a person
+received/read the message.
 
 ## Pause and resume
 

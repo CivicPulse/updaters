@@ -15,6 +15,7 @@ class ResourceJobTests(unittest.TestCase):
         self.assertIn("civpulse-test",argv)
         self.assertIn("/usr/local/bin/civpulse-measure",argv)
         self.assertIn("--pipeline",argv)
+        self.assertEqual(argv[argv.index("--scratch-root")+1], "/tmp")
         self.assertNotIn("once",argv)
         with self.assertRaises(ValueError):
             module.command("../../prod")

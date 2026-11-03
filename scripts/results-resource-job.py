@@ -12,7 +12,7 @@ CONTEXT = "do-atl1-k8s-1-37-0-do-2-atl1-1793724241236"
 def command(pod):
     if re.fullmatch(r"[a-z0-9][a-z0-9.-]{0,252}", pod) is None:
         raise ValueError("exact test pod name required")
-    return ["kubectl", "--context", CONTEXT, "-n", "civpulse-test", "exec", "-i", pod, "-c", "collector", "--", "/usr/local/bin/civpulse-measure", "-", "2026-11-03", "--pipeline", "160", "4178"]
+    return ["kubectl", "--context", CONTEXT, "-n", "civpulse-test", "exec", "-i", pod, "-c", "collector", "--", "/usr/local/bin/civpulse-measure", "--scratch-root", "/tmp", "-", "2026-11-03", "--pipeline", "160", "4178"]
 
 
 def verify(pod, digest):
