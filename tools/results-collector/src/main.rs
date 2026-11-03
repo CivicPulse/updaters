@@ -3,6 +3,7 @@ use civpulse_results_collector::{
     config::{Config, RPC_DEADLINE, RPC_RESPONSE_LIMIT},
     job::UnsupportedProcessor,
     rpc::Rpc,
+    validate,
     worker::{self, Options},
 };
 use std::{process::ExitCode, sync::Arc};
@@ -22,6 +23,9 @@ async fn main() -> ExitCode {
 }
 async fn execute() -> Result<()> {
     let args: Vec<_> = std::env::args().skip(1).collect();
+    if args.first().is_some_and(|argument| argument == "validate") {
+        return validate::run(&args[1..], shutdown_signal()).await;
+    }
     let command = match args.as_slice() {
         [] => "daemon",
         [command] => command.as_str(),
@@ -33,15 +37,12 @@ async fn execute() -> Result<()> {
     };
     if matches!(command, "--help" | "-h") {
         println!(
-            "civpulse-results-collector [daemon|once|health|liveness|validate|--check]\nCollection defaults to disabled. health checks service RPC access; liveness checks the local daemon heartbeat. --check performs no I/O. validate is unavailable until the parser is implemented."
+            "civpulse-results-collector [daemon|once|health|liveness|validate|--check]\nCollection defaults to disabled. health checks service RPC access; liveness checks the local daemon heartbeat. --check performs no I/O. validate <path> <election-date> [expected-jurisdictions expected-items] validates local bytes without credentials."
         );
         return Ok(());
     }
     if command == "--check" {
         return Ok(());
-    }
-    if command == "validate" {
-        return Err(Error::Unsupported);
     }
     if !matches!(command, "daemon" | "once" | "health" | "liveness") {
         return Err(Error::Config("Unknown collector command"));

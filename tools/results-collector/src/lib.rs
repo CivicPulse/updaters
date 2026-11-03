@@ -2,6 +2,7 @@
 pub mod config;
 pub mod job;
 pub mod rpc;
+pub mod validate;
 pub mod worker;
 
 use std::fmt;

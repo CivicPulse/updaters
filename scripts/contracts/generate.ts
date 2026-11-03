@@ -29,12 +29,15 @@ try {
   variants.label.results.ballotItems[0].ballotOptions[0].name = "Corrected label";
   variants.status = structuredClone(base);
   variants.status.results.reportingStatuses = [];
+  variants.unicode_numeric = structuredClone(base);
+  variants.unicode_numeric.results.ballotItems[0].ballotOptions = ["é", "e", "E", "a2", "a10", "😀", "𐀀"].map(id => option(id, 0));
+  Object.assign(variants.unicode_numeric.results.ballotItems[0], { "\uE000": "private use", "𐀀": "supplementary", "2": "index key", "10": "index ten", numberEdges:[1e-7,1e-6,1e20,1e21,-0,333333333.3333333,9007199254740992], escaping:"line\n\t\u0000\\\"é😀" });
   const expected: Record<string, any> = {reference_commit:revision, cases:{}};
   for (const [name, source] of Object.entries(variants)) {
     const raw = name === "reordered" ? "\uFEFF  " + JSON.stringify(source,null,2) + "\n" : JSON.stringify(source);
     await Bun.write(`${output}/${name}.json`, raw);
     const prepared = await prepare(`${output}/${name}.json`, `${temp}/${name}`, "2026-11-03");
-    expected.cases[name] = {fingerprint:prepared.fingerprint, raw_sha256:new Bun.CryptoHasher("sha256").update(raw).digest("hex"), item_count:prepared.itemCount, jurisdictions:prepared.jurisdictions};
+    expected.cases[name] = {fingerprint:prepared.fingerprint, raw_sha256:new Bun.CryptoHasher("sha256").update(raw).digest("hex"), item_count:prepared.itemCount, jurisdictions:prepared.jurisdictions, canonical_scope:canonical(source.results)};
     if (name !== "base") continue;
     const election = "00000000-0000-4000-8000-000000000001", snapshot = "00000000-0000-4000-8000-000000000002";
     const objects = new Map<string,string>();

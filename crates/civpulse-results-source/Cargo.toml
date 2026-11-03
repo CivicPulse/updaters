@@ -1,0 +1,37 @@
+[package]
+name = "civpulse-results-source"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
+sha2 = "0.10"
+ryu-js = "1"
+# Collation/normalization data is part of the persisted fingerprint contract.
+# Upgrade this ICU closure together only after golden + real-feed oracle review.
+icu_collator = "=2.1.2"
+icu_collator_data = "=2.1.1"
+icu_collections = "=2.1.1"
+icu_locale = "=2.1.1"
+icu_locale_core = "=2.1.1"
+icu_locale_data = "=2.1.2"
+icu_normalizer = "=2.1.1"
+icu_normalizer_data = "=2.1.1"
+icu_properties = "=2.1.2"
+icu_properties_data = "=2.1.2"
+icu_provider = "=2.1.1"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std", "serde"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream"] }
+tokio = { workspace = true, features = ["fs", "io-util", "time"] }
+thiserror = "2"
+httpdate = "1"
+
+[dev-dependencies]
+tempfile = "3"
+
+[lints]
+workspace = true
