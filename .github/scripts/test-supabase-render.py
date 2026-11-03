@@ -73,7 +73,21 @@ with tempfile.TemporaryDirectory() as directory:
                 assert document["spec"]["replicas"] == 1
                 document["spec"]["strategy"] = {"type":"Recreate", "rollingUpdate":None}
         assert rendered == expected, "Reviewed patch changed unrelated resources"
+        auth = [document for document in rendered if document and document.get("kind") == "Deployment" and document["metadata"]["name"] == "supabase-supabase-auth"]
+        assert len(auth) == 1
+        containers = auth[0]["spec"]["template"]["spec"]["containers"]
+        assert len(containers) == 1
+        auth_env = {entry["name"]: entry.get("value") for entry in containers[0]["env"]}
+        assert auth_env["GOTRUE_EXTERNAL_EMAIL_ENABLED"] == "true", "Confirmed users must be able to sign in normally"
+        assert auth_env["GOTRUE_DISABLE_SIGNUP"] == "true", "Public sign-up must stay disabled"
+        assert auth_env["GOTRUE_MAILER_AUTOCONFIRM"] == "false", "Do not bypass email confirmation"
+        assert auth_env["GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED"] == "false"
+        assert auth_env["GOTRUE_EXTERNAL_PHONE_ENABLED"] == "false"
+        assert not any(document and document.get("kind") == "Ingress" for document in rendered)
         for document in rendered:
+            if document and document.get("kind") == "Service":
+                assert document["spec"].get("type", "ClusterIP") == "ClusterIP"
+                assert not document["spec"].get("externalIPs")
             if document and document.get("kind") == "StatefulSet":
                 assert document["spec"].get("podManagementPolicy", "OrderedReady") == "OrderedReady"
 print("Pinned Supabase chart: scoped Recreate, cleared surge, unchanged member bytes, deterministic/idempotent insertion and fail-closed guards passed")

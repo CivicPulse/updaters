@@ -42,6 +42,13 @@ permissions and the deployment's restricted capability set; key output is never
 printed.
 Collector pods use the stricter non-root,
 read-only-root policy. All services are internal ClusterIP with no Ingress.
+The shared dev/test values enable Auth's email provider so confirmed acceptance
+users created through the Auth admin API can use normal password sign-in.
+Public sign-up remains disabled, mailer autoconfirm remains false, and anonymous
+and phone providers remain disabled. No SMTP delivery or JWT bypass is needed
+for these administrator-confirmed fixtures. Production does not use these values.
+The pinned-chart render regression checks these settings and internal services
+in both isolated namespaces.
 
 Storage and REST use single-replica `Recreate` upgrades. Storage's ReadWriteOnce
 volume must detach from the old pod before a replacement starts; REST also avoids

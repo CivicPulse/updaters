@@ -317,8 +317,9 @@ environment:
     value: authenticated
   - name: GOTRUE_JWT_EXP
     value: '3600'
+  # Confirmed acceptance users are created through the Auth admin API.
   - name: GOTRUE_EXTERNAL_EMAIL_ENABLED
-    value: 'false'
+    value: 'true'
   - name: GOTRUE_MAILER_AUTOCONFIRM
     value: 'false'
   - name: GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED
