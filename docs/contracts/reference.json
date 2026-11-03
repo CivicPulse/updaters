@@ -1,0 +1,11 @@
+{
+  "repository": "kerryhatcher/www.civpulse.org",
+  "commit": "0408add4c47a8549c9ad76c680d9a5779a58a050",
+  "source_sha256": {
+    "feed.ts": "c2b3a9c853e853ad7401c41bd6bbdc637d19069430c1a6368f411b0f65ae7eb8",
+    "collector.ts": "1654284f46811aad431fea6a506d234045a964d64070bb706006f1c117d15e2b",
+    "storage.ts": "c797c167041f574d5316280c0e034067533af6de98ca50890e1d012605539391",
+    "sos-results.ts": "3d87e0939271a8a3a49b00ec2bc2c7f94bf4c02b5371114127c7916660ec011c",
+    "main.ts": "a7c1abe60eca76f0187bf8985e6fddea474aeb0565bf7034c74115739de56550"
+  }
+}

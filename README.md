@@ -18,6 +18,13 @@ shared libraries under `crates/`; workspace glob membership picks them up.
 Dependency versions, metadata, and lint policy live in the root `Cargo.toml`.
 Workspace inheritance follows the [Cargo workspace reference](https://doc.rust-lang.org/cargo/reference/workspaces.html).
 
+## Election results collector
+
+The production collector is being implemented under [issue #1](https://github.com/CivicPulse/updaters/issues/1).
+The pinned reference, RPC/public-file contracts, synthetic golden fixtures, and
+activation gates are documented in [the compatibility contract](docs/contracts/results-collector.md).
+Collection remains disabled until controlled acceptance is complete.
+
 ## Development
 
 Install Rust using rustup; `rust-toolchain.toml` pins the build toolchain.
@@ -51,6 +58,8 @@ docker run --rm --read-only civpulse-download:dev --check
 
 The same Dockerfile builds one selected binary per image. Images include CA
 certificates for future HTTPS clients and run as an unprivileged numeric user.
+The runtime is a digest-pinned distroless Debian 13 image with no shell or package
+manager; probes and diagnostics must invoke the executable directly.
 CI builds and checks all three images without pushing them.
 
 Job manifests are examples, suspended by default, with `--check` arguments. Set
