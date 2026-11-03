@@ -272,7 +272,7 @@ pub async fn deliver(
         Delivery::Queued => Outcome::Queued,
     })
 }
-fn lock(path: &Path) -> Result<File> {
+pub(crate) fn lock(path: &Path) -> Result<File> {
     let mut options = OpenOptions::new();
     options.create(true).read(true).write(true).truncate(false);
     #[cfg(unix)]
@@ -287,9 +287,9 @@ fn lock(path: &Path) -> Result<File> {
         .map_err(|_| Error::Source("Another alert notifier owns the state lock"))?;
     Ok(file)
 }
-async fn load(path: &Path) -> Result<AlertState> {
+pub(crate) async fn load<T: serde::de::DeserializeOwned + Default>(path: &Path) -> Result<T> {
     match tokio::fs::metadata(path).await {
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(AlertState::default()),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(T::default()),
         Ok(metadata) if metadata.len() <= 16 * 1024 => {
             serde_json::from_slice(&tokio::fs::read(path).await.map_err(|_| Error::LocalIo)?)
                 .map_err(|_| Error::InvalidResponse)
@@ -298,7 +298,7 @@ async fn load(path: &Path) -> Result<AlertState> {
         Err(_) => Err(Error::LocalIo),
     }
 }
-async fn save(path: &Path, state: &AlertState) -> Result<()> {
+pub(crate) async fn save<T: Serialize>(path: &Path, state: &T) -> Result<()> {
     let temp = tempfile::NamedTempFile::new_in(
         path.parent()
             .ok_or(Error::Config("Alert state requires parent directory"))?,
@@ -331,7 +331,7 @@ pub async fn command(report: &Report) -> Result<Outcome> {
         PathBuf::from,
     );
     let _lock = lock(&path)?;
-    let mut state = load(&path).await?;
+    let mut state: AlertState = load(&path).await?;
     let mail = CloudflareMail::new(&token)?;
     let outcome = deliver(report, &environment, &mail, &mut state).await?;
     save(&path, &state).await?;

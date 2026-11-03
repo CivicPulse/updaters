@@ -214,7 +214,7 @@ async fn collect_reads_only_operational_rpcs_and_consistent_s3() {
         }
         async fn get(&self, key: &str, _: usize) -> Result<Stored> {
             self.keys.lock().unwrap().push(key.into());
-            Ok(Stored{status:200,etag:Some("etag".into()),body:json!({"schema_version":1,"election_id":ELECTION,"snapshot_id":"00000000-0000-4000-8000-000000000002","revision":"9007199254740993"}).to_string().into_bytes()})
+            Ok(Stored{status:200,etag:Some("etag".into()),body:json!({"schema_version":1,"election_id":ELECTION,"snapshot_id":"00000000-0000-4000-8000-000000000002","revision":"9007199254740993","fingerprint":"a".repeat(64)}).to_string().into_bytes()})
         }
         async fn put(&self, _: &str, _: &[u8], _: Conditions) -> Result<u16> {
             panic!("monitor attempted PUT")
@@ -274,6 +274,10 @@ async fn collect_reads_only_operational_rpcs_and_consistent_s3() {
     );
     server.await.unwrap();
     assert_eq!(routes.lock().unwrap().len(), 2);
+    assert_eq!(
+        report.feeds[0].publication_fingerprint,
+        Some("a".repeat(64))
+    );
 }
 #[test]
 fn hourly_cadence_uses_two_hours_plus_grace_then_transitions_to_five_minutes() {

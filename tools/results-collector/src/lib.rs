@@ -5,6 +5,7 @@ pub mod config;
 mod download_window;
 pub mod job;
 pub mod monitoring;
+pub mod ntfy;
 pub mod pipeline;
 pub mod resources;
 pub mod rpc;

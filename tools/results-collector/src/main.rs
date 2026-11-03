@@ -34,13 +34,13 @@ async fn execute() -> Result<()> {
         [command] => command.as_str(),
         _ => {
             return Err(Error::Config(
-                "Usage: civpulse-results-collector [daemon|once|health|monitor|metrics|notify|alert-test|resources|liveness|validate|--check|--help]",
+                "Usage: civpulse-results-collector [daemon|once|health|monitor|metrics|notify|alert-test|ntfy-test|resources|liveness|validate|--check|--help]",
             ));
         }
     };
     if matches!(command, "--help" | "-h") {
         println!(
-            "civpulse-results-collector [daemon|once|health|monitor|metrics|notify|alert-test|resources|liveness|validate|--check]\nCollection defaults to disabled. health checks service RPC access; liveness checks the local daemon heartbeat. --check performs no I/O. validate <path> <election-date> [expected-jurisdictions expected-items] validates local bytes without credentials."
+            "civpulse-results-collector [daemon|once|health|monitor|metrics|notify|alert-test|ntfy-test|resources|liveness|validate|--check]\nCollection defaults to disabled. health checks service RPC access; liveness checks the local daemon heartbeat. --check performs no I/O. validate <path> <election-date> [expected-jurisdictions expected-items] validates local bytes without credentials."
         );
         return Ok(());
     }
@@ -56,6 +56,7 @@ async fn execute() -> Result<()> {
             | "metrics"
             | "notify"
             | "alert-test"
+            | "ntfy-test"
             | "resources"
             | "liveness"
     ) {
@@ -64,8 +65,12 @@ async fn execute() -> Result<()> {
     if command == "resources" {
         return resources::command();
     }
-    if command == "alert-test" {
-        let receipt = alerting::verification().await?;
+    if matches!(command, "ntfy-test" | "alert-test") {
+        let receipt = if command == "ntfy-test" {
+            civpulse_results_collector::ntfy::verification().await?
+        } else {
+            alerting::verification().await?
+        };
         println!(
             "{}",
             serde_json::to_string(&receipt).map_err(|_| Error::InvalidResponse)?
@@ -150,9 +155,18 @@ async fn operational_command(command: &str, rpc: &Rpc) -> Result<()> {
         let report = monitoring::observe(rpc)
             .await
             .unwrap_or_else(|_| monitoring::unavailable());
-        let outcome = alerting::command(&report).await?;
+        // Each transport persists independently, even when its peer fails.
+        let (email, push) = tokio::join!(
+            alerting::command(&report),
+            civpulse_results_collector::ntfy::command(&report)
+        );
         monitoring::render(&report, monitoring::Format::Json)?;
-        if outcome == alerting::Outcome::Disabled && !report.alerts.is_empty() {
+        let outcome = email?;
+        let push = push?;
+        if outcome == alerting::Outcome::Disabled
+            && push == alerting::Outcome::Disabled
+            && !report.alerts.is_empty()
+        {
             return Err(Error::Source(
                 "Alerts disabled while monitoring has actionable conditions",
             ));

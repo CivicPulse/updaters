@@ -42,6 +42,8 @@ affinity: {}
 monitoring:
   enabled: false
   alertsEnabled: false
+  ntfyEnabled: false
+  ntfyUrl: https://ntfy.sh/CivPulse
   emailSecret: results-alert-email
   schedule: '* * * * *'
   stateStorageSize: 1Gi

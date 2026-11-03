@@ -259,7 +259,9 @@
         "storageClass",
         "initialIntervalSeconds",
         "intervalSeconds",
-        "transitionAt"
+        "transitionAt",
+        "ntfyEnabled",
+        "ntfyUrl"
       ],
       "properties": {
         "enabled": {
@@ -297,6 +299,13 @@
         "transitionAt": {
           "type": "string",
           "pattern": "^$|^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+        },
+        "ntfyEnabled": {
+          "type": "boolean"
+        },
+        "ntfyUrl": {
+          "type": "string",
+          "const": "https://ntfy.sh/CivPulse"
         }
       }
     }

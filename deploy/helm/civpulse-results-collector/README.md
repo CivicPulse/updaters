@@ -148,3 +148,16 @@ integers in Helm values. The ConfigMap explicitly formats them as decimal intege
 strings, including defaults and lower admission overrides; the Rust parser stays
 strict and rejects scientific notation. CI renders YAML overrides and passes the
 resulting strings through the worker’s actual admission implementation.
+
+The monitor supports independent email and ntfy channels. `monitoring.ntfyEnabled`
+defaults to false; the production values opt into the exact public topic
+`https://ntfy.sh/CivPulse` through `monitoring.ntfyUrl`. Other environments and
+endpoints are rejected. This setting neither enables the monitor itself nor
+changes collection. Preserve the live monitor/email/collection values when
+upgrading an active release; committed production defaults still disable collection.
+
+The retained monitor PVC stores `/state/alerts.json` for email and
+`/state/ntfy.json` for push notifications. Neither channel's failure advances the
+other channel's deduplication state. New-data notifications use confirmed signed-S3
+pointer/database agreement and the semantic fingerprint, not source polls or raw
+file hashes. See the [notification runbook](../../../docs/operations/results-ntfy.md).

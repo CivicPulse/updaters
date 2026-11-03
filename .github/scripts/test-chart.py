@@ -73,6 +73,16 @@ def main():
             assert monitor_env["SOS_POLL_TRANSITION_AT"] == "2026-11-03T22:00:00Z"
         # Database health must not be a liveness/readiness restart dependency.
         assert "health" not in json.dumps(container)
+    for environment in ["dev", "test", "prod"]:
+        docs = render(environment, ["monitoring.enabled=true"])
+        cron = next(doc for doc in docs if doc["kind"] == "CronJob")
+        env = {item["name"]: item.get("value") for item in cron["spec"]["jobTemplate"]["spec"]["template"]["spec"]["containers"][0]["env"]}
+        assert env["SOS_NTFY_ENABLED"] == str(environment == "prod").lower()
+        assert env["SOS_NTFY_URL"] == "https://ntfy.sh/CivPulse"
+        assert env["SOS_NTFY_STATE"] == "/state/ntfy.json"
+        assert env["SOS_ALERT_STATE"] != env["SOS_NTFY_STATE"]
+    render("dev", ["monitoring.ntfyEnabled=true"], success=False)
+    render("prod", ["monitoring.ntfyUrl=https://unreviewed.example/private"], success=False)
     reviewed = ["collection.enabled=true", "collection.electionId=00000000-0000-4000-8000-000000000001",
                 "collection.electionDate=2026-11-03",
                 "collection.sourceUrl=https://results.sos.ga.gov/cdn/results/Georgia/export-11032026GeneralAndSpecialElection.json",
