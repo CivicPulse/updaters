@@ -545,3 +545,45 @@ async fn rpc_wrapper_allowance_is_bounded_without_reducing_source_depth() {
     assert!(civpulse_results_source::stringify_envelope(&Value::Null, 5).is_err());
     task.abort();
 }
+
+#[test]
+fn deployment_rpc_origins_are_bound_to_the_matching_environment() {
+    let dev = "http://supabase-supabase-kong.civpulse-dev.svc.cluster.local:8000";
+    let test = "http://supabase-supabase-kong.civpulse-test.svc.cluster.local:8000";
+    let build = |environment: &str, origin: &str| {
+        Rpc::for_environment(environment, origin, "fixture", Duration::from_secs(1), 4096)
+    };
+    assert!(build("dev", dev).is_ok());
+    assert!(build("test", test).is_ok());
+    assert!(build("test", &format!("{test}/")).is_ok());
+    for environment in ["dev", "test", "prod"] {
+        assert!(build(environment, "https://project.supabase.co").is_ok());
+        for forbidden in [
+            "http://127.0.0.1:54321",
+            "http://localhost:8000",
+            "http://supabase-supabase-kong.civpulse-prod.svc.cluster.local:8000",
+            "http://supabase-supabase-kong.civpulse-test.svc.cluster.local:8001",
+            "http://another-service.civpulse-test.svc.cluster.local:8000",
+            "http://supabase-supabase-kong.civpulse-test.svc.cluster.local:8000.evil.example",
+            "https://user:secret@project.supabase.co",
+            "https://project.supabase.co/prefix",
+            "https://project.supabase.co?token=secret",
+        ] {
+            assert!(
+                build(environment, forbidden).is_err(),
+                "{environment}: {forbidden}"
+            );
+        }
+    }
+    assert!(build("prod", dev).is_err());
+    assert!(build("prod", test).is_err());
+    assert!(build("dev", test).is_err());
+    assert!(build("test", dev).is_err());
+    assert!(build("unknown", "https://project.supabase.co").is_err());
+    assert!(build("test", &format!("{test}//")).is_err());
+    assert!(build("test", &format!("{test}/rest/v1")).is_err());
+    assert!(build("test", &format!("{test}?token=secret")).is_err());
+    assert!(build("test", &format!("{test}#fragment")).is_err());
+    assert!(Config::read(|key| (key == "CIVPULSE_ENV").then(|| "staging".into())).is_err());
+    assert_eq!(Config::read(|_| None).unwrap().environment, "prod");
+}

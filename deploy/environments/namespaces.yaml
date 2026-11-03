@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: civpulse-dev
+  labels:
+    app.kubernetes.io/part-of: civpulse
+    civpulse.org/environment: dev
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: civpulse-test
+  labels:
+    app.kubernetes.io/part-of: civpulse
+    civpulse.org/environment: test
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: civpulse-prod
+  labels:
+    app.kubernetes.io/part-of: civpulse
+    civpulse.org/environment: prod

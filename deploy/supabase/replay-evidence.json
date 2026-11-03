@@ -1,0 +1,26 @@
+{
+  "verified_on": "2026-11-03",
+  "method": "isolated_local_container_sql_replay",
+  "website_commit": "3d135baa537d315244e6abef0261d4f1de39e1dd",
+  "verified_migration_count": 136,
+  "images_started": {
+    "db": "supabase/postgres:17.11.0.003@sha256:7374d196da7e301512cc5329e18040e0f7bb856287b323777cdadecccbc6c7e4",
+    "auth": "supabase/gotrue:v2.189.0@sha256:385184459f57569c54c25209f51f3b2be99ddd7c4ce9e3555b5d3eea8447b7cf",
+    "storage": "supabase/storage-api:v1.60.4@sha256:c8eb9858eafec891a97c27125470aaad54703c3f4eb4d55ca7f1bf6c6411febf"
+  },
+  "auth_and_storage_nonroot_uid": 1000,
+  "extensions": [
+    "pg_cron",
+    "pg_net",
+    "postgis",
+    "supabase_vault"
+  ],
+  "enabled_feeds": 0,
+  "external_poll_or_rebuild_vault_secrets": 0,
+  "queued_http_requests": 0,
+  "coordinator_schedule_count": 1,
+  "operational_health": [],
+  "chart_install_verified": false,
+  "cluster_deployment_verified": false,
+  "production_acceptance": false
+}

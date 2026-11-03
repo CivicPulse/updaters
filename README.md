@@ -15,7 +15,10 @@ collection stays disabled until controlled operational acceptance completes.
 - `crates/civpulse-results-source`: bounded downloading, parsing and reference-compatible fingerprints.
 - `crates/civpulse-results-contract`: public asset contracts and pinned golden fixtures.
 - `crates/civpulse-runtime`: JSON logging, batch lifecycle, and SIGTERM/Ctrl-C handling.
-- `deploy/k8s`: one suspended Job template per executable.
+- `deploy/k8s`: one suspended Job template per generic scaffold executable.
+- `deploy/helm/civpulse-results-collector`: disabled-by-default durable worker chart.
+- `deploy/environments`: separate dev/test/prod values for the shared DigitalOcean cluster.
+- `deploy/supabase`: pinned, isolated dev/test database bootstrap and local replay evidence.
 
 Only executable crates get images and Kubernetes workloads. Shared library crates
 are linked into those binaries. Add source-specific tools under `tools/` and
@@ -66,7 +69,10 @@ The same Dockerfile builds one selected binary per image. Images include CA
 certificates for future HTTPS clients and run as an unprivileged numeric user.
 The runtime is a digest-pinned distroless Debian 13 image with no shell or package
 manager; probes and diagnostics must invoke the executable directly.
-CI builds and checks all four images without pushing them.
+Pull-request CI builds and checks all four images, including the real disabled
+collector entry point, heartbeat, scratch permissions and bounded SIGTERM. A
+separate main-only workflow scans and publishes that same collector image to
+`registry.digitalocean.com/hatchk8s`; it deploys nothing.
 
 Job manifests are examples, suspended by default, with `--check` arguments. Set
 an image available to your cluster (prefer a digest), namespace, resource sizing,
@@ -74,7 +80,8 @@ and any needed configuration before use. For a scaffold smoke check, load/push
 the image, apply the selected manifest and explicitly unsuspend its Job. No
 resources are deployed automatically by this repository. These starter Jobs do not
 schedule or trigger each other. The results collector consumes the existing
-Supabase durable queue; Supabase owns its five-minute source schedule. Job pod exit status records completion;
+Supabase durable queue; Supabase owns the single five-minute Cron heartbeat and
+database-gated source cadence/window. Job pod exit status records completion;
 batch tools do not need an HTTP health server.
 
 Each pod has a read-only root filesystem and bounded ephemeral `/tmp`. Files there
@@ -145,7 +152,8 @@ Configuration:
 | `SOS_COLLECTOR_ENABLED` | `false`; only the exact strings `true` and `false` are accepted |
 | `SOS_COLLECTOR_CONCURRENCY` | `1`, restricted to `1..=4` |
 | `SOS_COLLECTOR_HEARTBEAT` | `/tmp/civpulse-results-heartbeat` |
-| `SUPABASE_URL` | Required for enabled collection and dependency health; HTTPS except explicit loopback development services |
+| `CIVPULSE_ENV` | `prod`; exact `dev`, `test`, or `prod` environment boundary |
+| `SUPABASE_URL` | Required for enabled collection and dependency health; production HTTPS, or the exact matching dev/test namespace gateway HTTP origin |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server-only secret; never logged |
 | `RUST_LOG` | `info`; JSON logs go to stderr |
 
@@ -153,7 +161,7 @@ A disabled daemon stays alive, writes a local heartbeat, and performs **no RPC
 calls**, even with credentials present. Feed pause/resume remains the existing
 admin `configure_sos_results_feed` operation; stopping a worker does not disable
 the Supabase source schedule. Queue checks every 15 seconds are separate from
-the existing authenticated five-minute SOS polling schedule.
+the existing authenticated Supabase Cron heartbeat and configured source cadence.
 
 The worker renews five-minute fenced leases every 30 seconds independently of
 asynchronous processing. Lease loss cancels processing and prevents subsequent
@@ -173,3 +181,18 @@ chains. Durable retry timing and quarantine remain owned by the database.
 Offline real/enlarged resource measurements and acceptance evidence are documented
 in [results verification](docs/results-verification.md). These local simulations
 do not authorize production collection.
+
+## Disabled Helm deployment
+
+Use the [collector chart](deploy/helm/civpulse-results-collector/README.md) on
+`do-atl1-k8s-1-37-0-do-2-atl1-1793724241236` with namespaces `civpulse-dev`,
+`civpulse-test`, and `civpulse-prod`. Supply the exact scanned manifest digest; all
+committed environment values disable collection. Production activation requires
+recorded acceptance in addition to the database feed controls. The provisional
+512Mi request / 1Gi memory limit / 2Gi scratch envelope still requires actual
+cgroup, worst-case asset/replay and shared-node capacity acceptance.
+
+The [self-hosted Supabase bootstrap](deploy/supabase/README.md) is limited to
+dev/test, checks the merged website migration lock, and creates no external
+poll/rebuild Vault target or enabled feed. Local SQL replay evidence does not
+claim a Helm rollout or production acceptance.

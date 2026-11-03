@@ -17,20 +17,62 @@ pub struct Rpc {
     headers: Arc<HeaderMap>,
 }
 impl Rpc {
-    /// Build a client for an HTTPS Supabase origin or explicit loopback test service.
+    /// Build an adapter for an HTTPS origin or explicit loopback test service.
+    /// Environment-bound executable paths must use [`Self::for_environment`].
     /// # Errors
     /// Rejects unsafe origins, credentials, and invalid headers.
     pub fn new(origin: &str, key: &str, deadline: Duration, response_limit: usize) -> Result<Self> {
-        let mut origin = Url::parse(origin).map_err(|_| Error::Config("Invalid Supabase URL"))?;
+        let origin = Url::parse(origin).map_err(|_| Error::Config("Invalid Supabase URL"))?;
         let local = matches!(origin.host_str(), Some("localhost" | "127.0.0.1" | "[::1]"));
-        if !(origin.scheme() == "https" || origin.scheme() == "http" && local)
-            || !origin.username().is_empty()
+        if !(origin.scheme() == "https" || origin.scheme() == "http" && local) {
+            return Err(Error::Config(
+                "RPC adapter requires HTTPS or explicit loopback",
+            ));
+        }
+        Self::build(origin, key, deadline, response_limit)
+    }
+    /// Build the deployment RPC transport with an explicit environment boundary.
+    /// Production always requires HTTPS. Internal HTTP is limited to the exact
+    /// matching dev/test namespace gateway; arbitrary cluster hostnames are rejected.
+    /// # Errors
+    /// Rejects unknown environments, cross-namespace or unsafe origins and credentials.
+    pub fn for_environment(
+        environment: &str,
+        origin: &str,
+        key: &str,
+        deadline: Duration,
+        response_limit: usize,
+    ) -> Result<Self> {
+        let internal = match environment {
+            "prod" => None,
+            "dev" => Some("http://supabase-supabase-kong.civpulse-dev.svc.cluster.local:8000"),
+            "test" => Some("http://supabase-supabase-kong.civpulse-test.svc.cluster.local:8000"),
+            _ => return Err(Error::Config("CIVPULSE_ENV must be dev, test or prod")),
+        };
+        let parsed = Url::parse(origin).map_err(|_| Error::Config("Invalid Supabase URL"))?;
+        if parsed.scheme() != "https"
+            && internal.is_none_or(|allowed| origin.trim_end_matches('/') != allowed)
+        {
+            return Err(Error::Config(
+                "Supabase origin is not allowed in this environment",
+            ));
+        }
+        Self::build(parsed, key, deadline, response_limit)
+    }
+    fn build(
+        mut origin: Url,
+        key: &str,
+        deadline: Duration,
+        response_limit: usize,
+    ) -> Result<Self> {
+        if !origin.username().is_empty()
             || origin.password().is_some()
             || origin.query().is_some()
             || origin.fragment().is_some()
+            || origin.path() != "/"
         {
             return Err(Error::Config(
-                "Supabase URL must be a credential-free HTTPS origin",
+                "Supabase URL must be a credential-free origin",
             ));
         }
         if key.is_empty() || response_limit == 0 || deadline.is_zero() {

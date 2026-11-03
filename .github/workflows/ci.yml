@@ -57,13 +57,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tool: [civpulse-download, civpulse-process, civpulse-upload]
+        tool: [civpulse-download, civpulse-process, civpulse-upload, civpulse-results-collector]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
       - run: docker build --pull --build-arg TOOL=${{ matrix.tool }} -t ${{ matrix.tool }}:ci .
       - run: docker run --rm --read-only --cap-drop=ALL --security-opt=no-new-privileges ${{ matrix.tool }}:ci --check
+      - name: Exercise disabled collector daemon under pod constraints
+        if: matrix.tool == 'civpulse-results-collector'
+        run: bash .github/scripts/smoke-collector-container.sh "${{ matrix.tool }}:ci"
       - name: Scan runtime image
         uses: aquasecurity/trivy-action@8f28faec26515256b6d22074d1d2a8986f4cbd87
         with:
