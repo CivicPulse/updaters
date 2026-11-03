@@ -1,0 +1,127 @@
+{
+  "reference_commit": "0408add4c47a8549c9ad76c680d9a5779a58a050",
+  "cases": {
+    "base": {
+      "fingerprint": "a4d3834c495de3b43ec8e04284dbc39ff123e93a8baf73148eb5bbe659b10c67",
+      "raw_sha256": "2b933a10b2349b3fb8fe2bd7ab1300c6d203b357f6bc789ccfaf2ed843598718",
+      "item_count": 2,
+      "jurisdictions": [
+        {
+          "id": "GA",
+          "name": "Scope GA",
+          "reportingStatuses": null,
+          "item_count": 1
+        },
+        {
+          "id": "001",
+          "name": "Scope 001",
+          "reportingStatuses": null,
+          "item_count": 1
+        }
+      ]
+    },
+    "reordered": {
+      "fingerprint": "a4d3834c495de3b43ec8e04284dbc39ff123e93a8baf73148eb5bbe659b10c67",
+      "raw_sha256": "e2f234eaf642774b1e8bc0b735fe3823d7cbdc487ed5e0f85bcc5a3ed554481d",
+      "item_count": 2,
+      "jurisdictions": [
+        {
+          "id": "GA",
+          "name": "Scope GA",
+          "reportingStatuses": null,
+          "item_count": 1
+        },
+        {
+          "id": "001",
+          "name": "Scope 001",
+          "reportingStatuses": null,
+          "item_count": 1
+        }
+      ]
+    },
+    "correction": {
+      "fingerprint": "2025b99a38001b7df428de7a9ae6012265339fe027316d0d624788e2a947ef60",
+      "raw_sha256": "c6748e03af115c936fdfb0885d0e6fbe6bc12cdec08bac5b140510b7e1fdbb18",
+      "item_count": 2,
+      "jurisdictions": [
+        {
+          "id": "GA",
+          "name": "Scope GA",
+          "reportingStatuses": null,
+          "item_count": 1
+        },
+        {
+          "id": "001",
+          "name": "Scope 001",
+          "reportingStatuses": null,
+          "item_count": 1
+        }
+      ]
+    },
+    "label": {
+      "fingerprint": "700aa07ff17c114bf60c174d2a55555216ec9cdf2b8a27b2da1fca71eacb8f94",
+      "raw_sha256": "c1cbc05f07135f638e4aa9f54a14615a1308de775c0339a796aaa341c6b9f268",
+      "item_count": 2,
+      "jurisdictions": [
+        {
+          "id": "GA",
+          "name": "Scope GA",
+          "reportingStatuses": null,
+          "item_count": 1
+        },
+        {
+          "id": "001",
+          "name": "Scope 001",
+          "reportingStatuses": null,
+          "item_count": 1
+        }
+      ]
+    },
+    "status": {
+      "fingerprint": "878b9ddc9a460d0432b62e7978897518f7a0fddfaa0dfaeebf4e872af9f4eaeb",
+      "raw_sha256": "2429a037e45552a91f5b0919e94f78fca20f0634c97894a8e28023be74128d0c",
+      "item_count": 2,
+      "jurisdictions": [
+        {
+          "id": "GA",
+          "name": "Scope GA",
+          "reportingStatuses": [],
+          "item_count": 1
+        },
+        {
+          "id": "001",
+          "name": "Scope 001",
+          "reportingStatuses": null,
+          "item_count": 1
+        }
+      ]
+    }
+  },
+  "assets": [
+    {
+      "key": "elections/00000000-0000-4000-8000-000000000001/revisions/00000000-0000-4000-8000-000000000002/state-detail.json",
+      "file": "assets/state-detail.json",
+      "sha256": "1f17bf96de45ba22c17672edcc8311253efec60b3e60346d5f562ddb212b6bd5"
+    },
+    {
+      "key": "elections/00000000-0000-4000-8000-000000000001/revisions/00000000-0000-4000-8000-000000000002/state.json",
+      "file": "assets/state.json",
+      "sha256": "ae9b67ac358435225f04ad6783b4811aadba88a1aadb156215407771be64985c"
+    },
+    {
+      "key": "elections/00000000-0000-4000-8000-000000000001/revisions/00000000-0000-4000-8000-000000000002/counties/001-detail.json",
+      "file": "assets/counties/001-detail.json",
+      "sha256": "92ed530624c420c9a557a26f86287007581900b020f4332cecde18914d391e6a"
+    },
+    {
+      "key": "elections/00000000-0000-4000-8000-000000000001/revisions/00000000-0000-4000-8000-000000000002/counties/001.json",
+      "file": "assets/counties/001.json",
+      "sha256": "bd29c624c3aa3beeb2af36cf024e1e6bc26251abba6117ea06bd834ca6fbd17c"
+    },
+    {
+      "key": "elections/00000000-0000-4000-8000-000000000001/revisions/00000000-0000-4000-8000-000000000002/manifest.json",
+      "file": "assets/manifest.json",
+      "sha256": "d9157ebb10b145787ecf7577e4cb3a6679d3cea4d0332c3c3f949a0388f05dbc"
+    }
+  ]
+}
