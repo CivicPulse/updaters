@@ -1,0 +1,72 @@
+version = 1
+name = "CivPulse updaters"
+
+[setup]
+script = '''
+set -eu
+
+# Worktree setup may run without the interactive shell's PATH configuration.
+export PATH="${CARGO_HOME:-$HOME/.cargo}/bin:$PATH"
+
+for tool in git cc pkg-config; do
+    if ! command -v "$tool" >/dev/null 2>&1; then
+        echo "Missing native prerequisite: $tool. Install Git, a C toolchain, and pkg-config on this host, then rerun setup." >&2
+        exit 1
+    fi
+done
+
+if ! command -v rustup >/dev/null 2>&1; then
+    command -v curl >/dev/null 2>&1 || {
+        echo "curl is required to install Rust via rustup." >&2
+        exit 1
+    }
+    installer=$(mktemp)
+    trap 'rm -f "$installer"' EXIT HUP INT TERM
+    curl --proto '=https' --tlsv1.2 --fail --silent --show-error https://sh.rustup.rs -o "$installer"
+    sh "$installer" -y --profile minimal --default-toolchain none --no-modify-path
+    rm -f "$installer"
+    trap - EXIT HUP INT TERM
+fi
+
+# Honor the checkout's toolchain file; support branches before it was added.
+if [ -f rust-toolchain.toml ] || [ -f rust-toolchain ]; then
+    rustup show active-toolchain
+    rustup component add rustfmt clippy
+else
+    rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy --no-self-update
+fi
+
+rustc --version
+cargo --version
+
+# This repository began empty. Do not create application code during setup.
+if [ -f Cargo.toml ]; then
+    if [ -f Cargo.lock ]; then
+        cargo fetch --locked
+    else
+        cargo fetch
+    fi
+else
+    echo "Rust is ready. No Cargo.toml exists on this branch yet; dependency fetch skipped."
+fi
+'''
+
+[[actions]]
+name = "Build"
+icon = "tool"
+command = "cargo build --locked --workspace"
+
+[[actions]]
+name = "Test"
+icon = "test"
+command = "cargo test --locked --workspace"
+
+[[actions]]
+name = "Lint"
+icon = "tool"
+command = "cargo clippy --locked --workspace --all-targets -- -D warnings"
+
+[[actions]]
+name = "Check formatting"
+icon = "tool"
+command = "cargo fmt --all -- --check"
