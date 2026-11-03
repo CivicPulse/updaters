@@ -34,7 +34,12 @@ configuration. It walks missing entries recursively because the pinned image’s
 BusyBox `cp -n` skips an already-existing target directory as a whole. Helm CI
 executes the actual init command inside that exact database image, checking fresh
 `lost+found` volumes, missing nested defaults, and preservation of existing keys
-and custom settings.
+and custom settings. The additional init changes only the mount root directory's
+owner to `postgres:postgres`, retaining its mode and all existing file ownership,
+so the pinned image can create its persistent `pgsodium_root.key`. CI also starts
+and restarts the real database image with representative root-owned volume
+permissions and the deployment's restricted capability set; key output is never
+printed.
 Collector pods use the stricter non-root,
 read-only-root policy. All services are internal ClusterIP with no Ingress.
 

@@ -48,6 +48,11 @@ with tempfile.TemporaryDirectory() as directory:
     for name in ("wal-g.conf", "read-replica.conf", "supautils.conf", "conf.d/pgsodium.key", "conf.d/pg_cron.conf", ".image-default"):
         (source/name).write_text("image default")
     command = init["args"][0].replace("/etc/postgresql-custom", str(source)).replace("/mnt/pgsodium", str(target))
+    # Ownership is checked by the pinned-image test; this host-only copy test
+    # runs without root and without assuming the image's postgres UID exists.
+    ownership = f"chown postgres:postgres {target}"
+    assert ownership in command and "chown -R" not in command
+    command = command.replace(ownership, ": # ownership tested in the actual image")
     subprocess.run([*init["command"], command], check=True)
     assert (target/"wal-g.conf").read_text() == "image default"
     (target/"conf.d/pgsodium.key").write_text("existing private key")
