@@ -13,9 +13,9 @@ sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "deploy/supabase/bootstrap.py"
 migration_lock = json.loads((ROOT / "deploy/supabase/migrations.lock.json").read_text())
-assert migration_lock["commit"] == "3d135baa537d315244e6abef0261d4f1de39e1dd"
-assert len(migration_lock["files"]) == 136
-assert max(migration_lock["files"]) == "20261125003500_sos_results_poll_cadence.sql"
+assert migration_lock["commit"] == "52b32714b5c5ce633060381ee16fdde2b063341d"
+assert len(migration_lock["files"]) == 137
+assert max(migration_lock["files"]) == "20261125003600_sos_results_feed_window.sql"
 spec = importlib.util.spec_from_file_location("supabase_bootstrap", SCRIPT)
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)

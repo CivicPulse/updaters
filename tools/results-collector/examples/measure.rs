@@ -71,14 +71,15 @@ async fn main() -> Result<()> {
     let input = source.clone();
     let out = scratch.path().join("validation");
     let expected = expectations.clone();
+    let admission =
+        civpulse_results_collector::admission::Admission::read(|key| std::env::var(key).ok())?;
+    let limits = Limits {
+        max_download: admission.download_bytes,
+        max_scope: admission.scope_bytes,
+        ..Limits::default()
+    };
     let prepared = tokio::task::spawn_blocking(move || {
-        prepare(
-            &input,
-            &out,
-            &expected,
-            &Limits::default(),
-            &AtomicBool::new(false),
-        )
+        prepare(&input, &out, &expected, &limits, &AtomicBool::new(false))
     })
     .await
     .map_err(|_| Error::Task)?
@@ -117,7 +118,7 @@ async fn main() -> Result<()> {
         .map(|kb| kb * 1024);
     println!(
         "{}",
-        json!({"measurement":"local_offline_simulation","code_base_revision":option_env!("CIVPULSE_MEASURE_CODE_REVISION").unwrap_or("unrecorded"),"measurement_harness_sha256":harness_hash(),"source_bytes":bytes,"raw_sha256":hash,"semantic_sha256":fingerprint,"jurisdictions":jurisdictions,"items":items,"raw_hash_ms":hash_ms,"validation_ms":validation_ms,"simulated_pipeline_ms":metrics.as_ref().map(|m|m.duration_ms),"duration_ms":start.elapsed().as_millis(),"staged_items":metrics.as_ref().map(|m|m.staged),"staged_batches":metrics.as_ref().map(|m|m.batches),"largest_rpc_batch_bytes":metrics.as_ref().map(|m|m.largest_batch),"peak_rss_bytes":peak_rss,"sampled_peak_total_local_bytes":peak.total.load(Ordering::Relaxed),"sampled_peak_worker_scratch_bytes":peak.worker.load(Ordering::Relaxed),"sampled_peak_simulated_object_bytes":peak.objects.load(Ordering::Relaxed),"scratch_sample_interval_ms":10,"scratch_excludes_input":true,"scratch_filesystem":filesystem,"platform":format!("{}-{}",std::env::consts::OS,std::env::consts::ARCH),"production_acceptance":false})
+        json!({"measurement":"local_offline_simulation","code_base_revision":option_env!("CIVPULSE_MEASURE_CODE_REVISION").unwrap_or("unrecorded"),"measurement_harness_sha256":harness_hash(),"source_bytes":bytes,"raw_sha256":hash,"semantic_sha256":fingerprint,"jurisdictions":jurisdictions,"items":items,"raw_hash_ms":hash_ms,"validation_ms":validation_ms,"simulated_pipeline_ms":metrics.as_ref().map(|m|m.duration_ms),"duration_ms":start.elapsed().as_millis(),"staged_items":metrics.as_ref().map(|m|m.staged),"staged_batches":metrics.as_ref().map(|m|m.batches),"largest_rpc_batch_bytes":metrics.as_ref().map(|m|m.largest_batch),"peak_rss_bytes":peak_rss,"sampled_peak_total_local_bytes":peak.total.load(Ordering::Relaxed),"sampled_peak_worker_scratch_bytes":peak.worker.load(Ordering::Relaxed),"sampled_peak_simulated_object_bytes":peak.objects.load(Ordering::Relaxed),"scratch_sample_interval_ms":10,"scratch_excludes_input":true,"scratch_filesystem":filesystem,"platform":format!("{}-{}",std::env::consts::OS,std::env::consts::ARCH),"production_acceptance":false,"container_resources":civpulse_results_collector::resources::read()})
     );
     Ok(())
 }
@@ -196,7 +197,10 @@ async fn run_pipeline(
         expectations,
         local_rpc::SOURCE.into(),
         scratch.join("spool"),
-    );
+    )
+    .with_admission(civpulse_results_collector::admission::Admission::read(
+        |key| std::env::var(key).ok(),
+    )?)?;
     let rpc = Rpc::new(
         &url,
         "offline-benchmark-not-a-secret",

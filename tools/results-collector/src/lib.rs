@@ -1,7 +1,11 @@
 //! Durable Georgia SOS queue consumer. Production collection is disabled by default.
+pub mod admission;
+pub mod alerting;
 pub mod config;
 pub mod job;
+pub mod monitoring;
 pub mod pipeline;
+pub mod resources;
 pub mod rpc;
 pub mod storage;
 pub mod validate;

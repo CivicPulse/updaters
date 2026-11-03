@@ -196,3 +196,5 @@ The [self-hosted Supabase bootstrap](deploy/supabase/README.md) is limited to
 dev/test, checks the merged website migration lock, and creates no external
 poll/rebuild Vault target or enabled feed. Local SQL replay evidence does not
 claim a Helm rollout or production acceptance.
+
+Operational acceptance, alerting and recovery: [results runbook](docs/operations/results-runbook.md).

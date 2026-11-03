@@ -1,8 +1,10 @@
 use civpulse_results_collector::{
-    Error, Result,
+    Error, Result, alerting,
     config::{Config, RPC_DEADLINE, RPC_RESPONSE_LIMIT},
     job::{JobProcessor, UnsupportedProcessor},
+    monitoring,
     pipeline::Publisher,
+    resources,
     rpc::Rpc,
     validate,
     worker::{self, Options},
@@ -32,58 +34,58 @@ async fn execute() -> Result<()> {
         [command] => command.as_str(),
         _ => {
             return Err(Error::Config(
-                "Usage: civpulse-results-collector [daemon|once|health|liveness|validate|--check|--help]",
+                "Usage: civpulse-results-collector [daemon|once|health|monitor|metrics|notify|alert-test|resources|liveness|validate|--check|--help]",
             ));
         }
     };
     if matches!(command, "--help" | "-h") {
         println!(
-            "civpulse-results-collector [daemon|once|health|liveness|validate|--check]\nCollection defaults to disabled. health checks service RPC access; liveness checks the local daemon heartbeat. --check performs no I/O. validate <path> <election-date> [expected-jurisdictions expected-items] validates local bytes without credentials."
+            "civpulse-results-collector [daemon|once|health|monitor|metrics|notify|alert-test|resources|liveness|validate|--check]\nCollection defaults to disabled. health checks service RPC access; liveness checks the local daemon heartbeat. --check performs no I/O. validate <path> <election-date> [expected-jurisdictions expected-items] validates local bytes without credentials."
         );
         return Ok(());
     }
     if command == "--check" {
         return Ok(());
     }
-    if !matches!(command, "daemon" | "once" | "health" | "liveness") {
+    if !matches!(
+        command,
+        "daemon"
+            | "once"
+            | "health"
+            | "monitor"
+            | "metrics"
+            | "notify"
+            | "alert-test"
+            | "resources"
+            | "liveness"
+    ) {
         return Err(Error::Config("Unknown collector command"));
+    }
+    if command == "resources" {
+        return resources::command();
+    }
+    if command == "alert-test" {
+        let receipt = alerting::verification().await?;
+        println!(
+            "{}",
+            serde_json::to_string(&receipt).map_err(|_| Error::InvalidResponse)?
+        );
+        return Ok(());
     }
     let config = Config::read(|key| std::env::var(key).ok())?;
     if command == "liveness" {
         return worker::liveness(&config.heartbeat_path).await;
     }
     initialize_logging()?;
-    let rpc = if config.enabled || command == "health" {
-        Some(Rpc::for_environment(
-            &config.environment,
-            config
-                .rpc_url
-                .as_deref()
-                .ok_or(Error::Config("SUPABASE_URL is required"))?,
-            config
-                .rpc_key
-                .as_deref()
-                .ok_or(Error::Config("SUPABASE_SERVICE_ROLE_KEY is required"))?,
-            RPC_DEADLINE,
-            RPC_RESPONSE_LIMIT,
-        )?)
-    } else {
-        None
-    };
+    let rpc = rpc_for_mode(&config, command)?;
     if command == "health" {
-        let health: serde_json::Value = rpc
+        return service_health(rpc.as_ref().ok_or(Error::Config("Missing health RPC"))?).await;
+    }
+    if matches!(command, "monitor" | "metrics" | "notify") {
+        let rpc = rpc
             .as_ref()
-            .ok_or(Error::Config("Missing health RPC"))?
-            .call("get_sos_collection_health", serde_json::json!({}))
-            .await?;
-        if !health.is_array() {
-            return Err(Error::InvalidResponse);
-        }
-        println!(
-            "{}",
-            serde_json::to_string(&health).map_err(|_| Error::InvalidResponse)?
-        );
-        return Ok(());
+            .ok_or(Error::Config("Missing operational RPC"))?;
+        return operational_command(command, rpc).await;
     }
     let options = Options {
         enabled: config.enabled,
@@ -141,4 +143,66 @@ fn initialize_logging() -> Result<()> {
         .try_init()
         .map_err(|_| Error::Config("Cannot initialize logging"))?;
     Ok(())
+}
+
+async fn operational_command(command: &str, rpc: &Rpc) -> Result<()> {
+    if command == "notify" {
+        let report = monitoring::observe(rpc)
+            .await
+            .unwrap_or_else(|_| monitoring::unavailable());
+        let outcome = alerting::command(&report).await?;
+        monitoring::render(&report, monitoring::Format::Json)?;
+        if outcome == alerting::Outcome::Disabled && !report.alerts.is_empty() {
+            return Err(Error::Source(
+                "Alerts disabled while monitoring has actionable conditions",
+            ));
+        }
+        Ok(())
+    } else {
+        monitoring::command(
+            rpc,
+            if command == "metrics" {
+                monitoring::Format::Prometheus
+            } else {
+                monitoring::Format::Json
+            },
+        )
+        .await
+    }
+}
+
+async fn service_health(rpc: &Rpc) -> Result<()> {
+    let health: serde_json::Value = rpc
+        .call("get_sos_collection_health", serde_json::json!({}))
+        .await?;
+    if !health.is_array() {
+        return Err(Error::InvalidResponse);
+    }
+    println!(
+        "{}",
+        serde_json::to_string(&health).map_err(|_| Error::InvalidResponse)?
+    );
+    Ok(())
+}
+
+fn rpc_for_mode(config: &Config, command: &str) -> Result<Option<Rpc>> {
+    let client = if config.enabled || matches!(command, "health" | "monitor" | "metrics" | "notify")
+    {
+        Some(Rpc::for_environment(
+            &config.environment,
+            config
+                .rpc_url
+                .as_deref()
+                .ok_or(Error::Config("SUPABASE_URL is required"))?,
+            config
+                .rpc_key
+                .as_deref()
+                .ok_or(Error::Config("SUPABASE_SERVICE_ROLE_KEY is required"))?,
+            RPC_DEADLINE,
+            RPC_RESPONSE_LIMIT,
+        )?)
+    } else {
+        None
+    };
+    Ok(client)
 }

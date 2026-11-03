@@ -1,0 +1,28 @@
+name: Monitoring and recovery
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  operational-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Test dry-run and acceptance controls
+        run: python3 -m unittest discover -s scripts/tests -v
+      - name: Check Prometheus rules
+        run: >-
+          docker run --rm --entrypoint /bin/promtool
+          -v "$PWD/deploy/monitoring:/rules:ro"
+          quay.io/prometheus/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2
+          check rules /rules/results-alerts.yaml
+      - name: Test alert timing and unchanged-source behavior
+        run: >-
+          docker run --rm --entrypoint /bin/promtool
+          -v "$PWD/deploy/monitoring:/rules:ro" -w /rules
+          quay.io/prometheus/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2
+          test rules /rules/results-alerts.test.yaml

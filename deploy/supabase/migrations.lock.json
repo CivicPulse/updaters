@@ -1,6 +1,6 @@
 {
   "repository": "kerryhatcher/www.civpulse.org",
-  "commit": "3d135baa537d315244e6abef0261d4f1de39e1dd",
+  "commit": "52b32714b5c5ce633060381ee16fdde2b063341d",
   "files": {
     "20261021145920_profiles.sql": "68c73bf4cd4a535269ae655f22066ba5c2389d092547dd9b8432972778c5cc7d",
     "20261021160740_organizations.sql": "187646246050916d8c11a7869a32ebd38640ca6cacea71b537590313a5b72005",
@@ -137,6 +137,7 @@
     "20261125003200_sos_results_automation.sql": "9740ee806af3a3527affc3e062fe8da665399c155c3e44e352ed71e111df2017",
     "20261125003300_sos_results_manual_publication_guard.sql": "989fc1cbc1d3c15609e7f6f3c7d2a5d9686735905d42cc60aaa1c43842b0028c",
     "20261125003400_sos_ballot_crosswalk.sql": "a69e0308c6613a90c2ec2179d4e6d6aae0aafb6d43fedc1b5c45da8ebdbe844d",
-    "20261125003500_sos_results_poll_cadence.sql": "1083f30a2f598d4340ab56b593f034e42c395576b11c962d6842bcd02a7ef053"
+    "20261125003500_sos_results_poll_cadence.sql": "1083f30a2f598d4340ab56b593f034e42c395576b11c962d6842bcd02a7ef053",
+    "20261125003600_sos_results_feed_window.sql": "c9092e6b42beb0582cbbcf987a548d56a3b527e6740852a28d8f10d3845edc93"
   }
 }

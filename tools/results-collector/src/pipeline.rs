@@ -68,13 +68,14 @@ impl Publisher {
         };
         let spool_root =
             value("SOS_SPOOL_ROOT").map_or_else(|| PathBuf::from("/tmp"), PathBuf::from);
-        Ok(Self::new(
+        Self::new(
             Arc::new(store),
             election,
             expectations,
             allowed_url,
             spool_root,
-        ))
+        )
+        .with_admission(crate::admission::Admission::read(&mut value)?)
     }
 
     #[must_use]
@@ -93,6 +94,20 @@ impl Publisher {
             allowed_url,
             spool_root,
         }
+    }
+    /// Apply validated deployment bounds to actual downloading and preparation.
+    /// # Errors
+    /// Rejects any cap above the reviewed source contract.
+    pub fn with_admission(mut self, caps: crate::admission::Admission) -> Result<Self> {
+        let caps = crate::admission::Admission::new(caps.download_bytes, caps.scope_bytes)?;
+        self.limits.max_download = caps.download_bytes;
+        self.limits.max_scope = caps.scope_bytes;
+        tracing::info!(
+            event = "admission_configured",
+            max_download_bytes = caps.download_bytes,
+            max_scope_bytes = caps.scope_bytes
+        );
+        Ok(self)
     }
     async fn process_job(&self, job: &Job, lease: Lease) -> Result<()> {
         if job.election_id != self.election
@@ -145,6 +160,8 @@ impl Publisher {
         if lease.is_lost() {
             return Err(Error::LeaseLost);
         }
+        let spool_usage = crate::resources::read();
+        tracing::info!(event="source_spool_ready",job_id=%job.job_id,scratch_spool_logical_bytes=spool_usage.scratch_spool_logical_bytes,scratch_spool_allocated_bytes=spool_usage.scratch_spool_allocated_bytes,cgroup_memory_current_bytes=spool_usage.cgroup_memory_current_bytes,cgroup_memory_peak_bytes=spool_usage.cgroup_memory_peak_bytes);
         tracing::info!(event="source_validated",job_id=%job.job_id,election_id=%job.election_id,bytes=receipt["bytes"].as_u64(),source_sha256=receipt["sha256"].as_str(),jurisdictions=prepared.jurisdictions.len(),items=prepared.item_count,fingerprint=%prepared.fingerprint);
         immutable_file(
             self.store.as_ref(),
@@ -211,14 +228,13 @@ impl Publisher {
             {
                 return Err(Error::Storage("Archived receipt identity mismatch"));
             }
-            self.store
-                .download(
-                    &key,
-                    path,
-                    hash,
-                    receipt["bytes"].as_u64().ok_or(Error::InvalidResponse)?,
-                )
-                .await?;
+            let bytes = receipt["bytes"].as_u64().ok_or(Error::InvalidResponse)?;
+            if bytes > self.limits.max_download {
+                return Err(Error::Source(
+                    "Archived source exceeds current admission cap; review capacity before replay",
+                ));
+            }
+            self.store.download(&key, path, hash, bytes).await?;
             receipt
         } else {
             match civpulse_results_source::download(
@@ -241,6 +257,7 @@ impl Publisher {
                     ..
                 } => {
                     lease.call::<Value>("unchanged_sos_results_job",json!({"p_etag":etag.or_else(||job.etag.clone()),"p_last_modified":last_modified.or_else(||job.last_modified.clone())})).await?;
+                    tracing::info!(event="source_unchanged",job_id=%job.job_id,election_id=%job.election_id);
                     return Ok(None);
                 }
                 Download::Downloaded(downloaded) => {
@@ -388,6 +405,7 @@ async fn stage(
     lease: &Lease,
     cancelled: &AtomicBool,
 ) -> Result<()> {
+    let mut staged = 0_usize;
     for entry in &prepared.scopes {
         let scope = scope(&entry.path).await?;
         let mut batch = Vec::new();
@@ -407,6 +425,8 @@ async fn stage(
                         json!({"p_snapshot_id":snapshot,"p_items":batch}),
                     )
                     .await?;
+                staged += batch.len();
+                tracing::info!(event="staging_progress",snapshot_id=%snapshot,jurisdiction_index=entry.index,attempt_staged_items=staged,expected_items=prepared.item_count);
                 batch = Vec::new();
                 size = 2;
             }
@@ -420,6 +440,8 @@ async fn stage(
                     json!({"p_snapshot_id":snapshot,"p_items":batch}),
                 )
                 .await?;
+            staged += batch.len();
+            tracing::info!(event="staging_progress",snapshot_id=%snapshot,jurisdiction_index=entry.index,attempt_staged_items=staged,expected_items=prepared.item_count);
         }
     }
     Ok(())
@@ -486,6 +508,11 @@ pub async fn write_assets(
         let key = format!("{prefix}/{path}.json");
         let hash = crate::storage::sha256(&bytes);
         immutable(store, &key, &bytes).await?;
+        tracing::info!(
+            event = "scope_assets_verified",
+            snapshot_id = snapshot,
+            jurisdiction_index = entry.index
+        );
         jurisdictions.push(json!({"id":scope["id"],"name":scope["name"],"item_count":scope["ballotItems"].as_array().ok_or(Error::InvalidResponse)?.len(),"url":store.url(&key)?,"sha256":hash,"detail_url":store.url(&detail_key)?}));
     }
     let manifest = json!({"schema_version":1,"election_id":election,"snapshot_id":snapshot,"source_url":receipt["source_url"],"source_created_at":prepared.header["createdAt"],"source_sha256":receipt["sha256"],"source_bytes":receipt["bytes"],"raw_url":receipt["raw_url"],"retrieved_at":receipt["retrieved_at"],"etag":receipt["etag"],"last_modified":receipt["last_modified"],"fingerprint":prepared.fingerprint,"jurisdictions":jurisdictions});
@@ -497,4 +524,114 @@ pub async fn write_assets(
     }
     immutable(store, &format!("{prefix}/manifest.json"), &bytes).await?;
     Ok(manifest)
+}
+#[cfg(test)]
+mod admission_tests {
+    use super::*;
+    use crate::storage::{Conditions, Stored};
+    use async_trait::async_trait;
+    struct Archive {
+        raw: Vec<u8>,
+        forbid_download: bool,
+    }
+    #[async_trait]
+    impl Store for Archive {
+        fn url(&self, key: &str) -> Result<String> {
+            Ok(format!("https://files-test.civpulse.org/{key}"))
+        }
+        async fn get(&self, _: &str, _: usize) -> Result<Stored> {
+            panic!("admission must fail before pointer reads")
+        }
+        async fn put(&self, _: &str, _: &[u8], _: Conditions) -> Result<u16> {
+            panic!("admission must fail before uploads")
+        }
+        async fn put_file(&self, _: &str, _: &Path, _: &str, _: u64, _: Conditions) -> Result<u16> {
+            panic!("admission must fail before raw upload")
+        }
+        async fn verify(&self, _: &str, _: &str, _: u64) -> Result<()> {
+            panic!("admission must fail before immutable verification")
+        }
+        async fn download(&self, _: &str, path: &Path, hash: &str, bytes: u64) -> Result<()> {
+            assert!(
+                !self.forbid_download,
+                "resume admission must reject before archived GET"
+            );
+            assert_eq!(crate::storage::sha256(&self.raw), hash);
+            assert_eq!(self.raw.len() as u64, bytes);
+            tokio::fs::write(path, &self.raw)
+                .await
+                .map_err(|_| Error::LocalIo)
+        }
+    }
+    async fn rejected(caps: crate::admission::Admission, forbid_download: bool) -> Error {
+        let raw = std::fs::read(
+            PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                .join("../../crates/civpulse-results-contract/tests/fixtures/base.json"),
+        )
+        .unwrap();
+        let election = Uuid::parse_str("00000000-0000-4000-8000-000000000001").unwrap();
+        let snapshot = Uuid::parse_str("00000000-0000-4000-8000-000000000002").unwrap();
+        let hash = crate::storage::sha256(&raw);
+        let key = format!("elections/{election}/raw/{hash}.json");
+        let bytes = raw.len();
+        let store = Arc::new(Archive {
+            raw,
+            forbid_download,
+        });
+        let spool = tempfile::tempdir().unwrap();
+        let url = "https://results.sos.ga.gov/cdn/results/Georgia/export-11032026GeneralAndSpecialElection.json";
+        let publisher = Publisher::new(
+            store.clone(),
+            election,
+            Expectations {
+                election_date: "2026-11-03".into(),
+                expected_jurisdictions: Some(2),
+                expected_items: Some(2),
+            },
+            url.into(),
+            spool.path().into(),
+        )
+        .with_admission(caps)
+        .unwrap();
+        let job = Job {
+            job_id: Uuid::nil(),
+            lease_id: Uuid::nil(),
+            election_id: election,
+            election_date: "2026-11-03".into(),
+            source_url: url.into(),
+            etag: None,
+            last_modified: None,
+            snapshot_id: Some(snapshot),
+            phase: Phase::Import,
+            revision: None,
+            manifest_key: None,
+            receipt: Some(
+                json!({"source_url":url,"raw_key":key,"raw_url":store.url(&key).unwrap(),"sha256":hash,"bytes":bytes,"retrieved_at":"2026-11-03T10:00:10Z","etag":null,"last_modified":null}),
+            ),
+        };
+        let (_sender, receiver) = tokio::sync::watch::channel(false);
+        let rpc = crate::rpc::Rpc::new(
+            "http://127.0.0.1:1",
+            "not-used",
+            std::time::Duration::from_millis(20),
+            4096,
+        )
+        .unwrap();
+        publisher
+            .process_job(&job, Lease::new(rpc, job.clone(), receiver))
+            .await
+            .unwrap_err()
+    }
+    #[tokio::test]
+    async fn lowered_raw_cap_rejects_original_receipt_before_archived_io() {
+        assert!(
+            matches!(rejected(crate::admission::Admission::new(1,1).unwrap(),true).await,Error::Source(message)if message.contains("Archived source exceeds"))
+        );
+    }
+    #[tokio::test]
+    async fn lowered_scope_cap_is_applied_by_the_real_parser_before_any_upload_or_rpc() {
+        assert!(
+            matches!(rejected(crate::admission::Admission::new(1024*1024,64).unwrap(),false).await,Error::Source(message)if message.contains("validation failed"))
+        );
+    }
 }

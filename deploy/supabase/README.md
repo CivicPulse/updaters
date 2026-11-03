@@ -8,8 +8,8 @@ CloudNativePG is unnecessary for this stack: the chart's Supabase Postgres image
 provides the platform initialization and extension support the contracts need.
 
 `chart.lock.json` pins the exact published chart archive and checksum.
-`migrations.lock.json` pins all 136 website migration files at reviewed commit
-`3d135baa537d315244e6abef0261d4f1de39e1dd`. This includes prerequisite application
+`migrations.lock.json` pins all 137 website migration files at reviewed commit
+`52b32714b5c5ce633060381ee16fdde2b063341d`. This includes prerequisite application
 schemas as well as the collector queue, fencing, publication guards, mapping
 contracts and reviewed hourly-to-five-minute cadence; there is no competing worker database model.
 
