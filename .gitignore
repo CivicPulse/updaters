@@ -26,3 +26,8 @@ rustc-ice-*.txt
 # Python script/test bytecode
 __pycache__/
 *.pyc
+
+__pycache__/
+*.pyc
+
+/resource-fixture.json

@@ -13,6 +13,9 @@ app.kubernetes.io/name: {{ include "collector.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 {{- define "collector.validate" -}}
+{{- if gt (int .Values.collection.maxScopeBytes) (int .Values.collection.maxDownloadBytes) -}}
+{{- fail "collection.maxScopeBytes must not exceed maxDownloadBytes" -}}
+{{- end -}}
 {{- if ne .Release.Namespace (printf "civpulse-%s" .Values.environment) -}}
 {{- fail "namespace must be civpulse-<environment>" -}}
 {{- end -}}
@@ -27,4 +30,8 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- fail "production collection requires acceptance.approved and a recorded acceptance.reference" -}}
 {{- end -}}
 {{- end -}}
+{{- end -}}
+
+{{- define "collector.monitorName" -}}
+{{ printf "%s-monitor" (include "collector.fullname" . | trunc 55 | trimSuffix "-") }}
 {{- end -}}

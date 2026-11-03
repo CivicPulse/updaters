@@ -9,6 +9,8 @@ replicaCount: 1
 collection:
   enabled: false
   concurrency: 1
+  maxDownloadBytes: 536870912
+  maxScopeBytes: 67108864
   electionId: ''
   electionDate: ''
   sourceUrl: ''
@@ -36,3 +38,14 @@ networkPolicy:
 nodeSelector: {}
 tolerations: []
 affinity: {}
+
+monitoring:
+  enabled: false
+  alertsEnabled: false
+  emailSecret: results-alert-email
+  schedule: '* * * * *'
+  stateStorageSize: 1Gi
+  storageClass: do-block-storage-retain
+  initialIntervalSeconds: 300
+  intervalSeconds: 300
+  transitionAt: ''

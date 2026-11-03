@@ -24,6 +24,7 @@ jobs:
       - name: Exercise rendering and activation guards
         run: |
           python3 .github/scripts/test-chart.py
+          python3 .github/scripts/test-monitor.py
           python3 .github/scripts/test-supabase-bootstrap.py
       - name: Verify config initialization with the pinned Supabase image
         run: python3 .github/scripts/test-supabase-init-image.py
@@ -35,6 +36,11 @@ jobs:
               --namespace "civpulse-$envname" -f "deploy/environments/$envname.yaml" \
               --set-string image.digest=sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa \
               > "$RUNNER_TEMP/collector-manifests/$envname.yaml"
+            helm template results deploy/helm/civpulse-results-collector \
+              --namespace "civpulse-$envname" -f "deploy/environments/$envname.yaml" \
+              --set-string image.digest=sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa \
+              --set monitoring.enabled=true --set monitoring.alertsEnabled=true \
+              > "$RUNNER_TEMP/collector-manifests/$envname-monitor.yaml"
           done
       - name: Scan rendered deployment security
         uses: aquasecurity/trivy-action@8f28faec26515256b6d22074d1d2a8986f4cbd87

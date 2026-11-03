@@ -44,6 +44,19 @@ if [[ ! -s "$collector_scratch/civpulse-results-heartbeat" ]]; then
 fi
 # Probe the exact same executable/heartbeat path used by Kubernetes.
 docker exec "$collector_name" /usr/local/bin/civpulse-tool liveness
+# The auxiliary binary runs inside the exact distroless image, with stdin and
+# explicit disk scratch: no shell, stat executable, credentials or external network.
+docker exec -i "$collector_name" /usr/local/bin/civpulse-measure \
+  --scratch-root /tmp - 2026-11-03 --pipeline 2 2 \
+  < crates/civpulse-results-contract/tests/fixtures/base.json > "$collector_scratch/measure.json"
+python3 - "$collector_scratch/measure.json" <<'PYTHON'
+import json, sys
+receipt = json.load(open(sys.argv[1]))
+assert receipt['jurisdictions'] == 2 and receipt['staged_items'] == 2
+assert receipt['production_acceptance'] is False
+assert receipt['scratch_filesystem'] not in ('tmpfs', 'ramfs')
+assert receipt['semantic_sha256'] and receipt['staged_batches']
+PYTHON
 stop_started=$SECONDS
 docker kill --signal=TERM "$collector_name" >/dev/null
 collector_exit=$(timeout 15s docker wait "$collector_name")

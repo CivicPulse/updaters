@@ -1,0 +1,44 @@
+{
+  "accepted": false,
+  "environment": "prod",
+  "operator": "Kerry Hatcher",
+  "election_id": "295d864d-80c8-4a87-ab16-3f4f3fa5ddb7",
+  "election_date": "2026-11-03",
+  "source_url": "https://results.sos.ga.gov/cdn/results/Georgia/export-11032026GeneralAndSpecialElection.json",
+  "starts_at": null,
+  "ends_at": "2026-11-11T00:00:00Z",
+  "poll_transition_at": "2026-11-03T22:00:00Z",
+  "initial_poll_interval_seconds": 3600,
+  "poll_interval_seconds": 300,
+  "actual_activation_at": null,
+  "first_source_check_at": null,
+  "first_production_publication_revision": null,
+  "checks": {
+    "contracts": false,
+    "resource_envelope": false,
+    "main_first_migrations": false,
+    "isolated_e2e": false,
+    "production_secret_isolation": false,
+    "production_r2_checksums": false,
+    "production_r2_conditional_writes": false,
+    "production_cors_cache": false,
+    "ballot_live_readback": false,
+    "monitoring_alert_route": false,
+    "recovery_drills": false,
+    "cutover_rollback": false,
+    "operator_review": false
+  },
+  "evidence": {},
+  "notes": [
+    "Template only: false checks are not acceptance evidence.",
+    "Production source URL was NULL on the initial read; verify the approved admin save rather than assuming configuration.",
+    "Record actual activation, immediate source check and first production browser readback separately in issue #9.",
+    "Do not extend the stop window or token lifetime without operator review."
+  ],
+  "resource_admission": {
+    "max_download_bytes": 536870912,
+    "max_scope_bytes": 67108864,
+    "accepted": false,
+    "evidence": null
+  }
+}

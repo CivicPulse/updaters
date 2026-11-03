@@ -145,6 +145,9 @@ async fn run_job(
     job: Job,
     renewal_interval: Duration,
 ) -> Result<()> {
+    let started = Instant::now();
+    tracing::info!(event="job_attempt_started",job_id=%job.job_id,election_id=%job.election_id,phase=?job.phase);
+    let job_id = job.job_id;
     let (lost_tx, lost_rx) = watch::channel(false);
     let lease = Lease::new(rpc.clone(), job.clone(), lost_rx);
     // The renewal future is independently scheduled even during asynchronous network I/O.
@@ -161,6 +164,7 @@ async fn run_job(
                     .await,
                 Ok(true)
             ) {
+                tracing::warn!(event="lease_lost",%job_id);
                 renewal_lost.send_replace(true);
                 return Err(Error::LeaseLost);
             }
@@ -191,9 +195,16 @@ async fn run_job(
             } => json!(seconds.clamp(&1, &3600)),
             _ => Value::Null,
         };
+        tracing::warn!(event="job_retry_requested",job_id=%job.job_id,election_id=%job.election_id,retry_after_seconds=args["p_retry_after"].as_u64());
         // A failed failure-report is safe: durable lease expiry permits recovery.
-        let _ = rpc.call::<Value>("fail_sos_results_job", args).await;
+        let recorded = rpc
+            .call::<Value>("fail_sos_results_job", args)
+            .await
+            .is_ok();
+        tracing::info!(event="job_failure_recorded",job_id=%job.job_id,recorded);
     }
+    let resource = crate::resources::read();
+    tracing::info!(event="job_attempt_finished",job_id=%job.job_id,election_id=%job.election_id,success=result.is_ok(),duration_ms=started.elapsed().as_millis(),cgroup_memory_current_bytes=resource.cgroup_memory_current_bytes,cgroup_memory_peak_bytes=resource.cgroup_memory_peak_bytes,cgroup_cpu_usage_usec=resource.cgroup_cpu_usage_usec,process_rss_bytes=resource.process_rss_bytes);
     result
 }
 struct LeaseLifecycle {
