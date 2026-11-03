@@ -32,6 +32,7 @@ Never bypass the RPC guards with direct table writes.
 | --- | --- | --- |
 | `claim_sos_results_job` | none | nullable job: `job_id`, `lease_id`, `election_id`, `election_date`, `source_url`, validators, `phase`, optional `snapshot_id`, `revision`, `manifest_key`, `receipt` |
 | `renew_sos_results_job` | none | boolean; false means lease lost |
+| `authorize_sos_results_download` | none | schema version 1, matching `job_id`, `election_id`, `source_url`, authoritative `server_now`, and required `ends_at` timestamp or explicit legacy null; denies fresh reads outside the current feed window |
 | `unchanged_sos_results_job` | `p_etag`, `p_last_modified` | completes a valid HTTP 304 check |
 | `begin_sos_results_job` | `p_sha256`, `p_header`, `p_jurisdictions`, `p_receipt` | `snapshot_id`, `published`, original durable `receipt` |
 | `stage_sos_results_job` | `p_snapshot_id`, `p_items` | idempotent bounded source items |

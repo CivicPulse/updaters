@@ -550,6 +550,15 @@ mod pipeline_scenarios {
                 json!(9_007_199_254_740_992_u64)
             );
         }
+        assert!(
+            !state
+                .calls
+                .lock()
+                .unwrap()
+                .iter()
+                .any(|call| call == "authorize_sos_results_download"),
+            "original archive replay and committed pointer drain must not request a fresh source window"
+        );
         server.abort();
     }
     #[tokio::test]

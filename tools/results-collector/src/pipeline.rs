@@ -237,19 +237,22 @@ impl Publisher {
             self.store.download(&key, path, hash, bytes).await?;
             receipt
         } else {
-            match civpulse_results_source::download(
-                &job.source_url,
-                &self.allowed_url,
-                path,
-                &Validators {
-                    etag: job.etag.clone(),
-                    last_modified: job.last_modified.clone(),
-                },
-                &self.limits,
-                cancelled,
-            )
-            .await
-            .map_err(source_error)?
+            match crate::download_window::fetch(job, lease, || async {
+                civpulse_results_source::download(
+                    &job.source_url,
+                    &self.allowed_url,
+                    path,
+                    &Validators {
+                        etag: job.etag.clone(),
+                        last_modified: job.last_modified.clone(),
+                    },
+                    &self.limits,
+                    cancelled,
+                )
+                .await
+                .map_err(source_error)
+            })
+            .await?
             {
                 Download::Unchanged {
                     etag,

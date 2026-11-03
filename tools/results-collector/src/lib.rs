@@ -2,6 +2,7 @@
 pub mod admission;
 pub mod alerting;
 pub mod config;
+mod download_window;
 pub mod job;
 pub mod monitoring;
 pub mod pipeline;
