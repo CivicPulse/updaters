@@ -72,7 +72,7 @@ migration history, use production execute-SQL to bypass the guard, or invent
 collector-owned tables to work around a missing coordinator operation.
 
 Before any fresh-source test of the download-window guarded image, merge and
-deploy the approved website migration `20261125003700_sos_download_stop.sql`.
+deploy the approved website migration `20261125003800_sos_download_stop.sql`.
 The worker fails closed without its service-only authorization RPC. Deploy the
 new image disabled and record its actual digest and migration version. Disaster
 recovery/resource evidence from an earlier image remains evidence for that prior

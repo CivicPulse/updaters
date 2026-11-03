@@ -47,7 +47,7 @@ Fresh downloads require the website's service-only
 `authorize_sos_results_download(p_job_id,p_lease_id)` RPC immediately before the
 GET. Deploy its approved website migration through the main-first path before
 running this worker against a fresh source job; a missing/denied RPC fails closed.
-The required website migration is `20261125003700_sos_download_stop.sql`.
+The required website migration is `20261125003800_sos_download_stop.sql`.
 The worker validates schema version, job/election/source identity and authoritative
 server timestamps. For a finite end, the remaining server interval is anchored
 at the local monotonic RPC start, conservatively subtracting the entire round
