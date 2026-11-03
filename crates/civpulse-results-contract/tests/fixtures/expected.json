@@ -18,7 +18,8 @@
           "reportingStatuses": null,
           "item_count": 1
         }
-      ]
+      ],
+      "canonical_scope": "{\"ballotItems\":[{\"ballotOptions\":[{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":12}],\"id\":\"A\",\"name\":\"Choice A\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":12}],\"voteCount\":12},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":0}],\"id\":\"b\",\"name\":\"Choice b\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":0}],\"voteCount\":0},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":null}],\"id\":\"c\",\"name\":\"Choice c\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":null}],\"voteCount\":null},{\"id\":\"d\",\"name\":\"Unknown count\"}],\"id\":\"race-1\",\"name\":\"Example race\",\"rankedChoiceResults\":[],\"voteFor\":1}],\"id\":\"GA\",\"name\":\"Scope GA\",\"reportingStatuses\":null}"
     },
     "reordered": {
       "fingerprint": "a4d3834c495de3b43ec8e04284dbc39ff123e93a8baf73148eb5bbe659b10c67",
@@ -37,7 +38,8 @@
           "reportingStatuses": null,
           "item_count": 1
         }
-      ]
+      ],
+      "canonical_scope": "{\"ballotItems\":[{\"ballotOptions\":[{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":12}],\"id\":\"A\",\"name\":\"Choice A\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":12}],\"voteCount\":12},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":0}],\"id\":\"b\",\"name\":\"Choice b\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":0}],\"voteCount\":0},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":null}],\"id\":\"c\",\"name\":\"Choice c\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":null}],\"voteCount\":null},{\"id\":\"d\",\"name\":\"Unknown count\"}],\"id\":\"race-1\",\"name\":\"Example race\",\"rankedChoiceResults\":[],\"voteFor\":1}],\"id\":\"GA\",\"name\":\"Scope GA\",\"reportingStatuses\":null}"
     },
     "correction": {
       "fingerprint": "2025b99a38001b7df428de7a9ae6012265339fe027316d0d624788e2a947ef60",
@@ -56,7 +58,8 @@
           "reportingStatuses": null,
           "item_count": 1
         }
-      ]
+      ],
+      "canonical_scope": "{\"ballotItems\":[{\"ballotOptions\":[{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":12}],\"id\":\"A\",\"name\":\"Choice A\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":12}],\"voteCount\":11},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":0}],\"id\":\"b\",\"name\":\"Choice b\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":0}],\"voteCount\":0},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":null}],\"id\":\"c\",\"name\":\"Choice c\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":null}],\"voteCount\":null},{\"id\":\"d\",\"name\":\"Unknown count\"}],\"id\":\"race-1\",\"name\":\"Example race\",\"rankedChoiceResults\":[],\"voteFor\":1}],\"id\":\"GA\",\"name\":\"Scope GA\",\"reportingStatuses\":null}"
     },
     "label": {
       "fingerprint": "700aa07ff17c114bf60c174d2a55555216ec9cdf2b8a27b2da1fca71eacb8f94",
@@ -75,7 +78,8 @@
           "reportingStatuses": null,
           "item_count": 1
         }
-      ]
+      ],
+      "canonical_scope": "{\"ballotItems\":[{\"ballotOptions\":[{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":12}],\"id\":\"A\",\"name\":\"Corrected label\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":12}],\"voteCount\":12},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":0}],\"id\":\"b\",\"name\":\"Choice b\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":0}],\"voteCount\":0},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":null}],\"id\":\"c\",\"name\":\"Choice c\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":null}],\"voteCount\":null},{\"id\":\"d\",\"name\":\"Unknown count\"}],\"id\":\"race-1\",\"name\":\"Example race\",\"rankedChoiceResults\":[],\"voteFor\":1}],\"id\":\"GA\",\"name\":\"Scope GA\",\"reportingStatuses\":null}"
     },
     "status": {
       "fingerprint": "878b9ddc9a460d0432b62e7978897518f7a0fddfaa0dfaeebf4e872af9f4eaeb",
@@ -94,7 +98,28 @@
           "reportingStatuses": null,
           "item_count": 1
         }
-      ]
+      ],
+      "canonical_scope": "{\"ballotItems\":[{\"ballotOptions\":[{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":12}],\"id\":\"A\",\"name\":\"Choice A\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":12}],\"voteCount\":12},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":0}],\"id\":\"b\",\"name\":\"Choice b\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":0}],\"voteCount\":0},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":null}],\"id\":\"c\",\"name\":\"Choice c\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":null}],\"voteCount\":null},{\"id\":\"d\",\"name\":\"Unknown count\"}],\"id\":\"race-1\",\"name\":\"Example race\",\"rankedChoiceResults\":[],\"voteFor\":1}],\"id\":\"GA\",\"name\":\"Scope GA\",\"reportingStatuses\":[]}"
+    },
+    "unicode_numeric": {
+      "fingerprint": "a216d1cbecda88bc737de0893087d37ca734303b3a2e7253201f19ea95dd958a",
+      "raw_sha256": "7852407df9ced0ecf0a6167ff277da26142e81ba04ac6470a4cf6ade12edc403",
+      "item_count": 2,
+      "jurisdictions": [
+        {
+          "id": "GA",
+          "name": "Scope GA",
+          "reportingStatuses": null,
+          "item_count": 1
+        },
+        {
+          "id": "001",
+          "name": "Scope 001",
+          "reportingStatuses": null,
+          "item_count": 1
+        }
+      ],
+      "canonical_scope": "{\"ballotItems\":[{\"10\":\"index ten\",\"2\":\"index key\",\"ballotOptions\":[{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":0}],\"id\":\"😀\",\"name\":\"Choice 😀\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":0}],\"voteCount\":0},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":0}],\"id\":\"a10\",\"name\":\"Choice a10\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":0}],\"voteCount\":0},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":0}],\"id\":\"a2\",\"name\":\"Choice a2\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":0}],\"voteCount\":0},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":0}],\"id\":\"e\",\"name\":\"Choice e\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":0}],\"voteCount\":0},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":0}],\"id\":\"E\",\"name\":\"Choice E\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":0}],\"voteCount\":0},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":0}],\"id\":\"é\",\"name\":\"Choice é\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":0}],\"voteCount\":0},{\"groupResults\":[{\"groupName\":\"Election Day\",\"voteCount\":0}],\"id\":\"𐀀\",\"name\":\"Choice 𐀀\",\"precinctResults\":[{\"id\":\"p1\",\"voteCount\":0}],\"voteCount\":0}],\"escaping\":\"line\\n\\t\\u0000\\\\\\\"é😀\",\"id\":\"race-1\",\"name\":\"Example race\",\"numberEdges\":[1e-7,0.000001,100000000000000000000,1e+21,0,333333333.3333333,9007199254740992],\"rankedChoiceResults\":[],\"voteFor\":1,\"𐀀\":\"supplementary\",\"\":\"private use\"}],\"id\":\"GA\",\"name\":\"Scope GA\",\"reportingStatuses\":null}"
     }
   },
   "assets": [

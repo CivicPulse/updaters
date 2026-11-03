@@ -98,9 +98,9 @@ There are no database/API adapters or production deployment assumptions yet.
 
 ## Georgia SOS durable worker
 
-`tools/results-collector` adds the queue/lease lifecycle for issue #1. Its source
-and publication adapters are deliberately unavailable in this implementation
-step: an enabled worker receiving a job records a bounded durable failure and
+`tools/results-collector` adds the queue/lease lifecycle for issue #1. The bounded
+source library and local validation mode are implemented; the publication adapter
+is still unavailable: an enabled worker receiving a job records a bounded durable failure and
 exits nonzero in `once` mode. It never reports an unimplemented import as success.
 Production collection must remain disabled until the complete pipeline and
 controlled acceptance pass.
@@ -109,13 +109,17 @@ controlled acceptance pass.
 cargo run --locked -p civpulse-results-collector -- --check
 cargo run --locked -p civpulse-results-collector -- daemon
 cargo run --locked -p civpulse-results-collector -- liveness
+# Local validation without credentials or remote writes:
+cargo run --locked -p civpulse-results-collector -- validate /path/to/source.json 2026-11-03 160 4178
 # Server-side credentials required; reads operational state without claiming work:
 cargo run --locked -p civpulse-results-collector -- health
 ```
 
 Commands are `daemon` (the default), `once`, `health`, `liveness`, `validate`,
-`--check`, and `--help`. `--check` performs no I/O. `validate` returns an explicit
-unavailable error until the bounded parser is implemented. `once` claims at most
+`--check`, and `--help`. `--check` performs no I/O. `validate` reads a local regular
+file and checks its date and optional completeness counts. Its parser and
+fingerprints match the [pinned reference](docs/contracts/results-source-api.md).
+`once` claims at most
 one durable job; an empty queue is a normal successful check. `health` calls the
 service-only `get_sos_collection_health` RPC without requiring R2 credentials or
 an enabled collector. It checks connectivity/access, not whether source counts
