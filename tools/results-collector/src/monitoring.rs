@@ -47,6 +47,8 @@ pub struct HealthRow {
     pub last_success_at: Option<DateTime<Utc>>,
     pub last_error: Option<String>,
     pub current_revision: Revision,
+    #[serde(skip)]
+    pub publication_fingerprint: Option<String>,
     pub job_id: Option<Uuid>,
     pub job_state: Option<String>,
     pub job_attempts: Option<u32>,
@@ -135,6 +137,7 @@ pub struct FeedStatus {
     pub poll_interval_seconds: u32,
     pub source_check_stale_after_seconds: i64,
     pub database_revision: Revision,
+    pub publication_fingerprint: Option<String>,
     pub pointer: PointerObservation,
     pub pending_job: Option<Uuid>,
     pub job_created_at: Option<DateTime<Utc>>,
@@ -212,7 +215,6 @@ pub fn evaluate(
         let expected_age = age(active_since, now);
         let pending_age = age(pending_since, now);
         let mismatch_age = age(mismatch_since, now);
-        let attempts = row.job_attempts.unwrap_or(0);
         state.feeds.insert(
             row.election_id,
             Observed {
@@ -233,15 +235,16 @@ pub fn evaluate(
                 row.poll_interval_seconds.unwrap_or(300),
             )?,
             database_revision: row.current_revision,
+            publication_fingerprint: row.publication_fingerprint,
             pointer,
             pending_job: pending,
             job_created_at: row.job_created_at,
             job_updated_at: row.job_updated_at,
             job_progress_age_seconds: age(row.job_updated_at, now),
-            job_attempts: attempts,
+            job_attempts: row.job_attempts.unwrap_or(0),
             error_present: row
                 .last_error
-                .as_deref()
+                .as_ref()
                 .is_some_and(|error| !error.is_empty()),
             last_attempt_at: row.last_attempt_at,
             last_success_at: row.last_success_at,
@@ -445,7 +448,11 @@ pub async fn collect(
                             row.source_to_publication_lag_seconds,
                             row.ingestion_lag_seconds,
                         ) = pointer_lags(&object.body);
-                        parse_pointer(&object.body, row.election_id)
+                        let pointer = parse_pointer(&object.body, row.election_id);
+                        if matches!(pointer, PointerObservation::Present { .. }) {
+                            row.publication_fingerprint = pointer_fingerprint(&object.body);
+                        }
+                        pointer
                     }
                     _ => PointerObservation::Unavailable,
                 };
@@ -476,6 +483,19 @@ fn pointer_lags(body: &[u8]) -> (Option<i64>, Option<i64>) {
             .filter(|seconds| *seconds >= 0)
     };
     (lag(times.source), lag(times.retrieved))
+}
+fn pointer_fingerprint(bytes: &[u8]) -> Option<String> {
+    let value: serde_json::Value = serde_json::from_slice(bytes).ok()?;
+    value
+        .get("fingerprint")?
+        .as_str()
+        .filter(|hash| {
+            hash.len() == 64
+                && hash
+                    .bytes()
+                    .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+        })
+        .map(str::to_owned)
 }
 fn parse_pointer(bytes: &[u8], election: Uuid) -> PointerObservation {
     #[derive(Deserialize)]
@@ -718,5 +738,27 @@ mod lag_tests {
         assert_eq!(pointer_lags(b"{}"), (None, None));
         assert_eq!(pointer_lags(br#"{"source_created_at":"2026-11-03T10:00:00Z","retrieved_at":"2026-11-03T17:59:55Z","published_at":"2026-11-03T18:00:00Z"}"#),(Some(28800),Some(5)));
         assert_eq!(pointer_lags(br#"{"source_created_at":"2026-11-03T19:00:00Z","retrieved_at":null,"published_at":"2026-11-03T18:00:00Z"}"#),(None,None));
+    }
+}
+
+#[cfg(test)]
+mod fingerprint_tests {
+    use super::*;
+    #[test]
+    fn fingerprints_require_complete_lowercase_sha256() {
+        for invalid in ["", "private-error", &"A".repeat(64), &"a".repeat(63)] {
+            assert!(
+                pointer_fingerprint(&serde_json::to_vec(&json!({"fingerprint":invalid})).unwrap())
+                    .is_none()
+            );
+        }
+        assert!(pointer_fingerprint(b"{}").is_none());
+        assert!(pointer_fingerprint(b"invalid").is_none());
+        assert_eq!(
+            pointer_fingerprint(
+                &serde_json::to_vec(&json!({"fingerprint":"a".repeat(64)})).unwrap()
+            ),
+            Some("a".repeat(64))
+        );
     }
 }

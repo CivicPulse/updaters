@@ -15,3 +15,9 @@ the collector, then pushes
 `DOCR_CONFIG` GitHub secret. It emits the immutable manifest reference in the run
 summary. It deploys nothing and enables no collection. Installation always uses
 the emitted digest, never a mutable tag.
+
+Production values enable ntfy at the approved public `https://ntfy.sh/CivPulse`
+topic when the existing monitor is enabled. Dev/test and chart defaults keep it
+disabled. Email remains separately controlled; preserve the current release's
+active collection/monitor/email flags during upgrades rather than applying the
+committed disabled-collection defaults directly to a live release.

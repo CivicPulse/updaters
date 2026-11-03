@@ -23,6 +23,10 @@ collection stays disabled until controlled operational acceptance completes.
 Only executable crates get images and Kubernetes workloads. Shared library crates
 are linked into those binaries. Add source-specific tools under `tools/` and
 shared libraries under `crates/`; workspace glob membership picks them up.
+HTTP services deploy independently and share an environment router/ingress and
+FQDN through distinct path prefixes; see [service deployment architecture](docs/architecture.md).
+The queue-driven results worker needs no public route.
+
 Dependency versions, metadata, and lint policy live in the root `Cargo.toml`.
 Workspace inheritance follows the [Cargo workspace reference](https://doc.rust-lang.org/cargo/reference/workspaces.html).
 

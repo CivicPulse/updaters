@@ -1,3 +1,6 @@
+{{- if and .Values.monitoring.ntfyEnabled (ne .Values.environment "prod") }}
+{{- fail "Public ntfy notifications require the production environment" }}
+{{- end }}
 {{- if .Values.monitoring.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -74,6 +77,11 @@ spec:
                 - {name: SOS_COLLECTOR_ENABLED, value: 'false'}
                 - {name: SOS_MONITOR_STATE, value: /state/observations.json}
                 - {name: SOS_ALERT_STATE, value: /state/alerts.json}
+                - {name: SOS_NTFY_STATE, value: /state/ntfy.json}
+                - name: SOS_NTFY_ENABLED
+                  value: {{ .Values.monitoring.ntfyEnabled | quote }}
+                - name: SOS_NTFY_URL
+                  value: {{ .Values.monitoring.ntfyUrl | quote }}
                 - name: SOS_ALERTS_ENABLED
                   value: {{ .Values.monitoring.alertsEnabled | quote }}
                 - name: SOS_POLL_INITIAL_INTERVAL_SECONDS

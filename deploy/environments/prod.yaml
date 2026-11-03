@@ -14,6 +14,8 @@ acceptance:
   approved: false
   reference: ""
 monitoring:
+  ntfyEnabled: true
+  ntfyUrl: https://ntfy.sh/CivPulse
   initialIntervalSeconds: 3600
   intervalSeconds: 300
   transitionAt: '2026-11-03T22:00:00Z'
