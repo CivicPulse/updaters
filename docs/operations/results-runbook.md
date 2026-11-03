@@ -267,3 +267,12 @@ The scanned collector image includes `/usr/local/bin/civpulse-measure` as an aux
 The auxiliary binary runs the real parser and Publisher through original archived-receipt replay, staging, commit and pointer confirmation. Its simulated RPC/object storage, input copy, and preliminary validation add conservative memory/scratch overhead; cgroup measurements include the idle daemon in the same deployed container. This supplies actual-image resource evidence, not real DB/R2 transport/CAS acceptance. The actual collector `once` run against dev/test DB/R2 on official data is a separate required gate.
 
 Record the wrapper output, cgroup counters, pod status/restarts and node capacity/headroom evidence while both selfhost databases run. Preserve failed/OOM pod evidence. Use a fresh reviewed disabled collector pod for each case to reset lifetime cgroup peaks; preserve evidence before replacing it. Record exact fixture hash and caps from the generator. Test official data, concentrated near-admission input and original receipt replay (`--pipeline`), plus over-cap rejection, before selecting limits. Never invoke this harness on production pods. The resulting measurements are not production collection acceptance by themselves.
+
+
+The source downloader identifies itself as
+`CivicPulse-results-collector/<package-version> (+https://github.com/CivicPulse/updaters)`.
+The official source rejected a missing User-Agent with HTTP 403 during isolated
+fresh-source acceptance. This honest stable identifier does not change the exact
+URL allowlist, TLS/redirect policy, conditional validators, identity encoding or
+download/deadline limits. Header tests capture the actual HTTP request. A failed
+fresh-source attempt is not acceptance; repeat the lane with the reviewed image.
