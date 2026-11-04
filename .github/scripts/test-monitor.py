@@ -38,7 +38,11 @@ def main():
         assert container["args"] == ["notify-daemon"]
         for probe in ["startupProbe", "readinessProbe", "livenessProbe"]:
             assert container[probe]["exec"]["command"] == ["/usr/local/bin/civpulse-tool", "notify-liveness"]
-        assert pod["volumes"][0]["persistentVolumeClaim"]["claimName"] == monitor["metadata"]["name"]
+        state_volume = next(volume for volume in pod["volumes"] if "persistentVolumeClaim" in volume)
+        assert state_volume["persistentVolumeClaim"]["claimName"] == monitor["metadata"]["name"]
+        state_mount = next(mount for mount in container["volumeMounts"] if mount["name"] == state_volume["name"])
+        assert state_mount["mountPath"] == "/state"
+        assert state_mount.get("readOnly", False) is False
         assert container["image"] == "registry.digitalocean.com/hatchk8s/civpulse-results-collector@" + DIGEST
         assert container["securityContext"]["readOnlyRootFilesystem"] is True
         assert container["securityContext"]["capabilities"]["drop"] == ["ALL"]

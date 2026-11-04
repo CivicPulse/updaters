@@ -376,6 +376,17 @@ fn topology(value: &Value) -> String {
 }
 
 #[test]
+fn topology_encoding_matches_independent_fixed_vector() {
+    // SHA256 of these compact UTF8 bytes, no trailing newline, derived independently
+    // with Python hashlib rather than the parser's topology encoder:
+    // [["county","001",[["race-1",["A","b","c","d"]]]],["state","GA",[["race-1",["A","b","c","d"]]]]]
+    assert_eq!(
+        topology(&base()),
+        "2fe2ce68c92bcbd1e0e7d7e1f925dd3aaa906066ef9fb4893b39a1fe9b512e06"
+    );
+}
+
+#[test]
 fn reviewed_topologies_accept_only_known_membership_not_matching_counts() {
     let prior = base();
     let mut current = prior.clone();

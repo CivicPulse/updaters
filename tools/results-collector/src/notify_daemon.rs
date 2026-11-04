@@ -39,6 +39,13 @@ where
     tokio::pin!(shutdown);
     heartbeat(path).await?;
     loop {
+        // Poll shutdown before constructing a pass: an already-requested stop
+        // must not start new notification work. An active pass still drains below.
+        tokio::select! {
+            biased;
+            () = &mut shutdown => return Ok(()),
+            () = std::future::ready(()) => {},
+        }
         let started = tokio::time::Instant::now();
         let cycle = tokio::time::timeout(limit, pass());
         tokio::pin!(cycle);
@@ -115,6 +122,27 @@ mod tests {
         Arc,
         atomic::{AtomicUsize, Ordering},
     };
+    #[tokio::test]
+    async fn pre_signaled_shutdown_never_constructs_a_pass() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("heartbeat");
+        let (stop_tx, stop_rx) = tokio::sync::oneshot::channel();
+        stop_tx.send(()).unwrap();
+        let calls = AtomicUsize::new(0);
+        run_with_timing(
+            || {
+                calls.fetch_add(1, Ordering::SeqCst);
+                async { Ok(()) }
+            },
+            async { stop_rx.await.unwrap() },
+            &path,
+            Duration::from_millis(2),
+            Duration::from_millis(100),
+        )
+        .await
+        .unwrap();
+        assert_eq!(calls.load(Ordering::SeqCst), 0);
+    }
     #[tokio::test]
     async fn shutdown_drains_current_pass_and_never_starts_another() {
         let dir = tempfile::tempdir().unwrap();
