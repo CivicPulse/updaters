@@ -34,13 +34,13 @@ async fn execute() -> Result<()> {
         [command] => command.as_str(),
         _ => {
             return Err(Error::Config(
-                "Usage: civpulse-results-collector [daemon|once|health|monitor|metrics|notify|alert-test|ntfy-test|resources|liveness|validate|--check|--help]",
+                "Usage: civpulse-results-collector [daemon|once|health|monitor|metrics|notify|notify-daemon|notify-liveness|alert-test|ntfy-test|resources|liveness|validate|--check|--help]",
             ));
         }
     };
     if matches!(command, "--help" | "-h") {
         println!(
-            "civpulse-results-collector [daemon|once|health|monitor|metrics|notify|alert-test|ntfy-test|resources|liveness|validate|--check]\nCollection defaults to disabled. health checks service RPC access; liveness checks the local daemon heartbeat. --check performs no I/O. validate <path> <election-date> [expected-jurisdictions expected-items] validates local bytes without credentials."
+            "civpulse-results-collector [daemon|once|health|monitor|metrics|notify|notify-daemon|notify-liveness|alert-test|ntfy-test|resources|liveness|validate|--check]\nCollection defaults to disabled. health checks service RPC access; liveness checks the local daemon heartbeat. --check performs no I/O. validate <path> <election-date> [expected-jurisdictions expected-items] validates local bytes without credentials."
         );
         return Ok(());
     }
@@ -55,6 +55,8 @@ async fn execute() -> Result<()> {
             | "monitor"
             | "metrics"
             | "notify"
+            | "notify-daemon"
+            | "notify-liveness"
             | "alert-test"
             | "ntfy-test"
             | "resources"
@@ -62,20 +64,14 @@ async fn execute() -> Result<()> {
     ) {
         return Err(Error::Config("Unknown collector command"));
     }
+    if command == "notify-liveness" {
+        return civpulse_results_collector::notify_daemon::liveness().await;
+    }
     if command == "resources" {
         return resources::command();
     }
     if matches!(command, "ntfy-test" | "alert-test") {
-        let receipt = if command == "ntfy-test" {
-            civpulse_results_collector::ntfy::verification().await?
-        } else {
-            alerting::verification().await?
-        };
-        println!(
-            "{}",
-            serde_json::to_string(&receipt).map_err(|_| Error::InvalidResponse)?
-        );
-        return Ok(());
+        return verify_notification_route(command).await;
     }
     let config = Config::read(|key| std::env::var(key).ok())?;
     if command == "liveness" {
@@ -86,7 +82,7 @@ async fn execute() -> Result<()> {
     if command == "health" {
         return service_health(rpc.as_ref().ok_or(Error::Config("Missing health RPC"))?).await;
     }
-    if matches!(command, "monitor" | "metrics" | "notify") {
+    if matches!(command, "monitor" | "metrics" | "notify" | "notify-daemon") {
         let rpc = rpc
             .as_ref()
             .ok_or(Error::Config("Missing operational RPC"))?;
@@ -150,20 +146,32 @@ fn initialize_logging() -> Result<()> {
     Ok(())
 }
 
+async fn verify_notification_route(command: &str) -> Result<()> {
+    let receipt = if command == "ntfy-test" {
+        civpulse_results_collector::ntfy::verification().await?
+    } else {
+        alerting::verification().await?
+    };
+    println!(
+        "{}",
+        serde_json::to_string(&receipt).map_err(|_| Error::InvalidResponse)?
+    );
+    Ok(())
+}
+
 async fn operational_command(command: &str, rpc: &Rpc) -> Result<()> {
+    if command == "notify-daemon" {
+        return civpulse_results_collector::notify_daemon::run(
+            || notify_once(rpc),
+            async {
+                let _ = shutdown_signal().await;
+            },
+            std::path::Path::new(civpulse_results_collector::notify_daemon::HEARTBEAT),
+        )
+        .await;
+    }
     if command == "notify" {
-        let report = monitoring::observe(rpc)
-            .await
-            .unwrap_or_else(|_| monitoring::unavailable());
-        // Each transport persists independently, even when its peer fails.
-        let (email, push) = tokio::join!(
-            alerting::command(&report),
-            civpulse_results_collector::ntfy::command(&report)
-        );
-        monitoring::render(&report, monitoring::Format::Json)?;
-        let outcome = email?;
-        let push = push?;
-        ensure_alert_coverage(&report, outcome, push)
+        notify_once(rpc).await
     } else {
         monitoring::command(
             rpc,
@@ -175,6 +183,21 @@ async fn operational_command(command: &str, rpc: &Rpc) -> Result<()> {
         )
         .await
     }
+}
+
+async fn notify_once(rpc: &Rpc) -> Result<()> {
+    let report = monitoring::observe(rpc)
+        .await
+        .unwrap_or_else(|_| monitoring::unavailable());
+    // Each transport persists independently, even when its peer fails.
+    let (email, push) = tokio::join!(
+        alerting::command(&report),
+        civpulse_results_collector::ntfy::command(&report)
+    );
+    monitoring::render(&report, monitoring::Format::Json)?;
+    let outcome = email?;
+    let push = push?;
+    ensure_alert_coverage(&report, outcome, push)
 }
 
 fn ensure_alert_coverage(
@@ -210,8 +233,11 @@ async fn service_health(rpc: &Rpc) -> Result<()> {
 }
 
 fn rpc_for_mode(config: &Config, command: &str) -> Result<Option<Rpc>> {
-    let client = if config.enabled || matches!(command, "health" | "monitor" | "metrics" | "notify")
-    {
+    let client = if config.enabled
+        || matches!(
+            command,
+            "health" | "monitor" | "metrics" | "notify" | "notify-daemon"
+        ) {
         Some(Rpc::for_environment(
             &config.environment,
             config

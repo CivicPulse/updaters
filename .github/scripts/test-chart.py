@@ -66,8 +66,8 @@ def main():
             assert config["SOS_EXPECTED_JURISDICTIONS"] == "160"
             assert config["SOS_EXPECTED_ITEMS"] == "4178"
             monitor = render("prod", ["monitoring.enabled=true"])
-            cron = next(doc for doc in monitor if doc["kind"] == "CronJob")
-            monitor_env = {entry["name"]: entry.get("value") for entry in cron["spec"]["jobTemplate"]["spec"]["template"]["spec"]["containers"][0]["env"]}
+            cron = next(doc for doc in monitor if doc["kind"] == "Deployment" and doc["metadata"]["name"].endswith("-monitor"))
+            monitor_env = {entry["name"]: entry.get("value") for entry in cron["spec"]["template"]["spec"]["containers"][0]["env"]}
             assert monitor_env["SOS_POLL_INITIAL_INTERVAL_SECONDS"] == "3600"
             assert monitor_env["SOS_POLL_INTERVAL_SECONDS"] == "300"
             assert monitor_env["SOS_POLL_TRANSITION_AT"] == "2026-11-03T22:00:00Z"
@@ -75,8 +75,8 @@ def main():
         assert "health" not in json.dumps(container)
     for environment in ["dev", "test", "prod"]:
         docs = render(environment, ["monitoring.enabled=true"])
-        cron = next(doc for doc in docs if doc["kind"] == "CronJob")
-        env = {item["name"]: item.get("value") for item in cron["spec"]["jobTemplate"]["spec"]["template"]["spec"]["containers"][0]["env"]}
+        cron = next(doc for doc in docs if doc["kind"] == "Deployment" and doc["metadata"]["name"].endswith("-monitor"))
+        env = {item["name"]: item.get("value") for item in cron["spec"]["template"]["spec"]["containers"][0]["env"]}
         assert env["SOS_NTFY_ENABLED"] == str(environment == "prod").lower()
         assert env["SOS_NTFY_URL"] == "https://ntfy.sh/CivPulse"
         assert env["SOS_NTFY_STATE"] == "/state/ntfy.json"

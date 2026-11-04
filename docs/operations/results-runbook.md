@@ -39,8 +39,8 @@ never substitute the planned start or deployment timestamp.
 One Supabase coordinator owns source scheduling. Its cron can tick every five
 minutes while database eligibility gates the effective hourly/five-minute source
 cadence. Do not add a Kubernetes source CronJob, independent Edge scheduler, manual
-table writes, or per-batch build webhook. The separate one-minute monitoring
-CronJob reads health/S3 and sends operational notifications; it never claims jobs,
+table writes, or per-batch build webhook. The separate long-lived monitoring
+Deployment reads health/S3 about once a minute and sends operational notifications; it never claims jobs,
 checks the SOS source, stages data, changes feed configuration, or triggers builds.
 
 ## Evidence before activation
@@ -120,21 +120,41 @@ first observed pending) or DB/pointer mismatch sustained for 15 minutes, repeate
 (eight attempts), or unavailable S3 pointer is actionable. An unchanging vote count
 is never an alert signal.
 
-The chart's optional monitoring CronJob uses `concurrencyPolicy:Forbid`, no job
-retries, a bounded deadline, a non-root/read-only container, namespace-private PVC
-for observation/dedup state, process file locks, and no inbound port or service
-account token. The PVC uses the retaining DOKS block-storage class and Helm's
-`keep` policy. Do not delete it during routine upgrades or rollbacks. Network
-policy permits DNS, public HTTPS and (dev/test only) namespace-local Supabase Kong.
-Standard Kubernetes NetworkPolicy cannot restrict public HTTPS by hostname; the
-code fixes R2, Supabase and email destinations and rejects redirects.
+The chart's optional monitor is a single-replica `Recreate` Deployment running
+`notify-daemon`, keeping its retaining RWO observation/dedup PVC mounted between
+passes. It has bounded, nonoverlapping passes, a non-root/read-only container,
+process state-file locks, no inbound port and no service account token. Source
+collection is explicitly false in this container. Network policy permits DNS,
+public HTTPS and (dev/test only) namespace-local Supabase Kong; code validates
+service destinations and rejects redirects. Preserve the PVC name, UID and all
+state files during upgrades; never delete it to clear a mount problem.
+
+Each pass starts no sooner than 60 seconds after its predecessor started and is
+bounded to 100 seconds. Slow passes delay the next observation without a burst of
+missed ticks. Remote failures emit a sanitized `notification_monitor_cycle` event
+and retry later; they do not restart the pod. `notify-liveness` checks a local
+cycle heartbeat with a 180-second threshold, independent of external health.
+SIGTERM stops new passes and drains the current bounded pass; the pod has a
+110-second grace period. A hard termination after provider acceptance can still
+duplicate a notification before state persistence (at-least-once delivery).
+
+When migrating from the historical minute CronJob, first suspend that exact
+monitor CronJob and let existing monitor Jobs finish. Verify no old notifier pod
+is still using the claim before the reviewed Helm upgrade replaces the CronJob
+with this Deployment. Verify the claim UID, state files, email/push markers,
+source-disabled env, ready pod, and several cycles without mount events. Do not
+run both controllers against the claim. For rollback to a CronJob chart, first
+scale the monitor Deployment to zero and wait for termination; preserve the PVC,
+then restore exactly one monitor controller. Do not alter source-worker flags or
+Supabase cadence. `monitoring.schedule` is retained only for values compatibility;
+`notify-daemon` owns the fixed read-only monitoring interval.
 
 Optional [Prometheus rules](../../deploy/monitoring/results-alerts.yaml) and
 [timing tests](../../deploy/monitoring/results-alerts.test.yaml) are supplied.
 Wire them into an existing scrape/textfile bridge if used; they are not evidence
 that a Prometheus/Alertmanager installation exists. Direct notification works
-without that stack. The monitor CronJob itself stopping still needs the host's
-job/monitor availability route or a configured external scrape alert.
+without that stack. The monitor Deployment itself stopping still needs the host's
+monitor availability route or a configured external scrape alert.
 
 ## Alert credentials and delivery verification
 
