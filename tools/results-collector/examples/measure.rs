@@ -138,6 +138,7 @@ fn parse_expectations(args: &[String]) -> Result<(bool, Expectations, usize, usi
         election_date: args[1].clone(),
         expected_jurisdictions: Some(jurisdictions),
         expected_items: Some(items),
+        accepted_topologies: vec![],
     };
     Ok((pipeline, expectations, jurisdictions, items))
 }

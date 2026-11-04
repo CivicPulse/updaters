@@ -61,11 +61,22 @@ impl Publisher {
                 "Reviewed completeness bounds must be positive",
             ));
         }
+        let accepted_topologies = value("SOS_ACCEPTED_TOPOLOGIES")
+            .map(|raw| {
+                serde_json::from_str::<Vec<String>>(&raw)
+                    .map_err(|_| Error::Config("Invalid reviewed topology allowlist"))
+            })
+            .transpose()?
+            .unwrap_or_default();
         let expectations = Expectations {
             election_date,
             expected_jurisdictions: Some(jurisdictions),
             expected_items: Some(items),
+            accepted_topologies,
         };
+        expectations
+            .validate_topologies()
+            .map_err(|_| Error::Config("Invalid reviewed topology allowlist"))?;
         let spool_root =
             value("SOS_SPOOL_ROOT").map_or_else(|| PathBuf::from("/tmp"), PathBuf::from);
         Self::new(
@@ -533,6 +544,37 @@ mod admission_tests {
     use super::*;
     use crate::storage::{Conditions, Stored};
     use async_trait::async_trait;
+    #[test]
+    fn invalid_topology_environment_fails_before_any_worker_can_fetch() {
+        for raw in ["", "null", "{}", "[42]", "[\"bad\"]"] {
+            let result = Publisher::from_environment(|key| {
+                Some(
+                    match key {
+                        "CIVPULSE_ENV" => "test",
+                        "R2_ENDPOINT" => {
+                            "https://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.r2.cloudflarestorage.com"
+                        }
+                        "R2_BUCKET" => "civpulse-files-test",
+                        "R2_PUBLIC_ORIGIN" => "https://files-test.civpulse.org",
+                        "R2_ACCESS_KEY_ID" | "R2_SECRET_ACCESS_KEY" => "synthetic-not-a-credential",
+                        "SOS_ELECTION_ID" => "00000000-0000-4000-8000-000000000001",
+                        "SOS_ELECTION_DATE" => "2026-11-03",
+                        "SOS_SOURCE_URL" => {
+                            "https://results.sos.ga.gov/cdn/results/Georgia/export-Test.json"
+                        }
+                        "SOS_EXPECTED_JURISDICTIONS" | "SOS_EXPECTED_ITEMS" => "2",
+                        "SOS_ACCEPTED_TOPOLOGIES" => raw,
+                        _ => return None,
+                    }
+                    .into(),
+                )
+            });
+            assert!(matches!(
+                result,
+                Err(Error::Config("Invalid reviewed topology allowlist"))
+            ));
+        }
+    }
     struct Archive {
         raw: Vec<u8>,
         forbid_download: bool,
@@ -590,6 +632,7 @@ mod admission_tests {
                 election_date: "2026-11-03".into(),
                 expected_jurisdictions: Some(2),
                 expected_items: Some(2),
+                accepted_topologies: vec![],
             },
             url.into(),
             spool.path().into(),

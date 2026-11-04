@@ -49,6 +49,7 @@ async fn offline_disk_pipeline_publishes_complete_snapshot_and_fenced_pointer() 
             election_date: "2026-11-03".into(),
             expected_jurisdictions: Some(2),
             expected_items: Some(2),
+            accepted_topologies: vec![],
         },
         local_rpc::SOURCE.into(),
         scratch.path().join("spool"),
