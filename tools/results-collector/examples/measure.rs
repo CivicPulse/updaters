@@ -139,6 +139,7 @@ fn parse_expectations(args: &[String]) -> Result<(bool, Expectations, usize, usi
         expected_jurisdictions: Some(jurisdictions),
         expected_items: Some(items),
         accepted_topologies: vec![],
+        topology_policy: None,
     };
     Ok((pipeline, expectations, jurisdictions, items))
 }

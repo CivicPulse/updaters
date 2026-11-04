@@ -68,11 +68,21 @@ impl Publisher {
             })
             .transpose()?
             .unwrap_or_default();
+        let topology_policy = civpulse_results_source::TopologyPolicy::parse(
+            &value("SOS_TOPOLOGY_POLICY").unwrap_or_default(),
+        )
+        .map_err(|_| Error::Config("Invalid reviewed source membership policy"))?;
+        if topology_policy.is_some_and(|policy| policy.source_url() != allowed_url) {
+            return Err(Error::Config(
+                "Source membership policy requires reviewed source URL",
+            ));
+        }
         let expectations = Expectations {
             election_date,
             expected_jurisdictions: Some(jurisdictions),
             expected_items: Some(items),
             accepted_topologies,
+            topology_policy,
         };
         expectations
             .validate_topologies()
@@ -121,6 +131,18 @@ impl Publisher {
         Ok(self)
     }
     async fn process_job(&self, job: &Job, lease: Lease) -> Result<()> {
+        self.expectations
+            .validate_topologies()
+            .map_err(|_| Error::Config("Invalid reviewed source membership policy"))?;
+        if self
+            .expectations
+            .topology_policy
+            .is_some_and(|policy| policy.source_url() != self.allowed_url)
+        {
+            return Err(Error::Config(
+                "Source membership policy requires reviewed source URL",
+            ));
+        }
         if job.election_id != self.election
             || job.election_date != self.expectations.election_date
             || job.source_url != self.allowed_url
@@ -391,6 +413,15 @@ fn source_error(error: civpulse_results_source::Error) -> Error {
             status,
             retry_after: Some(u32::try_from(retry_after.clamp(1, 3600)).unwrap_or(3600)),
         },
+        civpulse_results_source::Error::Invalid("source membership policy mismatch") => {
+            Error::Source("Source membership policy mismatch")
+        }
+        civpulse_results_source::Error::Invalid("source topology is not reviewed") => {
+            Error::Source("Source topology is not reviewed")
+        }
+        civpulse_results_source::Error::Invalid("source completeness mismatch") => {
+            Error::Source("Source completeness mismatch")
+        }
         civpulse_results_source::Error::Cancelled => Error::Shutdown,
         _ => Error::Source("Source download or validation failed"),
     }
@@ -575,6 +606,84 @@ mod admission_tests {
             ));
         }
     }
+    #[test]
+    fn policy_binding_and_mode_conflicts_fail_before_worker_creation() {
+        let valid = [
+            ("CIVPULSE_ENV", "test"),
+            (
+                "R2_ENDPOINT",
+                "https://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.r2.cloudflarestorage.com",
+            ),
+            ("R2_BUCKET", "civpulse-files-test"),
+            ("R2_PUBLIC_ORIGIN", "https://files-test.civpulse.org"),
+            ("R2_ACCESS_KEY_ID", "synthetic"),
+            ("R2_SECRET_ACCESS_KEY", "synthetic"),
+            ("SOS_ELECTION_ID", "00000000-0000-4000-8000-000000000001"),
+            ("SOS_ELECTION_DATE", "2026-11-03"),
+            (
+                "SOS_SOURCE_URL",
+                "https://results.sos.ga.gov/cdn/results/Georgia/export-11032026GeneralAndSpecialElection.json",
+            ),
+            ("SOS_EXPECTED_JURISDICTIONS", "160"),
+            ("SOS_EXPECTED_ITEMS", "4178"),
+            ("SOS_TOPOLOGY_POLICY", "georgia-2026-11-03-v1"),
+        ];
+        let build = |replacement: Option<(&str, &str)>| {
+            Publisher::from_environment(|key| {
+                replacement
+                    .filter(|(name, _)| *name == key)
+                    .map(|(_, value)| value.to_owned())
+                    .or_else(|| {
+                        valid
+                            .iter()
+                            .find(|(name, _)| *name == key)
+                            .map(|(_, value)| (*value).to_owned())
+                    })
+            })
+        };
+        assert!(build(None).is_ok());
+        for replacement in [
+            ("SOS_TOPOLOGY_POLICY", "unknown"),
+            ("SOS_ELECTION_DATE", "2026-11-04"),
+            ("SOS_EXPECTED_JURISDICTIONS", "159"),
+            (
+                "SOS_SOURCE_URL",
+                "https://results.sos.ga.gov/cdn/results/Georgia/export-Other.json",
+            ),
+            (
+                "SOS_ACCEPTED_TOPOLOGIES",
+                "[\"e3a380f76800cae26a72593cc33db5c7f354415c83ab1bff0ea563a27fdefb4b\"]",
+            ),
+        ] {
+            assert!(matches!(build(Some(replacement)), Err(Error::Config(_))));
+        }
+    }
+
+    #[test]
+    fn source_rejection_reasons_are_static_and_distinct() {
+        for (source, message) in [
+            (
+                "source membership policy mismatch",
+                "Source membership policy mismatch",
+            ),
+            (
+                "source topology is not reviewed",
+                "Source topology is not reviewed",
+            ),
+            (
+                "source completeness mismatch",
+                "Source completeness mismatch",
+            ),
+        ] {
+            assert!(
+                matches!(source_error(civpulse_results_source::Error::Invalid(source)),Error::Source(actual) if actual==message)
+            );
+        }
+        assert!(matches!(
+            source_error(civpulse_results_source::Error::Invalid("untrusted payload")),
+            Error::Source("Source download or validation failed")
+        ));
+    }
     struct Archive {
         raw: Vec<u8>,
         forbid_download: bool,
@@ -633,6 +742,7 @@ mod admission_tests {
                 expected_jurisdictions: Some(2),
                 expected_items: Some(2),
                 accepted_topologies: vec![],
+                topology_policy: None,
             },
             url.into(),
             spool.path().into(),

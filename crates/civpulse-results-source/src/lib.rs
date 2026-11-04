@@ -2,6 +2,8 @@
 mod canonical;
 mod download;
 mod parse;
+mod topology;
+pub use topology::TopologyPolicy;
 
 pub use canonical::{canonical, stringify, stringify_envelope};
 pub use download::{Download, Receipt, Validators, download, retry_after};

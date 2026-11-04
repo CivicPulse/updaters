@@ -22,6 +22,11 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if not (regexMatch "^sha256:[a-f0-9]{64}$" .Values.image.digest) -}}
 {{- fail "image.digest must be an immutable sha256 digest" -}}
 {{- end -}}
+{{- if .Values.collection.topologyPolicy -}}
+{{- if or (not (empty .Values.collection.acceptedTopologies)) (ne .Values.collection.electionDate "2026-11-03") (ne (int .Values.collection.expectedJurisdictions) 160) (ne .Values.collection.sourceUrl "https://results.sos.ga.gov/cdn/results/Georgia/export-11032026GeneralAndSpecialElection.json") -}}
+{{- fail "topologyPolicy requires its reviewed source/date/160 scopes and an empty acceptedTopologies" -}}
+{{- end -}}
+{{- end -}}
 {{- if .Values.collection.enabled -}}
 {{- if or (empty .Values.collection.electionId) (empty .Values.collection.electionDate) (empty .Values.collection.sourceUrl) (lt (int .Values.collection.expectedItems) 1) -}}
 {{- fail "enabled collection requires reviewed election identity/date/URL and expectedItems" -}}

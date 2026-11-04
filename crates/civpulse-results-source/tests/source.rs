@@ -14,6 +14,7 @@ fn expectations() -> Expectations {
         expected_jurisdictions: Some(2),
         expected_items: Some(2),
         accepted_topologies: vec![],
+        topology_policy: None,
     }
 }
 fn run(bytes: &[u8], limits: &Limits, expected: &Expectations) -> bool {
@@ -197,6 +198,7 @@ fn invalid_schema_duplicates_counts_and_completeness_fail_closed() {
         &Expectations {
             expected_items: Some(3),
             accepted_topologies: vec![],
+            topology_policy: None,
             ..expectations()
         }
     ));
@@ -367,6 +369,7 @@ fn topology(value: &Value) -> String {
             expected_jurisdictions: Some(2),
             expected_items: None,
             accepted_topologies: vec![],
+            topology_policy: None,
         },
         &Limits::default(),
         &AtomicBool::new(false),
@@ -483,4 +486,28 @@ fn topology_ignores_order_and_results_but_rejects_invalid_ids_and_configuration(
             &reviewed
         ));
     }
+}
+
+#[test]
+fn membership_policy_configuration_cannot_bypass_its_catalog_date_and_scope_binding() {
+    use civpulse_results_source::TopologyPolicy;
+    let policy = TopologyPolicy::Georgia20261103V1;
+    let mut expected = Expectations {
+        election_date: "2026-11-03".into(),
+        expected_jurisdictions: Some(160),
+        expected_items: Some(4178),
+        accepted_topologies: vec![],
+        topology_policy: Some(policy),
+    };
+    expected.validate_topologies().unwrap();
+    expected.accepted_topologies = vec!["a".repeat(64)];
+    assert!(expected.validate_topologies().is_err());
+    expected.accepted_topologies.clear();
+    expected.election_date = "2026-11-04".into();
+    assert!(expected.validate_topologies().is_err());
+    expected.election_date = "2026-11-03".into();
+    expected.expected_jurisdictions = Some(159);
+    assert!(expected.validate_topologies().is_err());
+    assert!(TopologyPolicy::parse("unknown").is_err());
+    assert_eq!(TopologyPolicy::parse("").unwrap(), None);
 }

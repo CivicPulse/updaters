@@ -11,6 +11,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .map(|raw| serde_json::from_str::<Vec<String>>(&raw))
         .transpose()?
         .unwrap_or_default();
+    let topology_policy = civpulse_results_source::TopologyPolicy::parse(
+        &std::env::args().nth(3).unwrap_or_default(),
+    )?;
     let temp = tempfile::tempdir()?;
     let start = Instant::now();
     let prepared = prepare(
@@ -21,6 +24,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             expected_jurisdictions: Some(160),
             expected_items: Some(4_178),
             accepted_topologies,
+            topology_policy,
         },
         &Limits {
             max_download: 128 * 1024 * 1024,

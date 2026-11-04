@@ -15,6 +15,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             expected_jurisdictions: Some(160),
             expected_items: Some(4178),
             accepted_topologies: vec![],
+            topology_policy: None,
         },
         &Limits::default(),
         &AtomicBool::new(false),

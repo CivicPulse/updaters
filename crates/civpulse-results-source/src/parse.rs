@@ -57,6 +57,7 @@ pub struct Expectations {
     pub expected_items: Option<usize>,
     /// Optional reviewed identity-membership hashes; replaces only exact item-count equality.
     pub accepted_topologies: Vec<String>,
+    pub topology_policy: Option<crate::TopologyPolicy>,
 }
 
 impl Expectations {
@@ -79,6 +80,17 @@ impl Expectations {
                 != self.accepted_topologies.len()
         {
             return Err(Error::Invalid("invalid reviewed topology allowlist"));
+        }
+        if let Some(policy) = self.topology_policy {
+            if !self.accepted_topologies.is_empty()
+                || self.election_date != "2026-11-03"
+                || self.expected_jurisdictions != Some(160)
+            {
+                return Err(Error::Invalid(
+                    "invalid source membership policy configuration",
+                ));
+            }
+            policy.validate_catalog()?;
         }
         Ok(())
     }
@@ -273,6 +285,9 @@ pub fn prepare(
         return Err(Error::Invalid("source timestamp is in the future"));
     }
     topology.sort_unstable();
+    if let Some(policy) = expectations.topology_policy {
+        policy.admit(&topology)?;
+    }
     let topology_sha256 = hex::encode(Sha256::digest(serde_json::to_vec(&topology)?));
     if !expectations.accepted_topologies.is_empty()
         && !expectations.accepted_topologies.contains(&topology_sha256)
@@ -283,6 +298,7 @@ pub fn prepare(
         .expected_jurisdictions
         .is_some_and(|count| count != scopes.len())
         || expectations.accepted_topologies.is_empty()
+            && expectations.topology_policy.is_none()
             && expectations
                 .expected_items
                 .is_some_and(|count| count != item_count)
@@ -355,7 +371,7 @@ fn scope_membership(scope: &Value) -> Result<Vec<(String, Vec<String>)>> {
     Ok(items)
 }
 
-type Topology = Vec<(String, String, Vec<(String, Vec<String>)>)>;
+type Topology = crate::topology::Membership;
 
 #[allow(clippy::too_many_arguments)]
 fn process_scope(

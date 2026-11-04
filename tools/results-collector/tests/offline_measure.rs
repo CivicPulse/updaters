@@ -50,6 +50,7 @@ async fn offline_disk_pipeline_publishes_complete_snapshot_and_fenced_pointer() 
             expected_jurisdictions: Some(2),
             expected_items: Some(2),
             accepted_topologies: vec![],
+            topology_policy: None,
         },
         local_rpc::SOURCE.into(),
         scratch.path().join("spool"),
