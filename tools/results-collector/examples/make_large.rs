@@ -14,6 +14,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             election_date: "2026-11-03".into(),
             expected_jurisdictions: Some(160),
             expected_items: Some(4178),
+            accepted_topologies: vec![],
         },
         &Limits::default(),
         &AtomicBool::new(false),

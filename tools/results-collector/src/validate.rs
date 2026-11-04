@@ -57,6 +57,7 @@ impl ValidationOptions {
                 election_date: date.clone(),
                 expected_jurisdictions,
                 expected_items,
+                accepted_topologies: vec![],
             },
         })
     }
@@ -69,6 +70,7 @@ pub struct ValidationSummary {
     pub item_count: usize,
     pub jurisdictions: usize,
     pub fingerprint: String,
+    pub topology_sha256: String,
     pub duration_ms: u128,
 }
 
@@ -100,6 +102,7 @@ pub async fn validate(
             item_count: prepared.item_count,
             jurisdictions: prepared.scopes.len(),
             fingerprint: prepared.fingerprint,
+            topology_sha256: prepared.topology_sha256,
             duration_ms: start.elapsed().as_millis(),
         })
     });

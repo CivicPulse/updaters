@@ -13,6 +13,7 @@ fn expectations() -> Expectations {
         election_date: "2026-11-03".to_owned(),
         expected_jurisdictions: Some(2),
         expected_items: Some(2),
+        accepted_topologies: vec![],
     }
 }
 fn run(bytes: &[u8], limits: &Limits, expected: &Expectations) -> bool {
@@ -195,6 +196,7 @@ fn invalid_schema_duplicates_counts_and_completeness_fail_closed() {
         &limits,
         &Expectations {
             expected_items: Some(3),
+            accepted_topologies: vec![],
             ..expectations()
         }
     ));
@@ -351,4 +353,134 @@ fn unknown_root_header_numbers_remain_rejected_before_publication() {
         &Limits::default(),
         &expectations()
     ));
+}
+
+fn topology(value: &Value) -> String {
+    let temp = tempfile::tempdir().unwrap();
+    let input = temp.path().join("source.json");
+    fs::write(&input, serde_json::to_vec(value).unwrap()).unwrap();
+    prepare(
+        &input,
+        &temp.path().join("spool"),
+        &Expectations {
+            election_date: "2026-11-03".into(),
+            expected_jurisdictions: Some(2),
+            expected_items: None,
+            accepted_topologies: vec![],
+        },
+        &Limits::default(),
+        &AtomicBool::new(false),
+    )
+    .unwrap()
+    .topology_sha256
+}
+
+#[test]
+fn topology_encoding_matches_independent_fixed_vector() {
+    // SHA256 of these compact UTF8 bytes, no trailing newline, derived independently
+    // with Python hashlib rather than the parser's topology encoder:
+    // [["county","001",[["race-1",["A","b","c","d"]]]],["state","GA",[["race-1",["A","b","c","d"]]]]]
+    assert_eq!(
+        topology(&base()),
+        "2fe2ce68c92bcbd1e0e7d7e1f925dd3aaa906066ef9fb4893b39a1fe9b512e06"
+    );
+}
+
+#[test]
+fn reviewed_topologies_accept_only_known_membership_not_matching_counts() {
+    let prior = base();
+    let mut current = prior.clone();
+    current["localResults"][0]["ballotItems"] = json!([]);
+    current["results"]["ballotItems"][0]["ballotOptions"]
+        .as_array_mut()
+        .unwrap()
+        .pop();
+    let mut reviewed = expectations();
+    reviewed.accepted_topologies = vec![topology(&prior), topology(&current)];
+    for value in [&prior, &current] {
+        assert!(run(
+            &serde_json::to_vec(value).unwrap(),
+            &Limits::default(),
+            &reviewed
+        ));
+    }
+    assert!(!run(
+        &serde_json::to_vec(&current).unwrap(),
+        &Limits::default(),
+        &expectations()
+    ));
+    let mut mutations = vec![];
+    let mut value = prior.clone();
+    value["localResults"][0]["id"] = json!("002");
+    mutations.push(value);
+    let mut value = prior.clone();
+    value["results"]["ballotItems"][0]["id"] = json!("replacement");
+    mutations.push(value);
+    let mut value = prior.clone();
+    value["results"]["ballotItems"][0]["ballotOptions"][0]["id"] = json!("replacement");
+    mutations.push(value);
+    let mut value = prior.clone();
+    let state = value["results"].clone();
+    value["results"] = value["localResults"][0].clone();
+    value["localResults"][0] = state;
+    mutations.push(value);
+    let mut value = current.clone();
+    value["results"]["ballotItems"][0]["ballotOptions"]
+        .as_array_mut()
+        .unwrap()
+        .pop();
+    mutations.push(value);
+    for value in mutations {
+        assert!(!run(
+            &serde_json::to_vec(&value).unwrap(),
+            &Limits::default(),
+            &reviewed
+        ));
+    }
+}
+
+#[test]
+fn topology_ignores_order_and_results_but_rejects_invalid_ids_and_configuration() {
+    let prior = base();
+    let hash = topology(&prior);
+    let mut value = prior.clone();
+    value["results"]["ballotItems"][0]["ballotOptions"]
+        .as_array_mut()
+        .unwrap()
+        .reverse();
+    value["results"]["ballotItems"][0]["ballotOptions"][0]["voteCount"] = json!(999);
+    assert_eq!(topology(&value), hash);
+    let mut reviewed = expectations();
+    reviewed.accepted_topologies = vec![hash.clone()];
+    for id in [json!(null), json!(42), json!("")] {
+        let mut invalid = prior.clone();
+        invalid["results"]["ballotItems"][0]["ballotOptions"][0]["id"] = id;
+        assert!(!run(
+            &serde_json::to_vec(&invalid).unwrap(),
+            &Limits::default(),
+            &reviewed
+        ));
+    }
+    let mut duplicate = prior.clone();
+    duplicate["results"]["ballotItems"][0]["ballotOptions"][1]["id"] =
+        duplicate["results"]["ballotItems"][0]["ballotOptions"][0]["id"].clone();
+    assert!(!run(
+        &serde_json::to_vec(&duplicate).unwrap(),
+        &Limits::default(),
+        &reviewed
+    ));
+    for hashes in [
+        vec![hash.clone(), hash],
+        vec!["a".repeat(63)],
+        vec!["G".repeat(64)],
+        (0..9).map(|i| format!("{i:064x}")).collect(),
+    ] {
+        reviewed.accepted_topologies = hashes;
+        assert!(reviewed.validate_topologies().is_err());
+        assert!(!run(
+            &serde_json::to_vec(&prior).unwrap(),
+            &Limits::default(),
+            &reviewed
+        ));
+    }
 }

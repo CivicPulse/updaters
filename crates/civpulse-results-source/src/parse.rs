@@ -55,6 +55,33 @@ pub struct Expectations {
     pub election_date: String,
     pub expected_jurisdictions: Option<usize>,
     pub expected_items: Option<usize>,
+    /// Optional reviewed identity-membership hashes; replaces only exact item-count equality.
+    pub accepted_topologies: Vec<String>,
+}
+
+impl Expectations {
+    /// Reject malformed, duplicated or excessive reviewed membership hashes before I/O.
+    /// # Errors
+    /// Returns an error for an invalid allowlist.
+    pub fn validate_topologies(&self) -> Result<()> {
+        if self.accepted_topologies.len() > 8
+            || self.accepted_topologies.iter().any(|hash| {
+                hash.len() != 64
+                    || !hash
+                        .bytes()
+                        .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+            })
+            || self
+                .accepted_topologies
+                .iter()
+                .collect::<HashSet<_>>()
+                .len()
+                != self.accepted_topologies.len()
+        {
+            return Err(Error::Invalid("invalid reviewed topology allowlist"));
+        }
+        Ok(())
+    }
 }
 
 /// One validated spool scope. Its source order index is stable across retries.
@@ -72,6 +99,7 @@ pub struct Prepared {
     pub jurisdictions: Vec<Value>,
     pub scopes: Vec<Scope>,
     pub fingerprint: String,
+    pub topology_sha256: String,
     pub item_count: usize,
 }
 
@@ -100,6 +128,7 @@ pub fn prepare(
     {
         return Err(Error::Invalid("invalid zero resource limit"));
     }
+    expectations.validate_topologies()?;
     let date = NaiveDate::parse_from_str(&expectations.election_date, "%Y-%m-%d")
         .map_err(|_| Error::Invalid("invalid expected election date"))?;
     if date.format("%Y-%m-%d").to_string() != expectations.election_date {
@@ -144,6 +173,7 @@ pub fn prepare(
     let mut scopes = Vec::new();
     let mut scope_ids = HashSet::new();
     let mut hashes = Vec::new();
+    let mut topology = Vec::new();
     let mut item_count = 0_usize;
     let mut county_count = 0_usize;
     let collator = collator()?;
@@ -173,6 +203,7 @@ pub fn prepare(
                     &mut scopes,
                     &mut scope_ids,
                     &mut hashes,
+                    &mut topology,
                     &mut item_count,
                     &reader,
                     &collator,
@@ -196,6 +227,7 @@ pub fn prepare(
                 &mut scopes,
                 &mut scope_ids,
                 &mut hashes,
+                &mut topology,
                 &mut item_count,
                 &reader,
                 &collator,
@@ -240,12 +272,20 @@ pub fn prepare(
     if time > Utc::now() + chrono::Duration::minutes(5) {
         return Err(Error::Invalid("source timestamp is in the future"));
     }
+    topology.sort_unstable();
+    let topology_sha256 = hex::encode(Sha256::digest(serde_json::to_vec(&topology)?));
+    if !expectations.accepted_topologies.is_empty()
+        && !expectations.accepted_topologies.contains(&topology_sha256)
+    {
+        return Err(Error::Invalid("source topology is not reviewed"));
+    }
     if expectations
         .expected_jurisdictions
         .is_some_and(|count| count != scopes.len())
-        || expectations
-            .expected_items
-            .is_some_and(|count| count != item_count)
+        || expectations.accepted_topologies.is_empty()
+            && expectations
+                .expected_items
+                .is_some_and(|count| count != item_count)
     {
         return Err(Error::Invalid("source completeness mismatch"));
     }
@@ -279,9 +319,43 @@ pub fn prepare(
         jurisdictions,
         scopes,
         fingerprint,
+        topology_sha256,
         item_count,
     })
 }
+
+fn scope_membership(scope: &Value) -> Result<Vec<(String, Vec<String>)>> {
+    let mut items: Vec<_> = scope["ballotItems"]
+        .as_array()
+        .ok_or(Error::Invalid("invalid ballot items"))?
+        .iter()
+        .map(|item| {
+            let mut options: Vec<String> = item["ballotOptions"]
+                .as_array()
+                .ok_or(Error::Invalid("invalid ballot options"))?
+                .iter()
+                .map(|option| {
+                    option["id"]
+                        .as_str()
+                        .map(str::to_owned)
+                        .ok_or(Error::Invalid("invalid option ID"))
+                })
+                .collect::<Result<_>>()?;
+            options.sort_unstable();
+            Ok((
+                item["id"]
+                    .as_str()
+                    .ok_or(Error::Invalid("invalid item ID"))?
+                    .to_owned(),
+                options,
+            ))
+        })
+        .collect::<Result<_>>()?;
+    items.sort_unstable();
+    Ok(items)
+}
+
+type Topology = Vec<(String, String, Vec<(String, Vec<String>)>)>;
 
 #[allow(clippy::too_many_arguments)]
 fn process_scope(
@@ -292,6 +366,7 @@ fn process_scope(
     scopes: &mut Vec<Scope>,
     ids: &mut HashSet<String>,
     hashes: &mut Vec<Value>,
+    topology: &mut Topology,
     item_count: &mut usize,
     reader: &Reader<'_>,
     collator: &icu_collator::CollatorBorrowed<'_>,
@@ -305,6 +380,11 @@ fn process_scope(
     if !ids.insert(id.clone()) {
         return Err(Error::Invalid("duplicate jurisdiction ID"));
     }
+    topology.push((
+        if index == 0 { "state" } else { "county" }.to_owned(),
+        id.clone(),
+        scope_membership(&scope)?,
+    ));
     let mut hash = HashWriter {
         hash: Sha256::new(),
         cancelled: reader.cancelled,

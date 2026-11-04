@@ -161,3 +161,18 @@ The retained monitor PVC stores `/state/alerts.json` for email and
 other channel's deduplication state. New-data notifications use confirmed signed-S3
 pointer/database agreement and the semantic fingerprint, not source polls or raw
 file hashes. See the [notification runbook](../../../docs/operations/results-ntfy.md).
+
+
+The optional monitor is a single-replica `Recreate` Deployment (`notify-daemon`),
+not a minute CronJob. Its unchanged retained RWO claim stays mounted between
+observations, with the same observation/email/push state paths. Local
+`notify-liveness` probes detect a stopped loop, independent of remote services.
+Passes run without overlap or catch-up, every 60 seconds at fastest, bounded to
+100 seconds. Shutdown drains a current pass within 110 seconds of pod grace.
+`monitoring.schedule` remains a deprecated compatibility value only.
+
+Before upgrading from the older CronJob chart, suspend that monitor CronJob and
+drain its existing Jobs, retaining the claim and state. Verify claim UID and
+notification state after migration. Rollback must likewise stop the Deployment
+before restoring a CronJob; never run both controllers or delete the state PVC.
+See the [monitor migration runbook](../../../docs/operations/results-runbook.md).

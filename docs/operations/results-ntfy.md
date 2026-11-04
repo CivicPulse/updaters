@@ -1,6 +1,6 @@
 # Results notifications
 
-The existing minute monitor can publish to the public `https://ntfy.sh/CivPulse`
+The existing long-lived minute monitor can publish to the public `https://ntfy.sh/CivPulse`
 topic in addition to its existing email channel. There is no new source scheduler.
 Chart defaults disable push; production values opt in when monitoring is enabled.
 `SOS_NTFY_ENABLED=true`, `CIVPULSE_ENV=prod`, and the exact
@@ -32,7 +32,8 @@ Timeouts cover the entire request/body (15 seconds per push), redirects are disa
 message/response sizes are bounded, and matching provider acknowledgement is
 required before advancing a marker. The monitor's 60-second observation budget,
 parallel email/push attempts, and at most two sequential 15-second push attempts
-fit its existing 120-second Job deadline.
+fit the daemon’s 100-second cycle deadline. SIGTERM drains the active bounded
+cycle within the pod’s 110-second grace period.
 
 After the reviewed image is scanned/published/deployed, an operator can run an
 explicit finite `ntfy-test` command using that same image, with the opt-in variables
@@ -42,7 +43,7 @@ verification. It proves delivery only, never a real error or new publication.
 Do not modify persistent deduplication state to manufacture a live event.
 
 Keep email enabled during push failures. Inspect the sanitized `push_delivery`
-event and failed monitor Job; avoid printing provider response bodies. Roll back
+event and monitor pod; avoid printing provider response bodies. Roll back
 only `monitoring.ntfyEnabled=false` if needed, preserving active collection,
 monitoring, email, identity, resource caps, and the retained state PVC. No actual
 notification or deployment is performed by these instructions or the CI tests.

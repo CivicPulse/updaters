@@ -20,4 +20,5 @@ data:
   SOS_ELECTION_DATE: {{ .Values.collection.electionDate | quote }}
   SOS_SOURCE_URL: {{ .Values.collection.sourceUrl | quote }}
   SOS_EXPECTED_JURISDICTIONS: {{ .Values.collection.expectedJurisdictions | quote }}
+  SOS_ACCEPTED_TOPOLOGIES: {{ .Values.collection.acceptedTopologies | toJson | quote }}
   SOS_EXPECTED_ITEMS: {{ .Values.collection.expectedItems | quote }}

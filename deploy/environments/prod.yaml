@@ -10,6 +10,10 @@ collection:
   sourceUrl: https://results.sos.ga.gov/cdn/results/Georgia/export-11032026GeneralAndSpecialElection.json
   expectedJurisdictions: 160
   expectedItems: 4178
+  # Exact reviewed scope/contest/option memberships; see docs/contracts/results-topology.md.
+  acceptedTopologies:
+    - e3a380f76800cae26a72593cc33db5c7f354415c83ab1bff0ea563a27fdefb4b
+    - ca2594ee8e08dec3c0790cba0c5a51a77e22ecec4febae3634a00ed2bbe2fbb9
 acceptance:
   approved: false
   reference: ""

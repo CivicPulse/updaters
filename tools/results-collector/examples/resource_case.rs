@@ -63,6 +63,15 @@ fn hash(path: &Path) -> Result<String, Box<dyn std::error::Error>> {
     }
     Ok(hex::encode(digest.finalize()))
 }
+fn reviewed_expectations() -> Expectations {
+    Expectations {
+        election_date: "2026-11-03".into(),
+        expected_jurisdictions: Some(160),
+        expected_items: Some(4178),
+        accepted_topologies: vec![],
+    }
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
     if args.len() != 4 {
@@ -74,11 +83,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Err("target exceeds contract".into());
     }
     let scratch = tempfile::tempdir()?;
-    let expectations = Expectations {
-        election_date: "2026-11-03".into(),
-        expected_jurisdictions: Some(160),
-        expected_items: Some(4178),
-    };
+    let expectations = reviewed_expectations();
     let original = prepare(
         Path::new(&args[0]),
         &scratch.path().join("source"),
@@ -253,6 +258,7 @@ mod tests {
                 election_date: "2026-11-03".into(),
                 expected_jurisdictions: Some(2),
                 expected_items: Some(6),
+                accepted_topologies: vec![],
             },
             &Limits::default(),
             &AtomicBool::new(false),

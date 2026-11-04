@@ -16,6 +16,7 @@ collection:
   sourceUrl: ''
   expectedJurisdictions: 160
   expectedItems: 0
+  acceptedTopologies: []
 acceptance:
   approved: false
   reference: ''
