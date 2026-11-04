@@ -102,6 +102,14 @@ def main():
     for environment in ["dev", "test", "prod"]:
         subprocess.run(["helm", "lint", str(CHART), "--strict", "--namespace", "civpulse-"+environment,
                         "-f", str(ROOT/f"deploy/environments/{environment}.yaml"), "--set-string", "image.digest="+DIGEST], check=True)
+    policy_config = next(x for x in render("prod") if x["kind"] == "ConfigMap")["data"]
+    assert policy_config["SOS_TOPOLOGY_POLICY"] == "georgia-2026-11-03-v1"
+    assert json.loads(policy_config["SOS_ACCEPTED_TOPOLOGIES"]) == []
+    for invalid in ["collection.topologyPolicy=unknown", "collection.expectedJurisdictions=159",
+                    "collection.electionDate=2026-11-04",
+                    "collection.sourceUrl=https://results.sos.ga.gov/cdn/results/Georgia/export-Other.json",
+                    "collection.acceptedTopologies[0]="+"a"*64]:
+        render("prod", [invalid], success=False)
     print("Collector chart safety and activation guards passed")
 
 

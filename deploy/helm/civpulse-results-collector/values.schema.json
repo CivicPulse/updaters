@@ -104,6 +104,10 @@
           "minimum": 1,
           "maximum": 160
         },
+        "topologyPolicy": {
+          "type": "string",
+          "enum": ["", "georgia-2026-11-03-v1"]
+        },
         "acceptedTopologies": {
           "type": "array",
           "maxItems": 8,

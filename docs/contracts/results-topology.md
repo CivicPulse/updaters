@@ -11,8 +11,9 @@ timeouts, download/scope/staging caps and semantic canonical fingerprint remain
 unchanged. A matching hash includes exact jurisdiction membership and roles,
 contest IDs within each jurisdiction and option IDs within each contest. Thus an
 unreviewed removal, addition, substitution or reparenting fails closed even if its
-aggregate item count equals a reviewed count. Only the two hashes below are
-configured for production; admitting a new structure requires reviewed config.
+aggregate item count equals a reviewed count. The first incident used the two exact hashes below; the durable named policy
+described later supersedes that production configuration. Unknown membership
+changes outside that explicit policy still require review.
 
 Encoding is compact UTF8 JSON, with no trailing newline, of an array of
 `[role, scope_id, [[item_id, [option_id, ...]], ...]]`. Role is `state` for root
@@ -49,9 +50,9 @@ No other scope/contest identity changes were observed. This policy treats the
 reviewed official source as authoritative for current projections. It does not
 claim the nonzero removals were intentional, correct, or empty cleanup. Earlier
 raw archives and published revisions retain the previous evidence; no aggregate
-vote monotonicity rule masks official corrections. Unknown future topologies
-remain rejected pending review, rather than silently moving an exact count or
-broadening a minimum/maximum range.
+vote monotonicity rule masks official corrections. In exact-hash mode, unknown future topologies remain rejected pending review.
+The named policy below admits only its explicitly bounded membership variations,
+rather than silently moving an exact count or broadening a numeric range.
 
 Offline reproduction with retained public raw files (no provider HTTP required):
 
@@ -65,3 +66,59 @@ The example enforces160 jurisdictions, the selected128MiB download/16MiB scope
 limits and the supplied topology allowlist. Large official JSON is not committed;
 compact synthetic tests verify admission and rejection, including equal-count
 identity mutations and unchanged legacy count defaults.
+
+## Durable reviewed membership policy v1
+
+`collection.topologyPolicy: georgia-2026-11-03-v1` opts into the bundled public
+identity catalog at `crates/civpulse-results-source/catalogs/georgia-2026-11-03-v1.json`.
+Its literal SHA256 is
+`e3a380f76800cae26a72593cc33db5c7f354415c83ab1bff0ea563a27fdefb4b`, derived
+from the revision2 raw `029fd8…` documented above. It contains only roles and
+scope/contest/option IDs, no votes, names, credentials or voter data. The compiled
+catalog hash is checked before source HTTP. Policy mode requires the exact
+November3 source URL/date and160 expected jurisdictions. It conflicts with a
+nonempty exact-hash allowlist; blank policy plus empty hashes retains legacy
+strict item counts. Exact-hash mode remains supported separately. Production
+selects the named policy with `acceptedTopologies: []`.
+
+The fixed baseline has3294 multi-option contests and884 single-option contests
+across160 scopes. All state/county roles and IDs must remain exact. Every baseline
+multi-option contest is required, with all baseline options required except the
+three exact statewide `(item, option)` pairs already documented above. These
+exceptions never make the multi-option contest itself optional. Every baseline
+single-option contest may disappear or reappear as a whole; if present, it must
+retain its exact baseline option. Unknown scope, contest or option IDs,
+reparenting, empty/substituted option sets and missing protected membership fail
+closed, including count-neutral mutations. Classification always uses the pinned
+baseline, never the changing live option count.
+
+This explicitly permits omissions of any of the884 known single-option entries,
+including entries that previously recorded nonzero votes. It makes no inference
+that one candidate won, an omitted count is zero, or the provider intended or
+correctly made a removal. The current official document is authoritative for the
+current projection; omitted items are removed, never silently carried forward or
+zeroed. Previous raw archives and immutable revisions preserve prior evidence.
+This is a reviewed source-membership policy, not an unrestricted count range.
+
+A subsequent single bounded official GET (HTTP200 Date2026-11-04T01:41:18Z,
+Last-Modified01:34:53Z) had createdAt2026-11-04T01:34:52.3233646Z,
+46887064 bytes, raw SHA256
+`11f8a742c43aa43bca42223e397ccbf65ccae3bbd51390898260a552fd787e2f`,
+160 jurisdictions and4167 items. It removed only Chatham025 local contests24–27
+(Elections Board Member1–4), whose baseline sole options42–45 had zero votes.
+Its diagnostic topology hash is
+`35632800575c4058050d06ff61c6924fc5ec2baa18a997b2b557a4b1c0348e9b`.
+All three retained raw documents pass policy admission under128MiB download and
+16MiB scope limits. Their semantic fingerprints are unchanged by this policy.
+
+Offline policy reproduction adds the policy argument and an empty hash list:
+
+```sh
+TMPDIR=/path/to/ext4/scratch cargo run --locked -p civpulse-results-source \
+  --example validate -- source.json '[]' georgia-2026-11-03-v1
+```
+
+Membership, exact-topology and legacy-completeness rejections have distinct
+static diagnostic messages. Other dependency errors retain the sanitized generic
+fallback; source response bodies, IDs and credentials are never included in
+failure text. Fresh imports and archived replay run the same parser admission.

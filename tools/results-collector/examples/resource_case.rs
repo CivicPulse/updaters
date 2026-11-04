@@ -69,6 +69,7 @@ fn reviewed_expectations() -> Expectations {
         expected_jurisdictions: Some(160),
         expected_items: Some(4178),
         accepted_topologies: vec![],
+        topology_policy: None,
     }
 }
 
@@ -259,6 +260,7 @@ mod tests {
                 expected_jurisdictions: Some(2),
                 expected_items: Some(6),
                 accepted_topologies: vec![],
+                topology_policy: None,
             },
             &Limits::default(),
             &AtomicBool::new(false),

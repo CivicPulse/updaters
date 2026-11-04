@@ -58,6 +58,7 @@ impl ValidationOptions {
                 expected_jurisdictions,
                 expected_items,
                 accepted_topologies: vec![],
+                topology_policy: None,
             },
         })
     }
