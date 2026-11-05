@@ -108,7 +108,6 @@
   "nodePoolsChanged": false,
   "storageClass": "local-path",
   "storageCapacityPerEnvironmentGiB": 12,
-  "deploymentSourceCheckout": "/home/kwhatcher/.codex-workspaces/worktrees/updaters-issue-1",
   "deploymentConfigurationChanges": [
     "deploy/supabase/bootstrap.py: restrict nonproduction to context thor",
     "deploy/supabase/values.yaml: local-path volumes",
@@ -125,5 +124,6 @@
     "authenticated collector database health RPC succeeds in each environment",
     "all migrated workload replicas ready",
     "production API continues returning 401 without credentials"
-  ]
+  ],
+  "deploymentSourceRepository": "https://github.com/CivicPulse/updaters"
 }

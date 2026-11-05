@@ -2,6 +2,7 @@
 """Check that bootstrap cannot accidentally select prod or execute a dry run."""
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -34,6 +35,17 @@ except RuntimeError:
     pass
 else:
     raise AssertionError("corrupted pinned migration accepted")
+# SQL replay must deliver EOF to Thor's older streaming exec API.
+with patch.dict(os.environ, {}, clear=True), patch.object(module.subprocess, "run") as executed:
+    executed.return_value.returncode = 0
+    executed.return_value.stdout = b"ok"
+    assert module.run(["kubectl", "--context", "thor", "exec", "-i", "db", "--", "psql"], b"select 1;") == b"ok"
+    assert executed.call_args.kwargs["env"]["KUBECTL_REMOTE_COMMAND_WEBSOCKETS"] == "false"
+with patch.dict(os.environ, {"KUBECTL_REMOTE_COMMAND_WEBSOCKETS": "true"}), patch.object(module.subprocess, "run") as executed:
+    executed.return_value.returncode = 0
+    module.run(["kubectl", "exec", "-i", "db", "--", "psql"], b"select 1;")
+    assert executed.call_args.kwargs["env"]["KUBECTL_REMOTE_COMMAND_WEBSOCKETS"] == "true"
+
 print("Bootstrap production/context/download guards passed")
 
 # Execute the actual values command against filesystem states matching a fresh

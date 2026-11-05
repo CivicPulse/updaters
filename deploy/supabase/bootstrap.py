@@ -25,8 +25,13 @@ HERE = Path(__file__).resolve().parent
 
 def run(args, data=None, capture=True):
     # Dependency errors may contain credentials; never print captured output.
+    environment = os.environ.copy()
+    if args[0] == "kubectl" and "exec" in args and "-i" in args:
+        # Thor k3s 1.34 can leave stdin open with newer kubectl WebSocket exec.
+        # SPDY forwards EOF correctly when replaying SQL through psql stdin.
+        environment.setdefault("KUBECTL_REMOTE_COMMAND_WEBSOCKETS", "false")
     result = subprocess.run(args, input=data, stdout=subprocess.PIPE if capture else None,
-                            stderr=subprocess.PIPE, check=False)
+                            stderr=subprocess.PIPE, check=False, env=environment)
     if result.returncode:
         raise RuntimeError("Command failed: " + args[0] + " " + args[1] + " (inspect privately)")
     return result.stdout or b""

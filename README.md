@@ -78,9 +78,9 @@ The same Dockerfile builds one selected binary per image. Images include CA
 certificates for future HTTPS clients and run as an unprivileged numeric user.
 The runtime is a digest-pinned distroless Debian 13 image with no shell or package
 manager; probes and diagnostics must invoke the executable directly.
-Pull-request CI builds and checks all four images, including the real disabled
+Pull-request CI builds and checks all five images, including the real disabled
 collector entry point, heartbeat, scratch permissions and bounded SIGTERM. A
-separate workflow builds, checks, scans, and publishes all four images on every
+separate workflow builds, checks, scans, and publishes all five images on every
 push to `main` (including merged pull requests). It can also be run manually from
 `main`. Images are published as
 `registry.digitalocean.com/hatchk8s/<tool>:sha-<full-commit-sha>`, and each job
