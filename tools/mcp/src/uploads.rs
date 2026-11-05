@@ -142,10 +142,9 @@ pub async fn call(b: &Backend, name: &str, a: &Value) -> Result<Value> {
                         false,
                     )
                     .await
+                    && let Some(row) = v.as_array().and_then(|r| r.first())
                 {
-                    if let Some(row) = v.as_array().and_then(|r| r.first()) {
-                        return Ok(row.clone());
-                    }
+                    return Ok(row.clone());
                 }
                 bail!(
                     "Upload outcome uncertain for attachment {id}; retained object {path}. Inspect get_meeting before retrying or reconciling the upload"

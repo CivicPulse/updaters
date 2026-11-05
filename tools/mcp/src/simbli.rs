@@ -285,10 +285,10 @@ pub fn parse(text: &str) -> Result<Value> {
     for (i, d) in documents.iter().enumerate() {
         if d["document"]["role"] == "Minutes" {
             found += 1;
-            if let Some(url) = d["document"]["source_url"].as_str() {
-                if !urls.contains(&url) {
-                    urls.push(url);
-                }
+            if let Some(url) = d["document"]["source_url"].as_str()
+                && !urls.contains(&url)
+            {
+                urls.push(url);
             }
             walk(
                 &d["public_content"]["LstItemMinutes"],

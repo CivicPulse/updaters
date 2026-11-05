@@ -84,10 +84,9 @@ impl Config {
             .nth(1)
             .and_then(|s| URL_SAFE_NO_PAD.decode(s).ok())
             .and_then(|v| serde_json::from_slice::<Value>(&v).ok())
+            && payload["role"] == "service_role"
         {
-            if payload["role"] == "service_role" {
-                bail!("Use a public Supabase key, never service_role");
-            }
+            bail!("Use a public Supabase key, never service_role");
         }
         Url::parse(&self.issuer).context("Invalid AUTHORIZATION_SERVER")?;
         Ok(())
@@ -136,19 +135,19 @@ async fn handle(State(app): State<Arc<App>>, request: Request) -> Response {
     result
         .headers_mut()
         .insert("cache-control", HeaderValue::from_static("no-store"));
-    if result.status() != StatusCode::FORBIDDEN {
-        if let Some(origin) = origin.filter(|s| allowed_origin(s)) {
-            let headers = result.headers_mut();
-            headers.insert(
-                "access-control-allow-origin",
-                HeaderValue::from_str(&origin).expect("checked literal"),
-            );
-            headers.insert(
-                "access-control-expose-headers",
-                HeaderValue::from_static("WWW-Authenticate"),
-            );
-            headers.insert("vary", HeaderValue::from_static("Origin"));
-        }
+    if result.status() != StatusCode::FORBIDDEN
+        && let Some(origin) = origin.filter(|s| allowed_origin(s))
+    {
+        let headers = result.headers_mut();
+        headers.insert(
+            "access-control-allow-origin",
+            HeaderValue::from_str(&origin).expect("checked literal"),
+        );
+        headers.insert(
+            "access-control-expose-headers",
+            HeaderValue::from_static("WWW-Authenticate"),
+        );
+        headers.insert("vary", HeaderValue::from_static("Origin"));
     }
     result
 }
@@ -280,13 +279,12 @@ async fn respond(app: &App, request: Request) -> Response {
         .headers()
         .get("mcp-protocol-version")
         .and_then(|v| v.to_str().ok())
+        && !VERSIONS.contains(&version)
     {
-        if !VERSIONS.contains(&version) {
-            return response(
-                StatusCode::BAD_REQUEST,
-                json!({"error":"Unsupported MCP protocol version"}),
-            );
-        }
+        return response(
+            StatusCode::BAD_REQUEST,
+            json!({"error":"Unsupported MCP protocol version"}),
+        );
     }
     let accept = request
         .headers()

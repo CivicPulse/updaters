@@ -37,10 +37,10 @@ pub(crate) fn defaults(schema: &Value, value: &mut Value) {
     }
     if let (Some(props), Some(object)) = (schema["properties"].as_object(), value.as_object_mut()) {
         for (key, property) in props {
-            if !object.contains_key(key) {
-                if let Some(default) = property.get("default") {
-                    object.insert(key.clone(), default.clone());
-                }
+            if !object.contains_key(key)
+                && let Some(default) = property.get("default")
+            {
+                object.insert(key.clone(), default.clone());
             }
             if let Some(field) = object.get_mut(key) {
                 defaults(property, field);

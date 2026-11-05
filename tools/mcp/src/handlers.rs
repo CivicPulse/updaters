@@ -1069,12 +1069,11 @@ fn validate_turnout(document: &str) -> Result<()> {
                 bail!("Measure schema changed");
             }
             for (key, cell) in measures {
-                if let Some(v) = cell["value"].as_f64() {
-                    if (key == "acceptance_ratio" && v > 1.0)
-                        || (key != "acceptance_ratio" && v.fract() != 0.0)
-                    {
-                        bail!("Invalid count or ratio");
-                    }
+                if let Some(v) = cell["value"].as_f64()
+                    && ((key == "acceptance_ratio" && v > 1.0)
+                        || (key != "acceptance_ratio" && v.fract() != 0.0))
+                {
+                    bail!("Invalid count or ratio");
                 }
             }
         }
