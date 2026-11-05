@@ -86,8 +86,8 @@ def main():
             return json.loads(result["content"][0]["text"])
 
         assert rpc("initialize", {"protocolVersion": "2025-11-25", "capabilities": {}, "clientInfo": {"name": "deployment-smoke", "version": "1"}})["protocolVersion"] == "2025-11-25"
-        expected = json.loads((Path(__file__).resolve().parent.parent / "reference/tools.json").read_text())
-        expected += json.loads((Path(__file__).resolve().parent.parent / "reference/extensions.json").read_text())
+        expected = json.loads((Path(__file__).resolve().parents[3] / "crates/civpulse-civic/reference/tools.json").read_text())
+        expected += json.loads((Path(__file__).resolve().parents[3] / "crates/civpulse-civic/reference/extensions.json").read_text())
         assert rpc("tools/list", {})["tools"] == expected
         checks.append(f"authenticated_full_catalog_{len(expected)}")
         identity = tool("whoami", {})

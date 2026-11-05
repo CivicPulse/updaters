@@ -1,4 +1,3 @@
-use crate::{backend::Backend, catalog, handlers};
 use anyhow::{Context, Result, bail};
 use axum::{
     Router,
@@ -8,6 +7,7 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
+use civpulse_civic::{backend::Backend, catalog, handlers};
 use jsonwebtoken::{Algorithm, DecodingKey, Validation, decode, decode_header, jwk::JwkSet};
 use serde_json::{Value, json};
 use std::{
@@ -335,7 +335,7 @@ async fn respond(app: &App, request: Request) -> Response {
     let result = match text(&message, "method") {
         "initialize" => {
             let requested = text(params, "protocolVersion");
-            json!({"protocolVersion":if VERSIONS.contains(&requested){requested}else{VERSIONS[0]},"capabilities":{"tools":{"listChanged":false}},"serverInfo":{"name":"Civic Pulse","version":"1.5.0"}})
+            json!({"protocolVersion":if VERSIONS.contains(&requested){requested}else{VERSIONS[0]},"capabilities":{"tools":{"listChanged":false}},"serverInfo":{"name":"Civic Pulse","version":"1.6.0"}})
         }
         "ping" => json!({}),
         "tools/list" => {

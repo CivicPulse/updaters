@@ -11,7 +11,7 @@ const {structuredTurnout}=await import(`${repo}/apps/mcp/src/structured-turnout.
 const {z}=await import(`${repo}/apps/mcp/node_modules/zod/index.js`);
 const id='00000000-0000-4000-8000-000000000001';
 const user={id,email:'test@example.org'};
-const root=resolve(import.meta.dir,'..');
+const root=resolve(import.meta.dir,'../../../crates/civpulse-civic');
 async function connection(api:any){const server=buildServer(api,user,{},undefined,'compact');const client=new Client({name:'rust-port-reference',version:'1'});const [a,b]=InMemoryTransport.createLinkedPair();await server.connect(a);await client.connect(b);return {client,close:async()=>{await client.close();await server.close();}};}
 const {McpServer}=await import(`${repo}/apps/mcp/node_modules/@modelcontextprotocol/server/dist/index.mjs`);
 const originalRegister=McpServer.prototype.registerTool;

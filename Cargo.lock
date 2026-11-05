@@ -368,6 +368,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "civpulse-civic"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "base64 0.22.1",
+ "chrono",
+ "civpulse-election-results",
+ "jsonschema",
+ "jsonwebtoken",
+ "regex",
+ "reqwest",
+ "serde_json",
+ "sha2 0.10.9",
+ "tokio",
+ "tower",
+ "tracing",
+ "tracing-subscriber",
+ "url",
+ "uuid",
+]
+
+[[package]]
 name = "civpulse-download"
 version = "0.1.0"
 dependencies = [
@@ -399,6 +422,7 @@ dependencies = [
  "axum",
  "base64 0.22.1",
  "chrono",
+ "civpulse-civic",
  "civpulse-election-results",
  "jsonschema",
  "jsonwebtoken",
@@ -511,6 +535,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum",
+ "civpulse-civic",
  "civpulse-election-results",
  "reqwest",
  "serde",
@@ -519,6 +544,7 @@ dependencies = [
  "tower",
  "tracing",
  "tracing-subscriber",
+ "url",
  "uuid",
 ]
 

@@ -21,7 +21,7 @@ spec:
       imagePullSecrets:
       - name: registry-hatchk8s
       automountServiceAccountToken: false
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 75
       securityContext:
         runAsNonRoot: true
         runAsUser: 65532
@@ -47,6 +47,10 @@ spec:
             secretKeyRef:
               name: webapi-supabase
               key: publishable-key
+        - name: KB_API_URL
+          value: https://kb-api.civpulse.org
+        - name: GEORGIA_SOURCE_READER_URL
+          value: https://civpulse-georgia-source.kerryhatcher.workers.dev/
         readinessProbe:
           tcpSocket:
             port: http

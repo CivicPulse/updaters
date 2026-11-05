@@ -43,5 +43,5 @@ and parsing run on a blocking worker. All authenticated responses remain
 failed feeds produce a sanitized API 502 or an MCP tool error, never zero totals.
 
 The frozen upstream MCP catalog is retained; native tools live separately in
-`tools/mcp/reference/extensions.json` so regenerating the upstream oracle cannot
+`crates/civpulse-civic/reference/extensions.json` so regenerating the upstream oracle cannot
 overwrite them.
