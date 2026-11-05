@@ -15,6 +15,11 @@ policies remain authoritative. No production schema or permission changes are
 needed. OAuth discovery and private health probes remain protocol infrastructure,
 not civic data endpoints; health is not routed publicly.
 
+The public REST documentation endpoints, `GET /api/v1/openapi.json` and
+`GET /api/v1/docs` (Swagger UI), describe the API without accessing civic data
+or contacting Auth. All data and discovery operations below still require a
+verified user token; Swagger UI supports bearer authorization.
+
 ## Discover and invoke operations
 
 - MCP: `list_civic_resources` describes fields, complete primary keys, possible

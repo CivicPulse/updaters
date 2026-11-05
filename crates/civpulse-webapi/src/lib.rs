@@ -1,4 +1,6 @@
 //! Authenticated REST entry point. Database RLS remains the authorization authority.
+mod openapi;
+
 use std::time::Duration;
 
 use anyhow::{Context, Result, ensure};
@@ -117,7 +119,7 @@ impl IntoResponse for ApiError {
     }
 }
 
-/// All routes, fallbacks, and method errors pass through authentication.
+/// Data routes, fallbacks, and method errors require authentication; documentation is public.
 pub fn router(backend: Backend) -> Router {
     Router::new()
         .route("/api/v1/me", get(me))
@@ -148,6 +150,9 @@ pub fn router(backend: Backend) -> Router {
             backend.clone(),
             authenticate,
         ))
+        .route("/api/v1/openapi.json", get(openapi::document))
+        .route("/api/v1/docs", get(openapi::ui))
+        .route("/api/v1/docs/", get(openapi::ui))
         .layer(middleware::from_fn(no_store))
         .with_state(backend)
 }
