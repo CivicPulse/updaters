@@ -4,7 +4,7 @@ use std::time::Duration;
 use anyhow::{Context, Result, ensure};
 use axum::{
     Extension, Json, Router,
-    extract::{Request, State},
+    extract::{Path, Query, Request, State},
     http::{HeaderValue, StatusCode, header},
     middleware::{self, Next},
     response::{IntoResponse, Response},
@@ -88,6 +88,8 @@ impl IntoResponse for ApiError {
         let message = match self.0 {
             StatusCode::UNAUTHORIZED => "authentication required",
             StatusCode::FORBIDDEN => "permission denied",
+            StatusCode::BAD_REQUEST => "invalid election ID or query",
+            StatusCode::BAD_GATEWAY => "election results unavailable",
             _ => "identity or data service unavailable",
         };
         let mut response = (self.0, Json(json!({"error": message}))).into_response();
@@ -105,6 +107,12 @@ pub fn router(backend: Backend) -> Router {
     Router::new()
         .route("/api/v1/me", get(me))
         .route("/api/v1/organizations", get(organizations))
+        .route("/api/v1/elections", get(elections))
+        .route("/api/v1/people", get(people))
+        .route(
+            "/api/v1/elections/{election_id}/results",
+            get(election_results),
+        )
         .fallback(|| async { StatusCode::NOT_FOUND })
         .layer(middleware::from_fn_with_state(
             backend.clone(),
@@ -197,6 +205,96 @@ async fn organizations(
         StatusCode::FORBIDDEN => return Err(ApiError(StatusCode::FORBIDDEN)),
         status if !status.is_success() => return Err(ApiError(StatusCode::SERVICE_UNAVAILABLE)),
         _ => {}
+    }
+    Ok(Json(
+        response
+            .json()
+            .await
+            .map_err(|_| ApiError(StatusCode::SERVICE_UNAVAILABLE))?,
+    ))
+}
+
+#[derive(Default, Deserialize)]
+struct ResultsQuery {
+    #[serde(default)]
+    query: String,
+}
+
+async fn election_results(
+    State(backend): State<Backend>,
+    Extension(identity): Extension<Identity>,
+    Path(election_id): Path<String>,
+    Query(query): Query<ResultsQuery>,
+) -> Result<Json<Value>, ApiError> {
+    if uuid::Uuid::parse_str(&election_id).is_err() || query.query.len() > 200 {
+        return Err(ApiError(StatusCode::BAD_REQUEST));
+    }
+    civpulse_election_results::read(
+        &backend.client,
+        &backend.base,
+        &backend.key,
+        &identity.bearer,
+        &election_id,
+        &query.query,
+    )
+    .await
+    .map(Json)
+    .map_err(|_| ApiError(StatusCode::BAD_GATEWAY))
+}
+
+async fn elections(
+    State(backend): State<Backend>,
+    Extension(identity): Extension<Identity>,
+    Query(query): Query<ResultsQuery>,
+) -> Result<Json<Value>, ApiError> {
+    search_table(
+        &backend,
+        &identity,
+        "elections",
+        "name",
+        "id,slug,name,election_date,results_json_url",
+        &query.query,
+    )
+    .await
+}
+async fn people(
+    State(backend): State<Backend>,
+    Extension(identity): Extension<Identity>,
+    Query(query): Query<ResultsQuery>,
+) -> Result<Json<Value>, ApiError> {
+    search_table(
+        &backend,
+        &identity,
+        "people",
+        "full_name",
+        "id,slug,full_name",
+        &query.query,
+    )
+    .await
+}
+async fn search_table(
+    backend: &Backend,
+    identity: &Identity,
+    table: &str,
+    field: &str,
+    select: &str,
+    query: &str,
+) -> Result<Json<Value>, ApiError> {
+    if query.len() > 200 {
+        return Err(ApiError(StatusCode::BAD_REQUEST));
+    }
+    let mut request = backend
+        .request(&format!("/rest/v1/{table}"), &identity.bearer)
+        .query(&[("select", select), ("order", "id.asc"), ("limit", "100")]);
+    if !query.trim().is_empty() {
+        request = request.query(&[(field, format!("ilike.%{}%", query.trim()))]);
+    }
+    let response = request
+        .send()
+        .await
+        .map_err(|_| ApiError(StatusCode::SERVICE_UNAVAILABLE))?;
+    if !response.status().is_success() {
+        return Err(ApiError(StatusCode::SERVICE_UNAVAILABLE));
     }
     Ok(Json(
         response

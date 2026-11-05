@@ -38,6 +38,19 @@ pub async fn call(b: &Backend, name: &str, a: Value) -> Result<Value> {
         b.admin().await?;
     }
     match name {
+        "read_official_election_results" => {
+            let key = reqwest::header::HeaderValue::from_str(&b.key)?;
+            let bearer = reqwest::header::HeaderValue::from_str(&format!("Bearer {}", b.token))?;
+            civpulse_election_results::read(
+                &b.client,
+                &b.base,
+                &key,
+                &bearer,
+                text(&a, "election_id"),
+                text(&a, "query"),
+            )
+            .await
+        }
         "import_meeting_source" => crate::meeting_source::import(b, &a).await,
         "accept_obligation_report" | "accept_user_fee_report" => {
             b.rpc(

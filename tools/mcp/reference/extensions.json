@@ -1,0 +1,30 @@
+[
+  {
+    "name": "read_official_election_results",
+    "description": "Read current official Georgia election vote totals. Resolve election_id with election search first. Filter query by candidate or contest name (case insensitive substring); matching contests retain all opponents. Returns source timestamp, checksum, reported status, voting methods and vote shares. Does not establish certification. Empty matches are not zero votes. Supports configured Georgia General and Special Election exports.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "election_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 200,
+          "default": ""
+        }
+      },
+      "required": [
+        "election_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  }
+]

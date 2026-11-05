@@ -2,14 +2,20 @@ use anyhow::{Result, bail};
 use serde_json::Value;
 use std::sync::OnceLock;
 
-/// The frozen V2 tool catalog.
+/// The frozen V2 tool catalog plus native Rust extensions.
 ///
 /// # Panics
 /// Panics only if the bundled, checked catalog is malformed.
 pub fn tools() -> &'static Vec<Value> {
     static TOOLS: OnceLock<Vec<Value>> = OnceLock::new();
     TOOLS.get_or_init(|| {
-        serde_json::from_str(include_str!("../reference/tools.json")).expect("embedded catalog")
+        let mut tools: Vec<Value> = serde_json::from_str(include_str!("../reference/tools.json"))
+            .expect("embedded catalog");
+        let extensions: Vec<Value> =
+            serde_json::from_str(include_str!("../reference/extensions.json"))
+                .expect("embedded extensions");
+        tools.extend(extensions);
+        tools
     })
 }
 pub(crate) fn legislation() -> &'static Value {

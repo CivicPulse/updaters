@@ -170,3 +170,38 @@ fn rejects_privileged_keys_and_unsafe_origins() {
         assert!(Backend::new("https://example.org", key).is_err());
     }
 }
+
+#[tokio::test]
+async fn result_routes_authenticate_and_validate_before_source_access() {
+    let (app, task) = app().await;
+    for (uri, auth, status) in [
+        (
+            "/api/v1/elections/295d864d-80c8-4a87-ab16-3f4f3fa5ddb7/results",
+            None,
+            StatusCode::UNAUTHORIZED,
+        ),
+        (
+            "/api/v1/elections/invalid/results",
+            Some("Bearer member"),
+            StatusCode::BAD_REQUEST,
+        ),
+        (
+            "/api/v1/elections/295d864d-80c8-4a87-ab16-3f4f3fa5ddb7/results",
+            Some("Bearer member"),
+            StatusCode::BAD_GATEWAY,
+        ),
+    ] {
+        let mut request = Request::builder().uri(uri);
+        if let Some(auth) = auth {
+            request = request.header(header::AUTHORIZATION, auth);
+        }
+        let response = app
+            .clone()
+            .oneshot(request.body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+        assert_eq!(response.status(), status);
+        assert_eq!(response.headers()[header::CACHE_CONTROL], "no-store");
+    }
+    task.abort();
+}

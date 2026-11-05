@@ -377,6 +377,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "civpulse-election-results"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "chrono",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "civpulse-mcp"
 version = "0.1.0"
 dependencies = [
@@ -384,6 +399,7 @@ dependencies = [
  "axum",
  "base64 0.22.1",
  "chrono",
+ "civpulse-election-results",
  "jsonschema",
  "jsonwebtoken",
  "regex",
@@ -495,6 +511,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum",
+ "civpulse-election-results",
  "reqwest",
  "serde",
  "serde_json",
@@ -502,6 +519,7 @@ dependencies = [
  "tower",
  "tracing",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]
