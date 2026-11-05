@@ -55,7 +55,8 @@ The edge and API services are internal ClusterIP services. This deployment uses
 no DigitalOcean load-balancer ingress, NodePort, or host port. TLS terminates at
 Cloudflare, and HTTP is used between services inside the cluster.
 
-Every API HTTP request requires a valid user bearer token. The API validates it
+Every data API request requires a valid user bearer token. The public
+`/api/v1/openapi.json` and `/api/v1/docs` endpoints serve documentation only. The API validates it
 with Supabase Auth and uses the same token for database requests, so grants and
 row-level security remain authoritative. The API uses a publishable key rather
 than a service-role key. Cloudflare Tunnel provides connectivity; it does not

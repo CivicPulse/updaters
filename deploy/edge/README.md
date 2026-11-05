@@ -54,8 +54,9 @@ Unmatched paths are Traefik 404s. Every future service must authenticate its
 requests and enforce its own resource permissions; this tunnel is connectivity,
 not user authentication.
 
-Never route a dashboard or unauthenticated health endpoint publicly. The API
-has no HTTP auth exceptions. Traefik's internal health probe is not exposed by
+Never route an operational dashboard or unauthenticated health endpoint publicly.
+The API permits public access only to its OpenAPI document and Swagger UI
+at `/api/v1/openapi.json`, `/api/v1/docs`, and `/api/v1/docs/`. Traefik's internal health probe is not exposed by
 its ClusterIP service.
 
 ## References

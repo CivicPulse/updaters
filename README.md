@@ -78,7 +78,9 @@ docker run --rm --read-only civpulse-download:dev --check
 
 The same Dockerfile builds one selected binary per image. Images include CA
 certificates for future HTTPS clients and run as an unprivileged numeric user.
-The runtime is a digest-pinned distroless Debian 13 image with no shell or package
+The runtime uses digest-pinned distroless Debian 13 no-SSL plus libgcc for Rust
+unwinding, with package metadata retained for scanning. TLS uses rustls, so the
+runtime excludes unused OpenSSL and compression libraries. There is no shell or package
 manager; probes and diagnostics must invoke the executable directly.
 Pull-request CI builds and checks all six images, including the real disabled
 collector entry point, heartbeat, scratch permissions and bounded SIGTERM. A
@@ -228,7 +230,12 @@ Run `cargo run --locked -p civpulse-webapi` with `SUPABASE_URL` and
 `SUPABASE_PUBLISHABLE_KEY` set. `API_BIND` defaults to `0.0.0.0:8080`.
 `--check` is an offline binary startup check and does not validate configuration.
 
-Every HTTP request requires `Authorization: Bearer <user access token>`.
+Public API documentation is available at `GET /api/v1/openapi.json` (OpenAPI 3.1)
+and `/api/v1/docs` (Swagger UI). Swagger UI loads pinned assets from unpkg, so
+your browser needs internet access. Use **Authorize** to enter a user access token;
+the UI does not persist it across reloads.
+
+Every data API request requires `Authorization: Bearer <user access token>`.
 Tokens are validated with Supabase Auth on every request; anonymous sign-ins are
 rejected. No user-editable metadata or proxy identity headers grant permissions.
 Database requests use the caller's token, preserving existing grants and RLS,
