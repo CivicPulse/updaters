@@ -1,0 +1,40 @@
+{
+  "sourceCommit": "22fca59dea277474e72f5b696760a20eac5e4ed6",
+  "sourceRepository": "https://github.com/CivicPulse/updaters",
+  "portedCatalogCommit": "870a12dc60c780a4b0312060988b187d230b339f",
+  "image": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:2d91ec064f68440678fff10279e20c0fbe29dac89a5ff44933f41301fde9ab16",
+  "tag": "registry.digitalocean.com/hatchk8s/civpulse-webapi:mcp-sha-22fca59dea277474e72f5b696760a20eac5e4ed6",
+  "clusterContext": "do-atl1-k8s-1-37-0-do-2-atl1-1793724241236",
+  "namespace": "civpulse-prod",
+  "endpoint": "https://webapi.civpulse.org/mcp/v2",
+  "toolCount": 79,
+  "validationStatus": "deployed-and-public-smoke-passed",
+  "deployedAt": "2026-11-05T01:39:20.466231+00:00",
+  "replicasReady": 2,
+  "ordinaryUserSmokeChecks": [
+    "OAuth discovery and issuer",
+    "missing/invalid bearer rejection",
+    "all 79 tool schemas match reference",
+    "whoami subject and normal-user role",
+    "live visibility-aware civic search",
+    "admin-only account search denied",
+    "same bearer token accepted by existing API"
+  ],
+  "existingApiImage": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:dc8b99be4e6e53dec70d6131b41434c24c3b0c112f21043b3c24dfdf5b61d3f1",
+  "existingApiIngressUnchanged": true,
+  "temporarySmokeAccountsRemoved": true,
+  "limitations": [
+    "Admin writes, document publication and resumable uploads were not exercised against production data; local compatibility and recovery tests cover these paths."
+  ],
+  "previousImage": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:bfc0d945c243b81b529b9125ef932120d33c0764c5382be3349001f5cf1b3f7b",
+  "runtime": "digest-pinned distroless Debian 13 nonroot",
+  "securityScan": {
+    "scanner": "Trivy 0.76.1",
+    "severity": [
+      "HIGH",
+      "CRITICAL"
+    ],
+    "vulnerabilities": 0,
+    "secrets": 0
+  }
+}

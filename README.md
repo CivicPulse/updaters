@@ -10,6 +10,7 @@ collection stays disabled until controlled operational acceptance completes.
 
 - `tools/download`: `civpulse-download` executable; future source-specific downloads.
 - `tools/process`: `civpulse-process` executable; future parsing and normalization.
+- `tools/mcp`: standalone 79-tool V2 MCP service; see [configuration and production deployment](tools/mcp/README.md).
 - `tools/upload`: `civpulse-upload` executable; future CivPulse API uploads.
 - `tools/results-collector`: durable queue consumer, local validation, and atomic publication.
 - `crates/civpulse-results-source`: bounded downloading, parsing and reference-compatible fingerprints.
@@ -78,13 +79,15 @@ The same Dockerfile builds one selected binary per image. Images include CA
 certificates for future HTTPS clients and run as an unprivileged numeric user.
 The runtime is a digest-pinned distroless Debian 13 image with no shell or package
 manager; probes and diagnostics must invoke the executable directly.
-Pull-request CI builds and checks all five images, including the real disabled
+Pull-request CI builds and checks all six images, including the real disabled
 collector entry point, heartbeat, scratch permissions and bounded SIGTERM. A
-separate workflow builds, checks, scans, and publishes all five images on every
+separate workflow builds, checks, scans, and publishes all six images on every
 push to `main` (including merged pull requests). It can also be run manually from
 `main`. Images are published as
 `registry.digitalocean.com/hatchk8s/<tool>:sha-<full-commit-sha>`, and each job
-records its immutable digest reference in the run summary. It deploys nothing.
+records its immutable digest reference in the run summary. MCP uses a distinct
+`mcp-sha-<full-commit-sha>` tag in the existing `civpulse-webapi` repository because
+the registry permits five repositories. Publishing deploys nothing.
 
 Before the first publish, configure the repository Actions secret `DOCR_CONFIG`
 with a Docker authentication JSON object containing push-capable credentials for
@@ -242,3 +245,10 @@ Production routing for `webapi.civpulse.org` uses an outbound Cloudflare Tunnel
 and internal Traefik services, with no DigitalOcean load balancer. See
 [deployment instructions](deploy/edge/README.md) for secrets, DNS, rollout,
 permission checks, and adding future microservices.
+
+## Civic Pulse MCP
+
+The production MCP service shares the API's DigitalOcean cluster, namespace and
+Traefik router at `https://webapi.civpulse.org/mcp/v2`. The API retains `/api/v1`.
+See [the MCP deployment and rollback guide](tools/mcp/README.md) and
+[release receipt](deploy/k8s/mcp-release.json).

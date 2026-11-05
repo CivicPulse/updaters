@@ -1,0 +1,36 @@
+# No stripping, retries or response caching. Existing /api/v1 ingress is independent.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: civpulse-mcp
+  namespace: civpulse-prod
+  annotations:
+    kubernetes.io/ingress.class: civpulse-internal
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: civpulse-internal
+  rules:
+    - host: webapi.civpulse.org
+      http:
+        paths:
+          - path: /mcp/v2
+            pathType: Prefix
+            backend:
+              service:
+                name: civpulse-mcp
+                port:
+                  name: http
+          - path: /functions/v1/mcp/v2
+            pathType: Prefix
+            backend:
+              service:
+                name: civpulse-mcp
+                port:
+                  name: http
+          - path: /.well-known/oauth-protected-resource
+            pathType: Prefix
+            backend:
+              service:
+                name: civpulse-mcp
+                port:
+                  name: http

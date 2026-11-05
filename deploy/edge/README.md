@@ -121,3 +121,11 @@ this is a reservation calculation rather than a peak-load guarantee.
 The machine-readable pool configuration and verification receipt are recorded in
 [capacity.json](../k8s/capacity.json). Regional supply limits can still prevent
 autoscaler expansion; monitor scheduling failures and memory pressure.
+
+## MCP service
+
+The V2 MCP Deployment shares this tunnel and Traefik at
+`https://webapi.civpulse.org/mcp/v2`. Its separate Ingress owns only its MCP and
+OAuth metadata paths; `/api/v1` stays with the API. See
+[the MCP runbook](../../tools/mcp/README.md) for the pinned release, authentication
+checks and independent rollback. No new DNS, tunnel or public listener is needed.

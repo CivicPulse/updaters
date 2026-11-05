@@ -1,0 +1,249 @@
+{
+  "whoami": [],
+  "search_users": [
+    [
+      "query"
+    ]
+  ],
+  "promote_user_to_admin": [],
+  "search_site": [],
+  "get_civic_record": [],
+  "get_county_statistic_catalog": [],
+  "search_county_statistics": [],
+  "save_county_statistic": [
+    [
+      "period"
+    ]
+  ],
+  "save_county_statistic_source": [],
+  "delete_organization": [],
+  "delete_calendar": [],
+  "delete_event": [],
+  "delete_person": [],
+  "delete_election": [],
+  "manage_election_results": [
+    [
+      "operation",
+      "scope",
+      "county"
+    ],
+    [
+      "operation",
+      "scope",
+      "unit"
+    ],
+    [
+      "operation",
+      "scope",
+      "ballot_style"
+    ],
+    [
+      "operation",
+      "snapshot",
+      "contests",
+      "*",
+      "choices",
+      "*",
+      "label"
+    ]
+  ],
+  "school_finances": [],
+  "accept_user_fee_report": [],
+  "browse_user_fees": [],
+  "accept_obligation_report": [],
+  "browse_obligations": [],
+  "get_layer_geojson": [],
+  "delete_map": [],
+  "delete_layer": [],
+  "save_postgis_layer": [],
+  "delete_contest": [],
+  "delete_ballot_question": [],
+  "delete_article": [],
+  "search_layer_features": [],
+  "get_layer_feature": [],
+  "delete_layer_feature": [],
+  "get_my_profile": [],
+  "update_my_profile": [],
+  "list_images": [],
+  "get_image_url": [],
+  "upload_image": [],
+  "delete_image": [],
+  "import_meeting_source": [],
+  "import_meeting_records": [],
+  "set_meeting_vote_outcome": [
+    [
+      "locator"
+    ],
+    [
+      "correction_reason"
+    ]
+  ],
+  "get_person_meeting_votes": [],
+  "begin_meeting_attachment_upload": [],
+  "finalize_meeting_attachment_upload": [],
+  "manage_meeting_attachment_upload": [],
+  "get_meeting": [],
+  "upload_meeting_attachment": [],
+  "get_meeting_attachment_url": [],
+  "get_georgia_legislative_source": [],
+  "browse_legislation": [],
+  "get_legislative_vote_totals": [],
+  "get_person_legislative_record": [],
+  "import_legislation": [],
+  "describe_legislative_resource": [],
+  "save_legislative_record": [],
+  "delete_legislative_record": [],
+  "list_offices": [],
+  "read_officeholder_observations": [],
+  "accept_officeholder_observations": [],
+  "get_public_document": [],
+  "list_public_documents": [],
+  "link_public_document_meeting": [],
+  "search_document_contents": [
+    [
+      "query"
+    ]
+  ],
+  "publish_meeting_document": [
+    [
+      "title"
+    ]
+  ],
+  "withdraw_public_document": [],
+  "save_organization": [],
+  "save_calendar": [],
+  "save_event": [],
+  "save_person": [],
+  "save_election": [],
+  "save_map": [],
+  "save_layer": [],
+  "save_contest": [],
+  "save_ballot_question": [
+    [
+      "request",
+      "title"
+    ],
+    [
+      "request",
+      "question_text"
+    ],
+    [
+      "request",
+      "title"
+    ],
+    [
+      "request",
+      "question_text"
+    ]
+  ],
+  "save_article": [
+    [
+      "request",
+      "title"
+    ],
+    [
+      "request",
+      "people",
+      "*",
+      "role"
+    ],
+    [
+      "request",
+      "organizations",
+      "*",
+      "role"
+    ],
+    [
+      "request",
+      "title"
+    ],
+    [
+      "request",
+      "people",
+      "*",
+      "role"
+    ],
+    [
+      "request",
+      "organizations",
+      "*",
+      "role"
+    ]
+  ],
+  "save_layer_feature": [],
+  "save_office": [
+    [
+      "request",
+      "name"
+    ],
+    [
+      "request",
+      "name"
+    ]
+  ],
+  "save_office_term": [],
+  "save_relationship": [
+    [
+      "request",
+      "change",
+      "relationship"
+    ],
+    [
+      "request",
+      "change",
+      "reverse_relationship"
+    ],
+    [
+      "request",
+      "change",
+      "relationship"
+    ],
+    [
+      "request",
+      "change",
+      "reverse_relationship"
+    ],
+    [
+      "request",
+      "change",
+      "relationship"
+    ],
+    [
+      "request",
+      "change",
+      "reverse_relationship"
+    ],
+    [
+      "request",
+      "change",
+      "relationship"
+    ],
+    [
+      "request",
+      "change",
+      "reverse_relationship"
+    ],
+    [
+      "request",
+      "change",
+      "role"
+    ],
+    [
+      "request",
+      "change",
+      "role"
+    ],
+    [
+      "request",
+      "change",
+      "role"
+    ],
+    [
+      "request",
+      "change",
+      "role"
+    ]
+  ],
+  "delete_relationship": [],
+  "read_related_records": []
+}

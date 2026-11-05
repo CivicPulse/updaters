@@ -11,7 +11,10 @@ FQDN. The router directs distinct, owned path prefixes to the appropriate
 ClusterIP Service. For example, a future `/api/service-a/` route can target
 service A while `/api/service-b/` targets service B on the same hostname. These
 are illustrative future paths. Production uses `webapi.civpulse.org`, with
-`/api/v1` reserved for `civpulse-webapi` and preserved by Traefik.
+`/api/v1` reserved for `civpulse-webapi` and `/mcp/v2` reserved for
+`civpulse-mcp`, both preserved by Traefik. MCP also owns the matching
+`/functions/v1/mcp/v2` compatibility alias and OAuth protected-resource metadata
+paths. Its internal `/healthz` is excluded from public routing.
 
 Maintain the hostname, TLS configuration, and route ownership together in the
 environment's ingress configuration. A service release must not create a new

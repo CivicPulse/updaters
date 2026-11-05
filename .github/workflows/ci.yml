@@ -58,7 +58,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tool: [civpulse-download, civpulse-process, civpulse-upload, civpulse-results-collector, civpulse-webapi]
+        tool: [civpulse-download, civpulse-process, civpulse-upload, civpulse-results-collector, civpulse-webapi, civpulse-mcp]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

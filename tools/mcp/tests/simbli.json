@@ -1,0 +1,194 @@
+[
+  {
+    "input": "[{\"document\":{\"role\":\"Minutes\",\"source_url\":\"https://example.org/source\"},\"public_content\":{\"LstItemMinutes\":[{\"EncrId\":\"item1\",\"Title\":\"Budget\",\"MeetingOnlineVotings\":[{\"Minutes\":\"Approve budget\",\"VotingHTML\":[\"<p>Yes: Alice</p><p>Vote Not Recorded: Bob</p><p>Absent: Carol</p>\"]}]}]}}]",
+    "result": {
+      "adapter": "simbli-minutes-v1",
+      "motions": [
+        {
+          "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0].VotingHTML",
+          "item_id": "item1",
+          "round": "0:0",
+          "subject": "Budget",
+          "description": "Approve budget",
+          "ballots": [
+            {
+              "name": "Alice",
+              "choice": "yes",
+              "text": "Yes: Alice"
+            },
+            {
+              "name": "Bob",
+              "choice": "unknown",
+              "text": "Vote Not Recorded: Bob"
+            }
+          ],
+          "absences": [
+            {
+              "name": "Carol",
+              "text": "Absent: Carol"
+            }
+          ]
+        }
+      ],
+      "warnings": [],
+      "source_urls": [
+        "https://example.org/source"
+      ]
+    }
+  },
+  {
+    "input": "[{\"document\":{\"role\":\"Minutes\",\"source_url\":\"https://example.org/source\"},\"public_content\":{\"LstItemMinutes\":[{\"EncrId\":\"two\",\"Title\":\"Items\",\"MeetingOnlineVotings\":[{\"Minutes\":\"Motion one\\nVoting:\\nAlice: Yes\\nBob: No\\nMotion two\\nVoting:\\nAlice: Abstained\"}]}]}}]",
+    "result": {
+      "adapter": "simbli-minutes-v1",
+      "motions": [
+        {
+          "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0].Voting[0]",
+          "item_id": "two",
+          "round": "0:0",
+          "subject": "Items",
+          "description": "Motion one",
+          "ballots": [
+            {
+              "name": "Alice",
+              "choice": "yes",
+              "text": "Alice: Yes"
+            },
+            {
+              "name": "Bob",
+              "choice": "no",
+              "text": "Bob: No"
+            }
+          ],
+          "absences": []
+        },
+        {
+          "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0].Voting[1]",
+          "item_id": "two",
+          "round": "0:1",
+          "subject": "Items",
+          "description": "Motion two",
+          "ballots": [
+            {
+              "name": "Alice",
+              "choice": "abstain",
+              "text": "Alice: Abstained"
+            }
+          ],
+          "absences": []
+        }
+      ],
+      "warnings": [],
+      "source_urls": [
+        "https://example.org/source"
+      ]
+    }
+  },
+  {
+    "input": "[{\"document\":{\"role\":\"Minutes\",\"source_url\":\"https://example.org/source\"},\"public_content\":{\"LstItemMinutes\":[{\"Title\":\"Conflict\",\"MeetingOnlineVotings\":[{\"Minutes\":\"Approve\\nVoting:\\nAlice: Yes\",\"VotingHTML\":[\"<p>No: Alice</p>\"]}]}]}}]",
+    "result": {
+      "adapter": "simbli-minutes-v1",
+      "motions": [
+        {
+          "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0].Voting[0]",
+          "item_id": "",
+          "round": "0:0",
+          "subject": "Conflict",
+          "description": "Approve",
+          "ballots": [
+            {
+              "name": "Alice",
+              "choice": "yes",
+              "text": "Alice: Yes"
+            }
+          ],
+          "absences": []
+        }
+      ],
+      "warnings": [
+        {
+          "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0]",
+          "reason": "Minutes and VotingHTML named evidence differ or cannot be aligned; reconcile both representations before import"
+        }
+      ],
+      "source_urls": [
+        "https://example.org/source"
+      ]
+    }
+  },
+  {
+    "input": "[{\"document\":{\"role\":\"Minutes\",\"source_url\":\"https://example.org/source\"},\"public_content\":{\"LstItemMinutes\":[{\"Visibility\":1,\"Title\":\"Private\",\"MeetingOnlineVotings\":[{\"Minutes\":\"Voting: Alice: Yes\"}]},{\"Title\":\"Parent\",\"ChildMinutesLst\":[{\"Title\":\"Child\",\"MeetingOnlineVotings\":[{\"Minutes\":\"Motion without named votes\"}]}]}]}}]",
+    "result": {
+      "adapter": "simbli-minutes-v1",
+      "motions": [],
+      "warnings": [
+        {
+          "locator": "documents[0].public_content.LstItemMinutes[0]",
+          "reason": "Non-public minutes item requires review"
+        },
+        {
+          "locator": "documents[0].public_content.LstItemMinutes[1].ChildMinutesLst[0].MeetingOnlineVotings[0]",
+          "reason": "Motion-like item without parsable named roll call"
+        }
+      ],
+      "source_urls": [
+        "https://example.org/source"
+      ]
+    }
+  },
+  {
+    "input": "[{\"document\":{\"role\":\"Minutes\",\"source_url\":\"https://example.org/source\"},\"public_content\":{\"LstItemMinutes\":[{\"Title\":\"Deleted\",\"MeetingOnlineVotings\":[{\"IsDeleted\":true}]}]}}]",
+    "result": {
+      "adapter": "simbli-minutes-v1",
+      "motions": [],
+      "warnings": [
+        {
+          "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0]",
+          "reason": "Deleted voting round requires review"
+        }
+      ],
+      "source_urls": [
+        "https://example.org/source"
+      ]
+    }
+  },
+  {
+    "input": "[{\"document\":{\"role\":\"Minutes\",\"source_url\":\"https://example.org/source\"},\"public_content\":{\"LstItemMinutes\":[{\"Title\":\"Unknown\",\"MeetingOnlineVotings\":[{\"VotingHTML\":[\"<p>Yes: Alice</p><p>Mystery: Bob</p><p>A motion followed</p>\"]}]}]}}]",
+    "result": {
+      "adapter": "simbli-minutes-v1",
+      "motions": [
+        {
+          "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0].VotingHTML",
+          "item_id": "",
+          "round": "0:0",
+          "subject": "Unknown",
+          "description": "",
+          "ballots": [
+            {
+              "name": "Alice",
+              "choice": "yes",
+              "text": "Yes: Alice"
+            }
+          ],
+          "absences": []
+        }
+      ],
+      "warnings": [
+        {
+          "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0].VotingHTML",
+          "reason": "Unparsed colon-delimited voting text; review required"
+        },
+        {
+          "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0].VotingHTML",
+          "reason": "Motion-like text after the final voting block requires review"
+        }
+      ],
+      "source_urls": [
+        "https://example.org/source"
+      ]
+    }
+  },
+  {
+    "input": "[{\"document\":{\"role\":\"Minutes\",\"source_url\":\"https://example.org/source\"},\"public_content\":{\"LstItemMinutes\":[{\"Title\":\"Duplicate\",\"MeetingOnlineVotings\":[{\"VotingHTML\":[\"<p>Yes: Alice</p><p>No: Alice</p>\"]}]}]}}]",
+    "error": true
+  }
+]

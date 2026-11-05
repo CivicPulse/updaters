@@ -5,7 +5,7 @@ WORKDIR /workspace
 COPY Cargo.toml Cargo.lock rust-toolchain.toml ./
 COPY crates ./crates
 COPY tools ./tools
-RUN case "$TOOL" in civpulse-download|civpulse-process|civpulse-upload|civpulse-results-collector|civpulse-webapi) ;; *) exit 1 ;; esac \
+RUN case "$TOOL" in civpulse-download|civpulse-process|civpulse-upload|civpulse-results-collector|civpulse-webapi|civpulse-mcp) ;; *) exit 1 ;; esac \
     && cargo build --locked --release --package "$TOOL" \
     && mkdir /runtime \
     && cp "target/release/$TOOL" /runtime/civpulse-tool \

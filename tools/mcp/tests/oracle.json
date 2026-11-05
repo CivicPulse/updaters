@@ -1,0 +1,7322 @@
+[
+  {
+    "name": "whoami",
+    "args": {},
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      }
+    ],
+    "result": {
+      "user_id": "00000000-0000-4000-8000-000000000001",
+      "email": "test@example.org",
+      "is_admin": true,
+      "role": "admin"
+    }
+  },
+  {
+    "name": "search_users",
+    "args": {},
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/admin_list_users",
+        "query": {},
+        "body": {
+          "p_query": "",
+          "p_offset": 0
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "promote_user_to_admin",
+    "args": {
+      "user_id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/promote_user_to_admin",
+        "query": {},
+        "body": {
+          "p_user_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "user_id": "00000000-0000-4000-8000-000000000001",
+      "role": "admin"
+    }
+  },
+  {
+    "name": "search_site",
+    "args": {},
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/search_site",
+        "query": {},
+        "body": {
+          "p_query": "",
+          "p_type": null,
+          "p_limit": 20,
+          "p_offset": 0
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "get_civic_record",
+    "args": {
+      "type": "person",
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_person",
+        "query": {},
+        "body": {
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "person": {
+            "id": "00000000-0000-4000-8000-000000000001"
+          },
+          "organizations": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001"
+            }
+          ]
+        }
+      }
+    ],
+    "result": {
+      "status": "ok",
+      "person": {
+        "id": "00000000-0000-4000-8000-000000000001"
+      },
+      "organizations": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      ]
+    }
+  },
+  {
+    "name": "get_county_statistic_catalog",
+    "args": {},
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/rest/v1/county_geographies",
+        "query": {
+          "select": "*"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/rest/v1/county_statistic_topics",
+        "query": {
+          "select": "*"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/rest/v1/county_statistic_indicators",
+        "query": {
+          "select": "*"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/rest/v1/county_statistic_sources",
+        "query": {
+          "select": "*"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "county_geographies": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "county_statistic_topics": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "county_statistic_indicators": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "county_statistic_sources": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      ]
+    }
+  },
+  {
+    "name": "search_county_statistics",
+    "args": {},
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/search_county_statistics",
+        "query": {},
+        "body": {
+          "p_query": "",
+          "p_county_fips": null,
+          "p_indicator_code": null,
+          "p_topic": null,
+          "p_limit": 100,
+          "p_offset": 0
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "save_county_statistic",
+    "args": {
+      "county_fips": "13021",
+      "indicator_code": "sample",
+      "expected_updated_at": "2026-01-01T00:00:00Z",
+      "value": 1,
+      "status": "available",
+      "period": "sample",
+      "source_id": "00000000-0000-4000-8000-000000000001",
+      "source_variables": "sample"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/county_statistics",
+        "query": {
+          "county_fips": "eq.13021",
+          "indicator_code": "eq.sample",
+          "updated_at": "eq.2026-01-01T00:00:00Z",
+          "select": "*"
+        },
+        "body": {
+          "county_fips": "13021",
+          "indicator_code": "sample",
+          "value": 1,
+          "status": "available",
+          "period": "sample",
+          "source_id": "00000000-0000-4000-8000-000000000001",
+          "source_variables": "sample",
+          "detail": "",
+          "components": {},
+          "numerator": null,
+          "denominator": null,
+          "margin_of_error": null,
+          "lower_bound": null,
+          "upper_bound": null,
+          "confidence_level": null
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_county_statistic_source",
+    "args": {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "publisher": "sample",
+      "title": "sample",
+      "source_url": "https://example.org/source",
+      "retrieved_on": "2026-01-01",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/county_statistic_sources",
+        "query": {
+          "select": "*"
+        },
+        "body": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "publisher": "sample",
+          "title": "sample",
+          "source_url": "https://example.org/source",
+          "retrieved_on": "2026-01-01",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_organization",
+    "args": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/organizations",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_calendar",
+    "args": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/calendars",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_event",
+    "args": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/events",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_person",
+    "args": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/people",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_election",
+    "args": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/elections",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "school_finances",
+    "args": {
+      "operation": {
+        "action": "browse"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/browse_school_finances",
+        "query": {},
+        "body": {
+          "p_dataset": "payments",
+          "p_year": null,
+          "p_query": "",
+          "p_offset": 0,
+          "p_limit": 50,
+          "p_sort": "amount",
+          "p_person_id": null
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "accept_user_fee_report",
+    "args": {
+      "version": 1,
+      "provider": "sample",
+      "report": {},
+      "rows": [
+        {}
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/accept_user_fee_report",
+        "query": {},
+        "body": {
+          "p_version": 1,
+          "p_provider": "sample",
+          "p_report": {},
+          "p_rows": [
+            {}
+          ],
+          "p_dry_run": true
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "browse_user_fees",
+    "args": {},
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/browse_user_fees",
+        "query": {},
+        "body": {
+          "p_organization_id": null,
+          "p_year": null,
+          "p_fee_id": null,
+          "p_query": "",
+          "p_history": false,
+          "p_offset": 0,
+          "p_limit": 50
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "accept_obligation_report",
+    "args": {
+      "version": 1,
+      "provider": "sample",
+      "report": {},
+      "rows": [
+        {}
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/accept_obligation_report",
+        "query": {},
+        "body": {
+          "p_version": 1,
+          "p_provider": "sample",
+          "p_report": {},
+          "p_rows": [
+            {}
+          ],
+          "p_dry_run": true
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "browse_obligations",
+    "args": {},
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/browse_obligations",
+        "query": {},
+        "body": {
+          "p_organization_id": null,
+          "p_year": null,
+          "p_query": "",
+          "p_vendor_kind": null,
+          "p_vendor_id": null,
+          "p_observation_id": null,
+          "p_history": false,
+          "p_offset": 0,
+          "p_limit": 50
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "get_layer_geojson",
+    "args": {
+      "layer_id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_layer_geojson",
+        "query": {},
+        "body": {
+          "p_layer_id": "00000000-0000-4000-8000-000000000001",
+          "p_map_id": null
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "delete_map",
+    "args": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/maps",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_layer",
+    "args": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/layers",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_postgis_layer",
+    "args": {
+      "name": "Example"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/mcp_save_postgis_layer",
+        "query": {},
+        "body": {
+          "p_layer": {
+            "name": "Example"
+          },
+          "p_geojson": null
+        },
+        "response": "00000000-0000-4000-8000-000000000001"
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_contest",
+    "args": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/contests",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_ballot_question",
+    "args": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/ballot_questions",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_article",
+    "args": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/articles",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "search_layer_features",
+    "args": {
+      "layer_id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/mcp_layer_features",
+        "query": {},
+        "body": {
+          "p_layer_id": "00000000-0000-4000-8000-000000000001",
+          "p_map_id": null,
+          "p_query": "",
+          "p_limit": 20,
+          "p_offset": 0
+        },
+        "response": [
+          {
+            "id": "1"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "1"
+      }
+    ]
+  },
+  {
+    "name": "get_layer_feature",
+    "args": {
+      "layer_id": "00000000-0000-4000-8000-000000000001",
+      "id": "1"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/mcp_layer_features",
+        "query": {},
+        "body": {
+          "p_layer_id": "00000000-0000-4000-8000-000000000001",
+          "p_map_id": null,
+          "p_id": "1",
+          "p_limit": 1
+        },
+        "response": [
+          {
+            "id": "1"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "status": "ok",
+      "feature": {
+        "id": "1"
+      }
+    }
+  },
+  {
+    "name": "delete_layer_feature",
+    "args": {
+      "layer_id": "00000000-0000-4000-8000-000000000001",
+      "id": "1"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/layer_features",
+        "query": {
+          "layer_id": "eq.00000000-0000-4000-8000-000000000001",
+          "id": "eq.1",
+          "select": "layer_id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "id": "1",
+      "layer_id": "00000000-0000-4000-8000-000000000001",
+      "deleted": 1
+    }
+  },
+  {
+    "name": "get_my_profile",
+    "args": {},
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/rest/v1/profiles",
+        "query": {
+          "select": "id,display_name,created_at,updated_at",
+          "id": "eq.00000000-0000-4000-8000-000000000001"
+        },
+        "body": null,
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "update_my_profile",
+    "args": {
+      "display_name": "sample"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/profiles",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id,display_name"
+        },
+        "body": {
+          "display_name": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "list_images",
+    "args": {
+      "bucket": "org-logos"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/storage/v1/object/list/org-logos",
+        "query": {},
+        "body": {
+          "limit": 20,
+          "offset": 0,
+          "sortBy": {
+            "column": "name",
+            "order": "asc"
+          },
+          "search": "",
+          "prefix": ""
+        },
+        "response": []
+      }
+    ],
+    "result": []
+  },
+  {
+    "name": "get_image_url",
+    "args": {
+      "bucket": "org-logos",
+      "path": "sample"
+    },
+    "requests": [],
+    "result": {
+      "path": "sample",
+      "url": "http://localhost:54321/storage/v1/object/public/org-logos/sample"
+    }
+  },
+  {
+    "name": "delete_image",
+    "args": {
+      "bucket": "org-logos",
+      "path": "sample"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/storage/v1/object/org-logos",
+        "query": {},
+        "body": {
+          "prefixes": [
+            "sample"
+          ]
+        },
+        "response": []
+      }
+    ],
+    "result": {
+      "deleted": true,
+      "bucket": "org-logos",
+      "path": "sample"
+    }
+  },
+  {
+    "name": "import_meeting_records",
+    "args": {
+      "meeting_id": "00000000-0000-4000-8000-000000000001",
+      "provider": "sample",
+      "records": [
+        {
+          "kind": "attendance",
+          "source_key": "sample",
+          "provenance": {
+            "source_url": "https://example.org/source",
+            "document_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "locator": "sample"
+          },
+          "data": {
+            "person_id": "00000000-0000-4000-8000-000000000001",
+            "status": "present",
+            "evidence": "sample"
+          }
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/import_meeting_records",
+        "query": {},
+        "body": {
+          "p_meeting_id": "00000000-0000-4000-8000-000000000001",
+          "p_provider": "sample",
+          "p_records": [
+            {
+              "kind": "attendance",
+              "source_key": "sample",
+              "provenance": {
+                "source_url": "https://example.org/source",
+                "document_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "locator": "sample"
+              },
+              "data": {
+                "person_id": "00000000-0000-4000-8000-000000000001",
+                "status": "present",
+                "evidence": "sample"
+              }
+            }
+          ],
+          "p_dry_run": true
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "set_meeting_vote_outcome",
+    "args": {
+      "vote_id": "00000000-0000-4000-8000-000000000001",
+      "outcome": "passed",
+      "source_url": "https://example.org/source",
+      "document_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "locator": "sample"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/set_meeting_vote_outcome",
+        "query": {},
+        "body": {
+          "p_vote_id": "00000000-0000-4000-8000-000000000001",
+          "p_outcome": "passed",
+          "p_source_url": "https://example.org/source",
+          "p_document_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "p_locator": "sample",
+          "p_supersedes_id": null,
+          "p_correction_reason": null
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "get_person_meeting_votes",
+    "args": {
+      "person_id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_person_meeting_votes",
+        "query": {},
+        "body": {
+          "p_person_id": "00000000-0000-4000-8000-000000000001",
+          "p_offset": 0,
+          "p_limit": 21
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "get_meeting",
+    "args": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_meeting",
+        "query": {},
+        "body": {
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "sources": [],
+          "attachments": []
+        }
+      }
+    ],
+    "result": {
+      "status": "ok",
+      "sources": [],
+      "attachments": []
+    }
+  },
+  {
+    "name": "browse_legislation",
+    "args": {},
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/browse_legislation",
+        "query": {},
+        "body": {
+          "p_table": "bills",
+          "p_id": null,
+          "p_filters": {},
+          "p_query": "",
+          "p_limit": 25,
+          "p_offset": 0,
+          "p_bill_id": null,
+          "p_person_id": null,
+          "p_vote_id": null
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "get_legislative_vote_totals",
+    "args": {
+      "vote_id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_legislative_vote_totals",
+        "query": {},
+        "body": {
+          "p_vote_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "get_person_legislative_record",
+    "args": {
+      "person_id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_person_legislative_record",
+        "query": {},
+        "body": {
+          "p_person_id": "00000000-0000-4000-8000-000000000001",
+          "p_session_id": null,
+          "p_body_id": null,
+          "p_category": null,
+          "p_term_id": null,
+          "p_bill_query": null,
+          "p_limit": 25,
+          "p_offset": 0
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "import_legislation",
+    "args": {
+      "records": []
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/import_legislation",
+        "query": {},
+        "body": {
+          "p_records": []
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "describe_legislative_resource",
+    "args": {
+      "table": "legislative_terms"
+    },
+    "requests": [],
+    "result": {
+      "label": "Legislative terms",
+      "fields": [
+        {
+          "name": "jurisdiction",
+          "label": "jurisdiction",
+          "type": "text",
+          "required": true,
+          "choices": [
+            "unspecified",
+            "federal",
+            "state"
+          ],
+          "default": "unspecified"
+        },
+        {
+          "name": "state_name",
+          "label": "state name (required for state terms)",
+          "type": "text"
+        },
+        {
+          "name": "organization_id",
+          "label": "organization",
+          "type": "uuid",
+          "required": true,
+          "reference": "organizations"
+        },
+        {
+          "name": "identifier",
+          "label": "identifier",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "name",
+          "label": "name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "starts_on",
+          "label": "starts on",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "ends_on",
+          "label": "ends on",
+          "type": "date",
+          "required": false
+        },
+        {
+          "name": "visibility",
+          "label": "visibility",
+          "type": "text",
+          "required": true,
+          "choices": [
+            "public",
+            "unlisted",
+            "private"
+          ],
+          "default": "public"
+        },
+        {
+          "name": "source_url",
+          "label": "source URL",
+          "type": "text"
+        },
+        {
+          "name": "source_system",
+          "label": "source provider",
+          "type": "text"
+        },
+        {
+          "name": "source_id",
+          "label": "provider record ID",
+          "type": "text"
+        },
+        {
+          "name": "retrieved_at",
+          "label": "retrieved at",
+          "type": "timestamptz"
+        }
+      ]
+    }
+  },
+  {
+    "name": "save_legislative_record",
+    "args": {
+      "table": "legislative_terms",
+      "data": {
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "identifier": "sample",
+        "name": "sample",
+        "starts_on": "sample"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/legislative_terms",
+        "query": {
+          "select": "*"
+        },
+        "body": {
+          "organization_id": "00000000-0000-4000-8000-000000000001",
+          "identifier": "sample",
+          "name": "sample",
+          "starts_on": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_legislative_record",
+    "args": {
+      "table": "legislative_terms",
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/legislative_terms",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "deleted": 1
+    }
+  },
+  {
+    "name": "list_offices",
+    "args": {},
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/rest/v1/offices",
+        "query": {
+          "select": "*",
+          "order": "name.asc,id.asc",
+          "offset": "0",
+          "limit": "50"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "read_officeholder_observations",
+    "args": {},
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/read_officeholder_observations",
+        "query": {},
+        "body": {
+          "p_person_id": null,
+          "p_organization_id": null,
+          "p_as_of": null,
+          "p_history": false,
+          "p_offset": 0,
+          "p_limit": 50
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "accept_officeholder_observations",
+    "args": {
+      "version": 1,
+      "provider": "sample",
+      "rows": [
+        {}
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/accept_officeholder_observations",
+        "query": {},
+        "body": {
+          "p_version": 1,
+          "p_provider": "sample",
+          "p_rows": [
+            {}
+          ],
+          "p_dry_run": true
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "get_public_document",
+    "args": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_public_document",
+        "query": {},
+        "body": {
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "list_public_documents",
+    "args": {},
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/list_public_documents",
+        "query": {},
+        "body": {
+          "p_query": "",
+          "p_meeting_id": null,
+          "p_admin": false,
+          "p_limit": 20,
+          "p_offset": 0
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "link_public_document_meeting",
+    "args": {
+      "document_id": "00000000-0000-4000-8000-000000000001",
+      "meeting_id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/link_public_document_meeting",
+        "query": {},
+        "body": {
+          "p_document_id": "00000000-0000-4000-8000-000000000001",
+          "p_meeting_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "save_organization",
+    "args": {
+      "request": {
+        "slug": "sample",
+        "name": "sample",
+        "operation": "create"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/organizations",
+        "query": {
+          "select": "id,slug,name"
+        },
+        "body": {
+          "slug": "sample",
+          "name": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_organization",
+    "args": {
+      "request": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "operation": "update",
+        "slug": "sample"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/organizations",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id,slug,name"
+        },
+        "body": {
+          "slug": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_calendar",
+    "args": {
+      "request": {
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "slug": "sample",
+        "name": "sample",
+        "operation": "create"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/calendars",
+        "query": {
+          "select": "id,slug,name"
+        },
+        "body": {
+          "organization_id": "00000000-0000-4000-8000-000000000001",
+          "slug": "sample",
+          "name": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_calendar",
+    "args": {
+      "request": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "operation": "update",
+        "organization_id": "00000000-0000-4000-8000-000000000001"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/calendars",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id,slug,name"
+        },
+        "body": {
+          "organization_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_event",
+    "args": {
+      "request": {
+        "calendar_id": "00000000-0000-4000-8000-000000000001",
+        "title": "sample",
+        "starts_at": "sample",
+        "operation": "create"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/events",
+        "query": {
+          "select": "id,title,starts_at"
+        },
+        "body": {
+          "calendar_id": "00000000-0000-4000-8000-000000000001",
+          "title": "sample",
+          "starts_at": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_event",
+    "args": {
+      "request": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "operation": "update",
+        "meeting_video_start_seconds": 0
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/events",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id,title,starts_at"
+        },
+        "body": {
+          "meeting_video_start_seconds": 0
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_person",
+    "args": {
+      "request": {
+        "slug": "sample",
+        "full_name": "sample",
+        "operation": "create"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/people",
+        "query": {
+          "select": "id,slug,full_name"
+        },
+        "body": {
+          "slug": "sample",
+          "full_name": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_person",
+    "args": {
+      "request": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "operation": "update",
+        "slug": "sample"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/people",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id,slug,full_name"
+        },
+        "body": {
+          "slug": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_election",
+    "args": {
+      "request": {
+        "slug": "sample",
+        "name": "sample",
+        "election_date": "sample",
+        "operation": "create"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/elections",
+        "query": {
+          "select": "id,slug,name"
+        },
+        "body": {
+          "slug": "sample",
+          "name": "sample",
+          "election_date": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_election",
+    "args": {
+      "request": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "operation": "update",
+        "slug": "sample"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/elections",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id,slug,name"
+        },
+        "body": {
+          "slug": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_map",
+    "args": {
+      "request": {
+        "slug": "sample",
+        "name": "sample",
+        "operation": "create"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/maps",
+        "query": {
+          "select": "id,slug,name,visibility,base_map,organization_id,view_options"
+        },
+        "body": {
+          "slug": "sample",
+          "name": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_map",
+    "args": {
+      "request": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "operation": "update",
+        "slug": "sample"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/maps",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id,slug,name,visibility,base_map,organization_id,view_options"
+        },
+        "body": {
+          "slug": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_layer",
+    "args": {
+      "request": {
+        "name": "sample",
+        "source_url": "https://example.org/source",
+        "operation": "create"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/layers",
+        "query": {
+          "select": "id,name,source_type,source_url,visibility,style,presentation"
+        },
+        "body": {
+          "name": "sample",
+          "source_url": "https://example.org/source"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_layer",
+    "args": {
+      "request": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "operation": "update",
+        "name": "sample"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/layers",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id,name,source_type,source_url,visibility,style,presentation"
+        },
+        "body": {
+          "name": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_contest",
+    "args": {
+      "request": {
+        "election_id": "00000000-0000-4000-8000-000000000001",
+        "office": "sample",
+        "operation": "create"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/contests",
+        "query": {
+          "select": "id,election_id,office,district,seat,description,partisan,position"
+        },
+        "body": {
+          "election_id": "00000000-0000-4000-8000-000000000001",
+          "office": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_contest",
+    "args": {
+      "request": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "operation": "update",
+        "election_id": "00000000-0000-4000-8000-000000000001"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/contests",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id,election_id,office,district,seat,description,partisan,position"
+        },
+        "body": {
+          "election_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_ballot_question",
+    "args": {
+      "request": {
+        "election_id": "00000000-0000-4000-8000-000000000001",
+        "title": "sample",
+        "question_text": "sample",
+        "operation": "create"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/ballot_questions",
+        "query": {
+          "select": "id,election_id,title,question_text,description,jurisdiction,choices,source_url,position"
+        },
+        "body": {
+          "election_id": "00000000-0000-4000-8000-000000000001",
+          "title": "sample",
+          "question_text": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_ballot_question",
+    "args": {
+      "request": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "operation": "update",
+        "election_id": "00000000-0000-4000-8000-000000000001"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/ballot_questions",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id,election_id,title,question_text,description,jurisdiction,choices,source_url,position"
+        },
+        "body": {
+          "election_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_article",
+    "args": {
+      "request": {
+        "title": "sample",
+        "url": "https://example.org/source",
+        "operation": "create"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/mcp_save_article",
+        "query": {},
+        "body": {
+          "p_article": {
+            "title": "sample",
+            "url": "https://example.org/source"
+          },
+          "p_people": null,
+          "p_organizations": null
+        },
+        "response": "00000000-0000-4000-8000-000000000001"
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_article",
+    "args": {
+      "request": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "operation": "update",
+        "title": "sample"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/mcp_save_article",
+        "query": {},
+        "body": {
+          "p_article": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "title": "sample"
+          },
+          "p_people": null,
+          "p_organizations": null
+        },
+        "response": "00000000-0000-4000-8000-000000000001"
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_layer_feature",
+    "args": {
+      "request": {
+        "layer_id": "00000000-0000-4000-8000-000000000001",
+        "geometry": {
+          "type": "Point",
+          "coordinates": []
+        },
+        "operation": "create"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/mcp_save_layer_feature",
+        "query": {},
+        "body": {
+          "p_layer_id": "00000000-0000-4000-8000-000000000001",
+          "p_feature": {
+            "geometry": {
+              "type": "Point",
+              "coordinates": []
+            }
+          }
+        },
+        "response": "00000000-0000-4000-8000-000000000001"
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "layer_id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_layer_feature",
+    "args": {
+      "request": {
+        "layer_id": "00000000-0000-4000-8000-000000000001",
+        "id": "1",
+        "operation": "update",
+        "position": -9007199254740991
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/mcp_save_layer_feature",
+        "query": {},
+        "body": {
+          "p_layer_id": "00000000-0000-4000-8000-000000000001",
+          "p_id": "1",
+          "p_feature": {
+            "position": -9007199254740991
+          }
+        },
+        "response": "00000000-0000-4000-8000-000000000001"
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "layer_id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_office",
+    "args": {
+      "request": {
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "name": "sample",
+        "operation": "create"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/offices",
+        "query": {
+          "select": "*"
+        },
+        "body": {
+          "organization_id": "00000000-0000-4000-8000-000000000001",
+          "name": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_office",
+    "args": {
+      "request": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "operation": "update",
+        "organization_id": "00000000-0000-4000-8000-000000000001"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/offices",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "*"
+        },
+        "body": {
+          "organization_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_office_term",
+    "args": {
+      "request": {
+        "office_id": "00000000-0000-4000-8000-000000000001",
+        "person_id": "00000000-0000-4000-8000-000000000001",
+        "selection_method": "elected",
+        "starts_on": "2026-01-01",
+        "operation": "create"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/office_terms",
+        "query": {
+          "select": "*"
+        },
+        "body": {
+          "office_id": "00000000-0000-4000-8000-000000000001",
+          "person_id": "00000000-0000-4000-8000-000000000001",
+          "selection_method": "elected",
+          "starts_on": "2026-01-01"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_office_term",
+    "args": {
+      "request": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "operation": "update",
+        "office_id": "00000000-0000-4000-8000-000000000001"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/office_terms",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "*"
+        },
+        "body": {
+          "office_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_relationship",
+    "args": {
+      "request": {
+        "relationship": "map_layer",
+        "change": {
+          "map_id": "00000000-0000-4000-8000-000000000001",
+          "layer_id": "00000000-0000-4000-8000-000000000001",
+          "operation": "create"
+        }
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/map_layers",
+        "query": {
+          "select": "*"
+        },
+        "body": {
+          "map_id": "00000000-0000-4000-8000-000000000001",
+          "layer_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_relationship",
+    "args": {
+      "request": {
+        "relationship": "map_layer",
+        "change": {
+          "map_id": "00000000-0000-4000-8000-000000000001",
+          "layer_id": "00000000-0000-4000-8000-000000000001",
+          "operation": "update",
+          "position": -9007199254740991
+        }
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/map_layers",
+        "query": {
+          "map_id": "eq.00000000-0000-4000-8000-000000000001",
+          "layer_id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "*"
+        },
+        "body": {
+          "position": -9007199254740991
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_relationship",
+    "args": {
+      "request": {
+        "relationship": "contest_candidate",
+        "change": {
+          "contest_id": "00000000-0000-4000-8000-000000000001",
+          "person_id": "00000000-0000-4000-8000-000000000001",
+          "operation": "create"
+        }
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/contest_candidates",
+        "query": {
+          "select": "*"
+        },
+        "body": {
+          "contest_id": "00000000-0000-4000-8000-000000000001",
+          "person_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_relationship",
+    "args": {
+      "request": {
+        "relationship": "contest_candidate",
+        "change": {
+          "contest_id": "00000000-0000-4000-8000-000000000001",
+          "person_id": "00000000-0000-4000-8000-000000000001",
+          "operation": "update",
+          "party": "sample"
+        }
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/contest_candidates",
+        "query": {
+          "contest_id": "eq.00000000-0000-4000-8000-000000000001",
+          "person_id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "*"
+        },
+        "body": {
+          "party": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_relationship",
+    "args": {
+      "request": {
+        "relationship": "person_organization",
+        "change": {
+          "person_id": "00000000-0000-4000-8000-000000000001",
+          "organization_id": "00000000-0000-4000-8000-000000000001",
+          "role": "sample",
+          "operation": "create"
+        }
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/person_organizations",
+        "query": {
+          "select": "*"
+        },
+        "body": {
+          "person_id": "00000000-0000-4000-8000-000000000001",
+          "organization_id": "00000000-0000-4000-8000-000000000001",
+          "role": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_relationship",
+    "args": {
+      "request": {
+        "relationship": "person_organization",
+        "change": {
+          "person_id": "00000000-0000-4000-8000-000000000001",
+          "organization_id": "00000000-0000-4000-8000-000000000001",
+          "operation": "update",
+          "role": "sample"
+        }
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/person_organizations",
+        "query": {
+          "person_id": "eq.00000000-0000-4000-8000-000000000001",
+          "organization_id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "*"
+        },
+        "body": {
+          "role": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_relationship",
+    "args": {
+      "request": {
+        "relationship": "organization_relationship",
+        "change": {
+          "organization_id": "00000000-0000-4000-8000-000000000001",
+          "related_organization_id": "00000000-0000-4000-8000-000000000001",
+          "relationship": "sample",
+          "reverse_relationship": "sample",
+          "operation": "create"
+        }
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/organization_relationships",
+        "query": {
+          "select": "*"
+        },
+        "body": {
+          "organization_id": "00000000-0000-4000-8000-000000000001",
+          "related_organization_id": "00000000-0000-4000-8000-000000000001",
+          "relationship": "sample",
+          "reverse_relationship": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_relationship",
+    "args": {
+      "request": {
+        "relationship": "organization_relationship",
+        "change": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "operation": "update",
+          "related_organization_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/organization_relationships",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "*"
+        },
+        "body": {
+          "related_organization_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_relationship",
+    "args": {
+      "request": {
+        "relationship": "person_relationship",
+        "change": {
+          "person_id": "00000000-0000-4000-8000-000000000001",
+          "related_person_id": "00000000-0000-4000-8000-000000000001",
+          "relationship": "sample",
+          "reverse_relationship": "sample",
+          "operation": "create"
+        }
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/person_relationships",
+        "query": {
+          "select": "*"
+        },
+        "body": {
+          "person_id": "00000000-0000-4000-8000-000000000001",
+          "related_person_id": "00000000-0000-4000-8000-000000000001",
+          "relationship": "sample",
+          "reverse_relationship": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_relationship",
+    "args": {
+      "request": {
+        "relationship": "person_relationship",
+        "change": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "operation": "update",
+          "related_person_id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/person_relationships",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "*"
+        },
+        "body": {
+          "related_person_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_relationship",
+    "args": {
+      "request": {
+        "relationship": "article_person",
+        "change": {
+          "article_id": "00000000-0000-4000-8000-000000000001",
+          "person_id": "00000000-0000-4000-8000-000000000001",
+          "operation": "create"
+        }
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/article_people",
+        "query": {
+          "select": "*"
+        },
+        "body": {
+          "article_id": "00000000-0000-4000-8000-000000000001",
+          "person_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_relationship",
+    "args": {
+      "request": {
+        "relationship": "article_person",
+        "change": {
+          "article_id": "00000000-0000-4000-8000-000000000001",
+          "person_id": "00000000-0000-4000-8000-000000000001",
+          "operation": "update",
+          "role": "sample"
+        }
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/article_people",
+        "query": {
+          "article_id": "eq.00000000-0000-4000-8000-000000000001",
+          "person_id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "*"
+        },
+        "body": {
+          "role": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_relationship",
+    "args": {
+      "request": {
+        "relationship": "article_organization",
+        "change": {
+          "article_id": "00000000-0000-4000-8000-000000000001",
+          "organization_id": "00000000-0000-4000-8000-000000000001",
+          "operation": "create"
+        }
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/article_organizations",
+        "query": {
+          "select": "*"
+        },
+        "body": {
+          "article_id": "00000000-0000-4000-8000-000000000001",
+          "organization_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_relationship",
+    "args": {
+      "request": {
+        "relationship": "article_organization",
+        "change": {
+          "article_id": "00000000-0000-4000-8000-000000000001",
+          "organization_id": "00000000-0000-4000-8000-000000000001",
+          "operation": "update",
+          "role": "sample"
+        }
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/article_organizations",
+        "query": {
+          "article_id": "eq.00000000-0000-4000-8000-000000000001",
+          "organization_id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "*"
+        },
+        "body": {
+          "role": "sample"
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_relationship",
+    "args": {
+      "request": {
+        "map_id": "00000000-0000-4000-8000-000000000001",
+        "layer_id": "00000000-0000-4000-8000-000000000001",
+        "relationship": "map_layer"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/map_layers",
+        "query": {
+          "map_id": "eq.00000000-0000-4000-8000-000000000001",
+          "layer_id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "map_id,layer_id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "map_id": "00000000-0000-4000-8000-000000000001",
+      "layer_id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_relationship",
+    "args": {
+      "request": {
+        "contest_id": "00000000-0000-4000-8000-000000000001",
+        "person_id": "00000000-0000-4000-8000-000000000001",
+        "relationship": "contest_candidate"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/contest_candidates",
+        "query": {
+          "contest_id": "eq.00000000-0000-4000-8000-000000000001",
+          "person_id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "contest_id,person_id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "contest_id": "00000000-0000-4000-8000-000000000001",
+      "person_id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_relationship",
+    "args": {
+      "request": {
+        "person_id": "00000000-0000-4000-8000-000000000001",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "relationship": "person_organization"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/person_organizations",
+        "query": {
+          "person_id": "eq.00000000-0000-4000-8000-000000000001",
+          "organization_id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "person_id,organization_id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "person_id": "00000000-0000-4000-8000-000000000001",
+      "organization_id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_relationship",
+    "args": {
+      "request": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "relationship": "organization_relationship"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/organization_relationships",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_relationship",
+    "args": {
+      "request": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "relationship": "person_relationship"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/person_relationships",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_relationship",
+    "args": {
+      "request": {
+        "article_id": "00000000-0000-4000-8000-000000000001",
+        "person_id": "00000000-0000-4000-8000-000000000001",
+        "relationship": "article_person"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/article_people",
+        "query": {
+          "article_id": "eq.00000000-0000-4000-8000-000000000001",
+          "person_id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "article_id,person_id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "article_id": "00000000-0000-4000-8000-000000000001",
+      "person_id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "delete_relationship",
+    "args": {
+      "request": {
+        "article_id": "00000000-0000-4000-8000-000000000001",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "relationship": "article_organization"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "DELETE",
+        "path": "/rest/v1/article_organizations",
+        "query": {
+          "article_id": "eq.00000000-0000-4000-8000-000000000001",
+          "organization_id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "article_id,organization_id"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "deleted": 1,
+      "article_id": "00000000-0000-4000-8000-000000000001",
+      "organization_id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "map_id": "00000000-0000-4000-8000-000000000001",
+        "relation": "map_layers"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_map_layers",
+        "query": {},
+        "body": {
+          "p_map_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "person_id": "00000000-0000-4000-8000-000000000001",
+        "relation": "person_articles"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_person_articles",
+        "query": {},
+        "body": {
+          "p_person_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "relation": "organization_articles"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_organization_articles",
+        "query": {},
+        "body": {
+          "p_organization_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "person_id": "00000000-0000-4000-8000-000000000001",
+        "relation": "person_candidacies"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_person_candidacies",
+        "query": {},
+        "body": {
+          "p_person_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "person_id": "00000000-0000-4000-8000-000000000001",
+        "relation": "person_organizations"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_person",
+        "query": {},
+        "body": {
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "person": {
+            "id": "00000000-0000-4000-8000-000000000001"
+          },
+          "organizations": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001"
+            }
+          ]
+        }
+      }
+    ],
+    "result": {
+      "status": "ok",
+      "organizations": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      ]
+    }
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "election_id": "00000000-0000-4000-8000-000000000001",
+        "relation": "election_contests"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_election",
+        "query": {},
+        "body": {
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "election": {
+            "id": "00000000-0000-4000-8000-000000000001"
+          },
+          "contests": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "ballot_questions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001"
+            }
+          ]
+        }
+      }
+    ],
+    "result": {
+      "status": "ok",
+      "contests": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      ]
+    }
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "election_id": "00000000-0000-4000-8000-000000000001",
+        "relation": "election_ballot_questions"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_election",
+        "query": {},
+        "body": {
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "election": {
+            "id": "00000000-0000-4000-8000-000000000001"
+          },
+          "contests": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "ballot_questions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001"
+            }
+          ]
+        }
+      }
+    ],
+    "result": {
+      "status": "ok",
+      "ballot_questions": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      ]
+    }
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "contest_id": "00000000-0000-4000-8000-000000000001",
+        "relation": "contest_candidates"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/mcp_get_record",
+        "query": {},
+        "body": {
+          "p_type": "contest",
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "contest": {
+            "candidates": [
+              {
+                "person": {
+                  "id": "00000000-0000-4000-8000-000000000001"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "result": {
+      "status": "ok",
+      "candidates": [
+        {
+          "person": {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "contest_id": "00000000-0000-4000-8000-000000000001",
+        "person_id": "00000000-0000-4000-8000-000000000001",
+        "relation": "contest_candidate"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/mcp_get_record",
+        "query": {},
+        "body": {
+          "p_type": "contest",
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "contest": {
+            "candidates": [
+              {
+                "person": {
+                  "id": "00000000-0000-4000-8000-000000000001"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "result": {
+      "status": "ok",
+      "contest_id": "00000000-0000-4000-8000-000000000001",
+      "person_id": "00000000-0000-4000-8000-000000000001",
+      "candidate": {
+        "person": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    }
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "map_id": "00000000-0000-4000-8000-000000000001",
+        "relation": "map_layer_links"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "GET",
+        "path": "/rest/v1/map_layers",
+        "query": {
+          "select": "map_id,layer_id,position,style,visible_by_default",
+          "map_id": "eq.00000000-0000-4000-8000-000000000001",
+          "order": "position.asc,layer_id.asc"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "relation": "organization_relationships"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_organization_relationships",
+        "query": {},
+        "body": {
+          "p_organization_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "person_id": "00000000-0000-4000-8000-000000000001",
+        "relation": "person_relationships"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_person_relationships",
+        "query": {},
+        "body": {
+          "p_person_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "article_id": "00000000-0000-4000-8000-000000000001",
+        "relation": "article_people"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "GET",
+        "path": "/rest/v1/article_people",
+        "query": {
+          "select": "article_id,person_id,role",
+          "article_id": "eq.00000000-0000-4000-8000-000000000001"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "article_id": "00000000-0000-4000-8000-000000000001",
+        "relation": "article_organizations"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "GET",
+        "path": "/rest/v1/article_organizations",
+        "query": {
+          "select": "article_id,organization_id,role",
+          "article_id": "eq.00000000-0000-4000-8000-000000000001"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "relation": "calendars"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/list_calendars",
+        "query": {},
+        "body": {
+          "p_organization_id": null
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "read_related_records",
+    "args": {
+      "request": {
+        "relation": "office_terms",
+        "person_id": "00000000-0000-4000-8000-000000000001"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_office_terms",
+        "query": {},
+        "body": {
+          "p_person_id": "00000000-0000-4000-8000-000000000001",
+          "p_organization_id": null
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "search_site",
+    "args": {
+      "mode": "directory",
+      "type": "organization",
+      "query": "sample"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/search_organizations",
+        "query": {},
+        "body": {
+          "p_query": "sample",
+          "p_limit": 20
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "search_site",
+    "args": {
+      "mode": "directory",
+      "type": "person",
+      "query": "sample"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/search_people",
+        "query": {},
+        "body": {
+          "p_query": "sample",
+          "p_limit": 20
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "search_site",
+    "args": {
+      "mode": "directory",
+      "type": "map",
+      "query": "sample"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/search_maps",
+        "query": {},
+        "body": {
+          "p_query": "sample",
+          "p_limit": 20
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "search_site",
+    "args": {
+      "mode": "directory",
+      "type": "election",
+      "query": "sample"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/search_elections",
+        "query": {},
+        "body": {
+          "p_query": "sample",
+          "p_limit": 50
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "search_site",
+    "args": {
+      "mode": "directory",
+      "type": "event",
+      "query": "sample"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/search_events",
+        "query": {},
+        "body": {
+          "p_query": "sample",
+          "p_limit": 50,
+          "p_organization_id": null,
+          "p_calendar_id": null,
+          "p_include_past": false
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "get_civic_record",
+    "args": {
+      "type": "organization",
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/mcp_get_record",
+        "query": {},
+        "body": {
+          "p_type": "organization",
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "contest": {
+            "candidates": [
+              {
+                "person": {
+                  "id": "00000000-0000-4000-8000-000000000001"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "result": {
+      "status": "ok",
+      "contest": {
+        "candidates": [
+          {
+            "person": {
+              "id": "00000000-0000-4000-8000-000000000001"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "get_civic_record",
+    "args": {
+      "type": "map",
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_map",
+        "query": {},
+        "body": {
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "map": {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_map_layers",
+        "query": {},
+        "body": {
+          "p_map_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "status": "ok",
+      "map": {
+        "id": "00000000-0000-4000-8000-000000000001"
+      },
+      "layers": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      ]
+    }
+  },
+  {
+    "name": "get_civic_record",
+    "args": {
+      "type": "event",
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_event",
+        "query": {},
+        "body": {
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "get_civic_record",
+    "args": {
+      "type": "election",
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_election",
+        "query": {},
+        "body": {
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "election": {
+            "id": "00000000-0000-4000-8000-000000000001"
+          },
+          "contests": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "ballot_questions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001"
+            }
+          ]
+        }
+      }
+    ],
+    "result": {
+      "status": "ok",
+      "election": {
+        "id": "00000000-0000-4000-8000-000000000001"
+      },
+      "contests": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "ballot_questions": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      ]
+    }
+  },
+  {
+    "name": "get_civic_record",
+    "args": {
+      "type": "article",
+      "id": "00000000-0000-4000-8000-000000000001"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/mcp_get_record",
+        "query": {},
+        "body": {
+          "p_type": "article",
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "contest": {
+            "candidates": [
+              {
+                "person": {
+                  "id": "00000000-0000-4000-8000-000000000001"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "result": {
+      "status": "ok",
+      "contest": {
+        "candidates": [
+          {
+            "person": {
+              "id": "00000000-0000-4000-8000-000000000001"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "search_site",
+    "args": {
+      "type": "county_statistic"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/search_county_statistics",
+        "query": {},
+        "body": {
+          "p_query": "",
+          "p_limit": 20,
+          "p_offset": 0
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "search_site",
+    "args": {
+      "type": "county_statistic_catalog"
+    },
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/rest/v1/county_geographies",
+        "query": {
+          "select": "*"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/rest/v1/county_statistic_topics",
+        "query": {
+          "select": "*"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/rest/v1/county_statistic_indicators",
+        "query": {
+          "select": "*"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/rest/v1/county_statistic_sources",
+        "query": {
+          "select": "*"
+        },
+        "body": null,
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "county_geographies": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "county_statistic_topics": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "county_statistic_indicators": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "county_statistic_sources": [
+        {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      ]
+    }
+  },
+  {
+    "name": "school_finances",
+    "args": {
+      "operation": {
+        "action": "begin",
+        "payload": {
+          "test": true
+        }
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/manage_school_finances",
+        "query": {},
+        "body": {
+          "p_action": "begin",
+          "p_payload": {
+            "test": true
+          }
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "import_legislation",
+    "args": {
+      "records": [
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        },
+        {
+          "table": "bills",
+          "data": {}
+        }
+      ],
+      "mode": "batched"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/import_legislation",
+        "query": {},
+        "body": {
+          "p_records": [
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            }
+          ]
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/import_legislation",
+        "query": {},
+        "body": {
+          "p_records": [
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            },
+            {
+              "table": "bills",
+              "data": {}
+            }
+          ]
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/import_legislation",
+        "query": {},
+        "body": {
+          "p_records": [
+            {
+              "table": "bills",
+              "data": {}
+            }
+          ]
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "status": "complete",
+      "imported_count": 201,
+      "next_offset": 201,
+      "total": 201
+    }
+  },
+  {
+    "name": "list_public_documents",
+    "args": {
+      "query": "sample",
+      "include_unpublished": true,
+      "meeting_id": "00000000-0000-4000-8000-000000000001",
+      "limit": 5,
+      "offset": 2
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/list_public_documents",
+        "query": {},
+        "body": {
+          "p_query": "sample",
+          "p_meeting_id": "00000000-0000-4000-8000-000000000001",
+          "p_admin": true,
+          "p_limit": 5,
+          "p_offset": 2
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "manage_election_results",
+    "args": {
+      "operation": {
+        "action": "read",
+        "election_id": "00000000-0000-4000-8000-000000000001"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_election_results",
+        "query": {},
+        "body": {
+          "p_election_id": "00000000-0000-4000-8000-000000000001",
+          "p_history": false,
+          "p_offset": 0,
+          "p_limit": 50
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "manage_election_results",
+    "args": {
+      "operation": {
+        "action": "read_turnout",
+        "election_id": "00000000-0000-4000-8000-000000000001"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_structured_turnout",
+        "query": {},
+        "body": {
+          "p_election_id": "00000000-0000-4000-8000-000000000001",
+          "p_report_id": null,
+          "p_offset": 0,
+          "p_limit": 100
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "get_layer_feature",
+    "args": {
+      "layer_id": "00000000-0000-4000-8000-000000000001",
+      "id": "1"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/mcp_layer_features",
+        "query": {},
+        "body": {
+          "p_layer_id": "00000000-0000-4000-8000-000000000001",
+          "p_map_id": null,
+          "p_id": "1",
+          "p_limit": 1
+        },
+        "response": [
+          {
+            "id": "1"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "status": "ok",
+      "feature": {
+        "id": "1"
+      }
+    }
+  },
+  {
+    "name": "save_county_statistic",
+    "args": {
+      "county_fips": "13021",
+      "indicator_code": "sample",
+      "expected_updated_at": null,
+      "value": 42,
+      "status": "available",
+      "period": "2026",
+      "source_id": "sample",
+      "source_variables": "sample"
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/county_statistics",
+        "query": {
+          "select": "*"
+        },
+        "body": {
+          "county_fips": "13021",
+          "indicator_code": "sample",
+          "value": 42,
+          "status": "available",
+          "period": "2026",
+          "source_id": "sample",
+          "source_variables": "sample",
+          "detail": "",
+          "components": {},
+          "numerator": null,
+          "denominator": null,
+          "margin_of_error": null,
+          "lower_bound": null,
+          "upper_bound": null,
+          "confidence_level": null
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "search_users",
+    "args": {
+      "query": "  sample  "
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/admin_list_users",
+        "query": {},
+        "body": {
+          "p_query": "sample",
+          "p_offset": 0
+        },
+        "response": [
+          {
+            "id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    ],
+    "result": [
+      {
+        "id": "00000000-0000-4000-8000-000000000001"
+      }
+    ]
+  },
+  {
+    "name": "save_person",
+    "args": {
+      "request": {
+        "operation": "update",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "full_name": " Name "
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/rest/v1/people",
+        "query": {
+          "id": "eq.00000000-0000-4000-8000-000000000001",
+          "select": "id,slug,full_name"
+        },
+        "body": {
+          "full_name": " Name "
+        },
+        "response": {
+          "id": "00000000-0000-4000-8000-000000000001"
+        }
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "save_article",
+    "args": {
+      "request": {
+        "operation": "create",
+        "title": "  Title  ",
+        "url": "https://example.org/article"
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/mcp_save_article",
+        "query": {},
+        "body": {
+          "p_article": {
+            "title": "Title",
+            "url": "https://example.org/article"
+          },
+          "p_people": null,
+          "p_organizations": null
+        },
+        "response": "00000000-0000-4000-8000-000000000001"
+      }
+    ],
+    "result": {
+      "id": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "name": "import_meeting_source",
+    "args": {
+      "meeting_id": "00000000-0000-4000-8000-000000000001",
+      "provider": "test",
+      "provenance": {
+        "source_url": "https://example.org/source",
+        "document_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "attendance": [
+        {
+          "source_key": "a",
+          "locator": "page 1",
+          "person_id": "00000000-0000-4000-8000-000000000001",
+          "status": "observed",
+          "evidence": "Named ballot"
+        }
+      ],
+      "motions": [
+        {
+          "source_key": "vote",
+          "locator": "page 2",
+          "subject": "Motion",
+          "ballots": [
+            {
+              "person_id": "00000000-0000-4000-8000-000000000001",
+              "choice": "yes",
+              "text": "Sample: Yes"
+            }
+          ]
+        }
+      ]
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_meeting",
+        "query": {},
+        "body": {
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "sources": [],
+          "attachments": []
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/import_meeting_records_compact",
+        "query": {},
+        "body": {
+          "p_meeting_id": "00000000-0000-4000-8000-000000000001",
+          "p_provider": "test",
+          "p_records": [
+            {
+              "kind": "attendance",
+              "source_key": "a",
+              "provenance": {
+                "source_url": "https://example.org/source",
+                "document_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "locator": "page 1"
+              },
+              "data": {
+                "person_id": "00000000-0000-4000-8000-000000000001",
+                "status": "observed",
+                "evidence": "Named ballot"
+              }
+            },
+            {
+              "kind": "vote",
+              "source_key": "vote",
+              "provenance": {
+                "source_url": "https://example.org/source",
+                "document_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "locator": "page 2"
+              },
+              "data": {
+                "subject": "Motion"
+              }
+            },
+            {
+              "kind": "choice",
+              "source_key": "vote:person:00000000-0000-4000-8000-000000000001",
+              "provenance": {
+                "source_url": "https://example.org/source",
+                "document_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "locator": "page 2"
+              },
+              "data": {
+                "person_id": "00000000-0000-4000-8000-000000000001",
+                "vote_source_key": "vote",
+                "choice": "yes",
+                "original_text": "Sample: Yes"
+              }
+            }
+          ],
+          "p_dry_run": true
+        },
+        "response": {
+          "status": "complete",
+          "errors": []
+        }
+      }
+    ],
+    "result": {
+      "status": "complete",
+      "errors": [],
+      "errors_truncated": false,
+      "document": null,
+      "warnings": []
+    }
+  },
+  {
+    "name": "import_meeting_source",
+    "args": {
+      "meeting_id": "00000000-0000-4000-8000-000000000001",
+      "provider": "test",
+      "provenance": {
+        "source_url": "https://example.org/source",
+        "document_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "reconcile_only": true
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_meeting",
+        "query": {},
+        "body": {
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "sources": [],
+          "attachments": []
+        }
+      }
+    ],
+    "result": {
+      "status": "inventory_only",
+      "observations": 0,
+      "existing": 0,
+      "existing_sources": [],
+      "comparison_performed": false
+    }
+  },
+  {
+    "name": "import_meeting_source",
+    "document": "[{\"document\":{\"role\":\"Minutes\",\"source_url\":\"https://example.org/source\"},\"public_content\":{\"LstItemMinutes\":[{\"EncrId\":\"item1\",\"Title\":\"Budget\",\"MeetingOnlineVotings\":[{\"Minutes\":\"Approve budget\",\"VotingHTML\":[\"<p>Yes: Alice</p><p>Vote Not Recorded: Bob</p><p>Absent: Carol</p>\"]}]}]}}]",
+    "meetingSources": [],
+    "args": {
+      "meeting_id": "00000000-0000-4000-8000-000000000001",
+      "provider": "test",
+      "provenance": {
+        "source_url": "https://example.org/source",
+        "document_sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07"
+      },
+      "attachment": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "adapter": "simbli-minutes-v1",
+        "people": [
+          {
+            "name": "Alice",
+            "person_id": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "name": "Bob",
+            "person_id": "00000000-0000-4000-8000-000000000002"
+          },
+          {
+            "name": "Carol",
+            "person_id": "00000000-0000-4000-8000-000000000003"
+          }
+        ]
+      },
+      "reconcile_only": false
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_meeting",
+        "query": {},
+        "body": {
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "sources": [],
+          "attachments": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "meeting_id": "00000000-0000-4000-8000-000000000001",
+              "mime_type": "application/json",
+              "size_bytes": 287,
+              "storage_path": "00000000-0000-4000-8000-000000000001/source.json",
+              "sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07"
+            }
+          ]
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/storage/v1/object/meeting-attachments/00000000-0000-4000-8000-000000000001/source.json",
+        "query": {},
+        "body": null,
+        "response_base64": "W3siZG9jdW1lbnQiOnsicm9sZSI6Ik1pbnV0ZXMiLCJzb3VyY2VfdXJsIjoiaHR0cHM6Ly9leGFtcGxlLm9yZy9zb3VyY2UifSwicHVibGljX2NvbnRlbnQiOnsiTHN0SXRlbU1pbnV0ZXMiOlt7IkVuY3JJZCI6Iml0ZW0xIiwiVGl0bGUiOiJCdWRnZXQiLCJNZWV0aW5nT25saW5lVm90aW5ncyI6W3siTWludXRlcyI6IkFwcHJvdmUgYnVkZ2V0IiwiVm90aW5nSFRNTCI6WyI8cD5ZZXM6IEFsaWNlPC9wPjxwPlZvdGUgTm90IFJlY29yZGVkOiBCb2I8L3A+PHA+QWJzZW50OiBDYXJvbDwvcD4iXX1dfV19fV0="
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/import_meeting_records_compact",
+        "query": {},
+        "body": {
+          "p_meeting_id": "00000000-0000-4000-8000-000000000001",
+          "p_provider": "test",
+          "p_records": [
+            {
+              "kind": "attendance",
+              "source_key": "simbli:attendance:00000000-0000-4000-8000-000000000001",
+              "provenance": {
+                "source_url": "https://example.org/source",
+                "document_sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07",
+                "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0].VotingHTML"
+              },
+              "data": {
+                "person_id": "00000000-0000-4000-8000-000000000001",
+                "status": "observed",
+                "evidence": "Yes: Alice"
+              }
+            },
+            {
+              "kind": "attendance",
+              "source_key": "simbli:attendance:00000000-0000-4000-8000-000000000003",
+              "provenance": {
+                "source_url": "https://example.org/source",
+                "document_sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07",
+                "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0].VotingHTML"
+              },
+              "data": {
+                "person_id": "00000000-0000-4000-8000-000000000003",
+                "status": "absent",
+                "evidence": "Absent: Carol"
+              }
+            },
+            {
+              "kind": "vote",
+              "source_key": "simbli:item1:round:0:0",
+              "provenance": {
+                "source_url": "https://example.org/source",
+                "document_sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07",
+                "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0].VotingHTML"
+              },
+              "data": {
+                "subject": "Budget",
+                "description": "Approve budget"
+              }
+            },
+            {
+              "kind": "choice",
+              "source_key": "simbli:item1:round:0:0:person:00000000-0000-4000-8000-000000000001",
+              "provenance": {
+                "source_url": "https://example.org/source",
+                "document_sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07",
+                "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0].VotingHTML"
+              },
+              "data": {
+                "person_id": "00000000-0000-4000-8000-000000000001",
+                "vote_source_key": "simbli:item1:round:0:0",
+                "choice": "yes",
+                "original_text": "Yes: Alice"
+              }
+            },
+            {
+              "kind": "choice",
+              "source_key": "simbli:item1:round:0:0:person:00000000-0000-4000-8000-000000000002",
+              "provenance": {
+                "source_url": "https://example.org/source",
+                "document_sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07",
+                "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0].VotingHTML"
+              },
+              "data": {
+                "person_id": "00000000-0000-4000-8000-000000000002",
+                "vote_source_key": "simbli:item1:round:0:0",
+                "choice": "unknown",
+                "original_text": "Vote Not Recorded: Bob"
+              }
+            }
+          ],
+          "p_dry_run": true
+        },
+        "response": {
+          "status": "complete",
+          "errors": []
+        }
+      }
+    ],
+    "result": {
+      "status": "complete",
+      "errors": [],
+      "errors_truncated": false,
+      "document": {
+        "attachment_id": "00000000-0000-4000-8000-000000000001",
+        "sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07",
+        "adapter": "simbli-minutes-v1",
+        "motions": 1,
+        "named_ballots": 1,
+        "unknown_choices": 1
+      },
+      "warnings": []
+    }
+  },
+  {
+    "name": "import_meeting_source",
+    "document": "[{\"document\":{\"role\":\"Minutes\",\"source_url\":\"https://example.org/source\"},\"public_content\":{\"LstItemMinutes\":[{\"EncrId\":\"item1\",\"Title\":\"Budget\",\"MeetingOnlineVotings\":[{\"Minutes\":\"Approve budget\",\"VotingHTML\":[\"<p>Yes: Alice</p><p>Vote Not Recorded: Bob</p><p>Absent: Carol</p>\"]}]}]}}]",
+    "meetingSources": [],
+    "args": {
+      "meeting_id": "00000000-0000-4000-8000-000000000001",
+      "provider": "test",
+      "provenance": {
+        "source_url": "https://example.org/source",
+        "document_sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07"
+      },
+      "attachment": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "adapter": "simbli-minutes-v1",
+        "people": [
+          {
+            "name": "Alice",
+            "person_id": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      },
+      "reconcile_only": false
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_meeting",
+        "query": {},
+        "body": {
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "sources": [],
+          "attachments": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "meeting_id": "00000000-0000-4000-8000-000000000001",
+              "mime_type": "application/json",
+              "size_bytes": 287,
+              "storage_path": "00000000-0000-4000-8000-000000000001/source.json",
+              "sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07"
+            }
+          ]
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/storage/v1/object/meeting-attachments/00000000-0000-4000-8000-000000000001/source.json",
+        "query": {},
+        "body": null,
+        "response_base64": "W3siZG9jdW1lbnQiOnsicm9sZSI6Ik1pbnV0ZXMiLCJzb3VyY2VfdXJsIjoiaHR0cHM6Ly9leGFtcGxlLm9yZy9zb3VyY2UifSwicHVibGljX2NvbnRlbnQiOnsiTHN0SXRlbU1pbnV0ZXMiOlt7IkVuY3JJZCI6Iml0ZW0xIiwiVGl0bGUiOiJCdWRnZXQiLCJNZWV0aW5nT25saW5lVm90aW5ncyI6W3siTWludXRlcyI6IkFwcHJvdmUgYnVkZ2V0IiwiVm90aW5nSFRNTCI6WyI8cD5ZZXM6IEFsaWNlPC9wPjxwPlZvdGUgTm90IFJlY29yZGVkOiBCb2I8L3A+PHA+QWJzZW50OiBDYXJvbDwvcD4iXX1dfV19fV0="
+      }
+    ],
+    "result": {
+      "status": "review_required",
+      "document": {
+        "attachment_id": "00000000-0000-4000-8000-000000000001",
+        "sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07",
+        "adapter": "simbli-minutes-v1",
+        "motions": 1,
+        "named_ballots": 1,
+        "unknown_choices": 1
+      },
+      "missing_people": [
+        "Bob",
+        "Carol"
+      ],
+      "warnings": [],
+      "reconciliation": [
+        {
+          "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0].VotingHTML",
+          "source_key": "simbli:item1:round:0:0",
+          "vote_id": null,
+          "status": "missing",
+          "differences": [
+            "missing_ballot:simbli:item1:round:0:0:person:00000000-0000-4000-8000-000000000001",
+            "missing_ballot:simbli:item1:round:0:0:person:undefined"
+          ],
+          "missing_ballots": [
+            {
+              "person_id": "00000000-0000-4000-8000-000000000001",
+              "source_key": "simbli:item1:round:0:0:person:00000000-0000-4000-8000-000000000001",
+              "source_name": "Alice",
+              "choice": "yes",
+              "original_text": "Yes: Alice"
+            },
+            {
+              "source_key": "simbli:item1:round:0:0:person:undefined",
+              "source_name": "Bob",
+              "choice": "unknown",
+              "original_text": "Vote Not Recorded: Bob"
+            }
+          ],
+          "unexpected_ballots": [],
+          "ballot_differences": [],
+          "stored_ballots": 0,
+          "document_ballots": 2
+        }
+      ],
+      "existing_motions": []
+    }
+  },
+  {
+    "name": "import_meeting_source",
+    "document": "[{\"document\":{\"role\":\"Minutes\",\"source_url\":\"https://example.org/source\"},\"public_content\":{\"LstItemMinutes\":[{\"EncrId\":\"item1\",\"Title\":\"Budget\",\"MeetingOnlineVotings\":[{\"Minutes\":\"Approve budget\",\"VotingHTML\":[\"<p>Yes: Alice</p><p>Vote Not Recorded: Bob</p><p>Absent: Carol</p>\"]}]}]}}]",
+    "meetingSources": [],
+    "args": {
+      "meeting_id": "00000000-0000-4000-8000-000000000001",
+      "provider": "test",
+      "provenance": {
+        "source_url": "https://example.org/source",
+        "document_sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07"
+      },
+      "attachment": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "adapter": "simbli-minutes-v1",
+        "people": [
+          {
+            "name": "Alice",
+            "person_id": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "name": "Bob",
+            "person_id": "00000000-0000-4000-8000-000000000002"
+          },
+          {
+            "name": "Carol",
+            "person_id": "00000000-0000-4000-8000-000000000003"
+          }
+        ]
+      },
+      "reconcile_only": true
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_meeting",
+        "query": {},
+        "body": {
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "sources": [],
+          "attachments": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "meeting_id": "00000000-0000-4000-8000-000000000001",
+              "mime_type": "application/json",
+              "size_bytes": 287,
+              "storage_path": "00000000-0000-4000-8000-000000000001/source.json",
+              "sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07"
+            }
+          ]
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/storage/v1/object/meeting-attachments/00000000-0000-4000-8000-000000000001/source.json",
+        "query": {},
+        "body": null,
+        "response_base64": "W3siZG9jdW1lbnQiOnsicm9sZSI6Ik1pbnV0ZXMiLCJzb3VyY2VfdXJsIjoiaHR0cHM6Ly9leGFtcGxlLm9yZy9zb3VyY2UifSwicHVibGljX2NvbnRlbnQiOnsiTHN0SXRlbU1pbnV0ZXMiOlt7IkVuY3JJZCI6Iml0ZW0xIiwiVGl0bGUiOiJCdWRnZXQiLCJNZWV0aW5nT25saW5lVm90aW5ncyI6W3siTWludXRlcyI6IkFwcHJvdmUgYnVkZ2V0IiwiVm90aW5nSFRNTCI6WyI8cD5ZZXM6IEFsaWNlPC9wPjxwPlZvdGUgTm90IFJlY29yZGVkOiBCb2I8L3A+PHA+QWJzZW50OiBDYXJvbDwvcD4iXX1dfV19fV0="
+      }
+    ],
+    "result": {
+      "status": "review_required",
+      "document": {
+        "attachment_id": "00000000-0000-4000-8000-000000000001",
+        "sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07",
+        "adapter": "simbli-minutes-v1",
+        "motions": 1,
+        "named_ballots": 1,
+        "unknown_choices": 1
+      },
+      "missing_people": [],
+      "warnings": [],
+      "reconciliation": [
+        {
+          "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0].VotingHTML",
+          "source_key": "simbli:item1:round:0:0",
+          "vote_id": null,
+          "status": "missing",
+          "differences": [
+            "missing_ballot:simbli:item1:round:0:0:person:00000000-0000-4000-8000-000000000001",
+            "missing_ballot:simbli:item1:round:0:0:person:00000000-0000-4000-8000-000000000002"
+          ],
+          "missing_ballots": [
+            {
+              "person_id": "00000000-0000-4000-8000-000000000001",
+              "source_key": "simbli:item1:round:0:0:person:00000000-0000-4000-8000-000000000001",
+              "source_name": "Alice",
+              "choice": "yes",
+              "original_text": "Yes: Alice"
+            },
+            {
+              "person_id": "00000000-0000-4000-8000-000000000002",
+              "source_key": "simbli:item1:round:0:0:person:00000000-0000-4000-8000-000000000002",
+              "source_name": "Bob",
+              "choice": "unknown",
+              "original_text": "Vote Not Recorded: Bob"
+            }
+          ],
+          "unexpected_ballots": [],
+          "ballot_differences": [],
+          "stored_ballots": 0,
+          "document_ballots": 2
+        }
+      ],
+      "existing_motions": []
+    }
+  },
+  {
+    "name": "import_meeting_source",
+    "document": "[{\"document\":{\"role\":\"Minutes\",\"source_url\":\"https://example.org/source\"},\"public_content\":{\"LstItemMinutes\":[{\"EncrId\":\"item1\",\"Title\":\"Budget\",\"MeetingOnlineVotings\":[{\"Minutes\":\"Approve budget\",\"VotingHTML\":[\"<p>Yes: Alice</p><p>Vote Not Recorded: Bob</p><p>Absent: Carol</p>\"]}]}]}}]",
+    "meetingSources": [
+      {
+        "kind": "vote",
+        "provider": "test",
+        "source_key": "legacy",
+        "vote_id": "00000000-0000-4000-8000-000000000001",
+        "data": {
+          "subject": "Budget",
+          "description": "Approve budget"
+        },
+        "provenance": {
+          "document_sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07"
+        }
+      }
+    ],
+    "args": {
+      "meeting_id": "00000000-0000-4000-8000-000000000001",
+      "provider": "test",
+      "provenance": {
+        "source_url": "https://example.org/source",
+        "document_sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07"
+      },
+      "attachment": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "adapter": "simbli-minutes-v1",
+        "people": [
+          {
+            "name": "Alice",
+            "person_id": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "name": "Bob",
+            "person_id": "00000000-0000-4000-8000-000000000002"
+          },
+          {
+            "name": "Carol",
+            "person_id": "00000000-0000-4000-8000-000000000003"
+          }
+        ]
+      },
+      "reconcile_only": false
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/is_admin",
+        "query": {},
+        "body": {},
+        "response": true
+      },
+      {
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_meeting",
+        "query": {},
+        "body": {
+          "p_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "response": {
+          "status": "ok",
+          "sources": [
+            {
+              "kind": "vote",
+              "provider": "test",
+              "source_key": "legacy",
+              "vote_id": "00000000-0000-4000-8000-000000000001",
+              "data": {
+                "subject": "Budget",
+                "description": "Approve budget"
+              },
+              "provenance": {
+                "document_sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07"
+              }
+            }
+          ],
+          "attachments": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "meeting_id": "00000000-0000-4000-8000-000000000001",
+              "mime_type": "application/json",
+              "size_bytes": 287,
+              "storage_path": "00000000-0000-4000-8000-000000000001/source.json",
+              "sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07"
+            }
+          ]
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/storage/v1/object/meeting-attachments/00000000-0000-4000-8000-000000000001/source.json",
+        "query": {},
+        "body": null,
+        "response_base64": "W3siZG9jdW1lbnQiOnsicm9sZSI6Ik1pbnV0ZXMiLCJzb3VyY2VfdXJsIjoiaHR0cHM6Ly9leGFtcGxlLm9yZy9zb3VyY2UifSwicHVibGljX2NvbnRlbnQiOnsiTHN0SXRlbU1pbnV0ZXMiOlt7IkVuY3JJZCI6Iml0ZW0xIiwiVGl0bGUiOiJCdWRnZXQiLCJNZWV0aW5nT25saW5lVm90aW5ncyI6W3siTWludXRlcyI6IkFwcHJvdmUgYnVkZ2V0IiwiVm90aW5nSFRNTCI6WyI8cD5ZZXM6IEFsaWNlPC9wPjxwPlZvdGUgTm90IFJlY29yZGVkOiBCb2I8L3A+PHA+QWJzZW50OiBDYXJvbDwvcD4iXX1dfV19fV0="
+      }
+    ],
+    "result": {
+      "status": "review_required",
+      "document": {
+        "attachment_id": "00000000-0000-4000-8000-000000000001",
+        "sha256": "2bd7b7676b4467e61698b1f79f017f9f3d220d965f0ac596404876f31d926d07",
+        "adapter": "simbli-minutes-v1",
+        "motions": 1,
+        "named_ballots": 1,
+        "unknown_choices": 1
+      },
+      "missing_people": [],
+      "warnings": [],
+      "reconciliation": [
+        {
+          "locator": "documents[0].public_content.LstItemMinutes[0].MeetingOnlineVotings[0].VotingHTML",
+          "source_key": "simbli:item1:round:0:0",
+          "vote_id": null,
+          "status": "missing",
+          "differences": [
+            "missing_ballot:simbli:item1:round:0:0:person:00000000-0000-4000-8000-000000000001",
+            "missing_ballot:simbli:item1:round:0:0:person:00000000-0000-4000-8000-000000000002"
+          ],
+          "missing_ballots": [
+            {
+              "person_id": "00000000-0000-4000-8000-000000000001",
+              "source_key": "simbli:item1:round:0:0:person:00000000-0000-4000-8000-000000000001",
+              "source_name": "Alice",
+              "choice": "yes",
+              "original_text": "Yes: Alice"
+            },
+            {
+              "person_id": "00000000-0000-4000-8000-000000000002",
+              "source_key": "simbli:item1:round:0:0:person:00000000-0000-4000-8000-000000000002",
+              "source_name": "Bob",
+              "choice": "unknown",
+              "original_text": "Vote Not Recorded: Bob"
+            }
+          ],
+          "unexpected_ballots": [],
+          "ballot_differences": [],
+          "stored_ballots": 0,
+          "document_ballots": 2
+        }
+      ],
+      "existing_motions": [
+        {
+          "source_key": "legacy",
+          "vote_id": "00000000-0000-4000-8000-000000000001",
+          "subject": "Budget",
+          "ballots": 0
+        }
+      ],
+      "reason": "Bind every document motion locator to its existing source key before importing into an already imported meeting"
+    }
+  }
+]
