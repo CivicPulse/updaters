@@ -130,3 +130,36 @@ For a later image rollback, restore the previous immutable image digest and
 wait for rollout, or use `kubectl rollout undo deployment/civpulse-mcp` in the
 explicit production context/namespace. The original Supabase Edge Function
 remains at its existing hostname throughout.
+
+### Deployed release
+
+The production rollout and public smoke checks passed on 2026-11-05 UTC
+(2026-11-04 America/New_York). See
+[the immutable release receipt](../../deploy/k8s/mcp-release.json).
+Both replicas became ready on separate existing workers; no new worker pool,
+load balancer, tunnel, hostname or registry subscription was provisioned.
+
+The registry's plan permits five repositories and all are occupied. MCP therefore
+uses a distinct `mcp-sha-...` tag in `hatchk8s/civpulse-webapi`, pinned by digest
+in the Deployment; the API's existing tags and digest are retained.
+
+The public checks verified OAuth metadata and issuer, authentication challenges,
+the exact 79-tool catalog, normal-user identity, a live visibility-aware civic
+search, admin-only account-read rejection, public health-path exclusion and
+browser preflight. The same temporary normal user token also succeeded on the
+existing API. Both temporary test accounts were removed. No production content
+writes, document publication or upload sessions were created during validation.
+Admin writes and upload recovery retain their local compatibility/recovery test
+evidence; these workflows were not exercised against production content.
+
+To rerun the read-only public checks:
+
+```sh
+python3 tools/mcp/scripts/smoke-production.py
+```
+
+Set `MCP_SMOKE_TOKEN` to a normal user's access token in the environment to also
+check authenticated MCP/API reads; optionally set `MCP_SMOKE_USER_ID` to assert
+the exact account. Never put bearer tokens in command arguments or commit them.
+The script does not create accounts or content. For an internal candidate,
+port-forward the MCP Service and add `--base http://127.0.0.1:18789 --skip-api`.

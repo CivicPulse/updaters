@@ -38,8 +38,8 @@ spec:
               topologyKey: kubernetes.io/hostname
       containers:
         - name: mcp
-          # Replaced with the immutable digest after publishing the checked image.
-          image: localhost/civpulse-mcp:dev
+          # A distinct MCP tag shares the API repository because the registry permits five repositories.
+          image: registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:bfc0d945c243b81b529b9125ef932120d33c0764c5382be3349001f5cf1b3f7b
           ports:
             - name: http
               containerPort: 8789
