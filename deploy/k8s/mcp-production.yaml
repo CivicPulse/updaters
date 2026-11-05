@@ -39,7 +39,7 @@ spec:
       containers:
         - name: mcp
           # A distinct MCP tag shares the API repository because the registry permits five repositories.
-          image: registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:5f2225ccb1cbe28a159bd82cd6211523d0e4df104467fdccc5bed04385201686
+          image: registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:cd12033104341b98881a42ee5072e1e9b0a3d38b18bdbee683facee8f33fb682
           ports:
             - name: http
               containerPort: 8789

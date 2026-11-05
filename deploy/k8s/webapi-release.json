@@ -1,8 +1,8 @@
 {
-  "sourceCommit": "8e49354841d67d6d4efff6c0746a550a253e231a",
-  "image": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:4a85ea0879e19f3a37fdc6faabfb0251806b5e2b2c3627e7f9c5f60f3225c4a0",
-  "tag": "registry.digitalocean.com/hatchk8s/civpulse-webapi:sha-8e49354841d67d6d4efff6c0746a550a253e231a",
-  "sourcePullRequest": "https://github.com/CivicPulse/updaters/pull/37",
-  "previousImage": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:dc8b99be4e6e53dec70d6131b41434c24c3b0c112f21043b3c24dfdf5b61d3f1",
-  "validation": "Local pinned Dockerfile build; read-only/nonroot container startup and zero HIGH/CRITICAL vulnerability/secret scans passed. Ordinary-user local API/MCP parity and discovery checks passed against production election data. Public rollout validation is recorded on the pull request."
+  "sourceCommit": "967e26b86eeba2574d1793338858e19ed369c552",
+  "image": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:32889b73cd21ca6e290510b1e701c164abf3dd0626398329b14df41db9846c18",
+  "tag": "registry.digitalocean.com/hatchk8s/civpulse-webapi:sha-967e26b86eeba2574d1793338858e19ed369c552",
+  "sourcePullRequest": "https://github.com/CivicPulse/updaters/pull/38",
+  "previousImage": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:4a85ea0879e19f3a37fdc6faabfb0251806b5e2b2c3627e7f9c5f60f3225c4a0",
+  "validation": "Pinned Dockerfile image: startup/read-only/nonroot checks and zero HIGH/CRITICAL vulnerability/secret scans passed. All 106 operation schemas and 76 resource dispositions matched MCP using an ordinary temporary user, under 256 MiB; account removed. Existing RLS/owner/admin checks validated in an isolated database. Post-deployment validation is recorded on the pull request."
 }

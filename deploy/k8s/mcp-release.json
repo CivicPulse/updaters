@@ -1,21 +1,21 @@
 {
-  "sourceCommit": "8e49354841d67d6d4efff6c0746a550a253e231a",
+  "sourceCommit": "967e26b86eeba2574d1793338858e19ed369c552",
   "sourceRepository": "https://github.com/CivicPulse/updaters",
   "portedCatalogCommit": "870a12dc60c780a4b0312060988b187d230b339f",
-  "image": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:5f2225ccb1cbe28a159bd82cd6211523d0e4df104467fdccc5bed04385201686",
-  "tag": "registry.digitalocean.com/hatchk8s/civpulse-webapi:mcp-sha-8e49354841d67d6d4efff6c0746a550a253e231a",
+  "image": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:cd12033104341b98881a42ee5072e1e9b0a3d38b18bdbee683facee8f33fb682",
+  "tag": "registry.digitalocean.com/hatchk8s/civpulse-webapi:mcp-sha-967e26b86eeba2574d1793338858e19ed369c552",
   "clusterContext": "do-atl1-k8s-1-37-0-do-2-atl1-1793724241236",
   "namespace": "civpulse-prod",
   "endpoint": "https://webapi.civpulse.org/mcp/v2",
-  "toolCount": 80,
-  "validationStatus": "image-validated-and-local-live-election-parity-passed",
-  "existingApiImage": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:4a85ea0879e19f3a37fdc6faabfb0251806b5e2b2c3627e7f9c5f60f3225c4a0",
+  "toolCount": 106,
+  "validationStatus": "image-validated-and-local-live-civic-parity-passed",
+  "existingApiImage": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:32889b73cd21ca6e290510b1e701c164abf3dd0626398329b14df41db9846c18",
   "existingApiIngressUnchanged": true,
   "temporarySmokeAccountsRemoved": true,
   "limitations": [
     "Admin writes, document publication and resumable uploads were not exercised against production data; local compatibility and recovery tests cover these paths."
   ],
-  "previousImage": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:2d91ec064f68440678fff10279e20c0fbe29dac89a5ff44933f41301fde9ab16",
+  "previousImage": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:5f2225ccb1cbe28a159bd82cd6211523d0e4df104467fdccc5bed04385201686",
   "runtime": "digest-pinned distroless Debian 13 nonroot",
   "securityScan": {
     "scanner": "Trivy 0.76.1",
@@ -26,13 +26,16 @@
     "vulnerabilities": 0,
     "secrets": 0
   },
-  "previousApiImage": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:dc8b99be4e6e53dec70d6131b41434c24c3b0c112f21043b3c24dfdf5b61d3f1",
-  "sourcePullRequest": "https://github.com/CivicPulse/updaters/pull/37",
+  "previousApiImage": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:4a85ea0879e19f3a37fdc6faabfb0251806b5e2b2c3627e7f9c5f60f3225c4a0",
+  "sourcePullRequest": "https://github.com/CivicPulse/updaters/pull/38",
   "predeploymentChecks": [
-    "140 workspace tests passed",
-    "all-target all-feature Clippy passed",
-    "container startup under pod security constraints passed",
-    "Trivy HIGH/CRITICAL vulnerabilities and secrets: zero for both images",
-    "ordinary-user local API/MCP election reads identical to official November 3 feed; discovery searches passed; test account removed"
-  ]
+    "147 locked all-feature workspace tests passed",
+    "all-target all-feature Clippy, rustdoc and deployment contracts passed",
+    "isolated database: real admin CRUD, owner requests, unrelated-user denial and self-profile policies passed; synthetic data rolled back",
+    "both actual images: 106-tool catalog and all 76 resource dispositions matched through API/MCP, including guarded workflows and own-profile edits, under 256 MiB/read-only constraints; temporary ordinary account removed",
+    "Trivy HIGH/CRITICAL vulnerabilities and secrets: zero for both images"
+  ],
+  "resourceCount": 76,
+  "schemaTablesAccountedFor": 81,
+  "resourceInventory": "crates/civpulse-civic/reference/resources.json"
 }

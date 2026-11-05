@@ -30,7 +30,7 @@ spec:
           type: RuntimeDefault
       containers:
       - name: webapi
-        image: registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:4a85ea0879e19f3a37fdc6faabfb0251806b5e2b2c3627e7f9c5f60f3225c4a0
+        image: registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:32889b73cd21ca6e290510b1e701c164abf3dd0626398329b14df41db9846c18
         ports:
         - name: http
           containerPort: 8080
