@@ -78,7 +78,9 @@ docker run --rm --read-only civpulse-download:dev --check
 
 The same Dockerfile builds one selected binary per image. Images include CA
 certificates for future HTTPS clients and run as an unprivileged numeric user.
-The runtime is a digest-pinned distroless Debian 13 image with no shell or package
+The runtime uses digest-pinned distroless Debian 13 no-SSL plus libgcc for Rust
+unwinding, with package metadata retained for scanning. TLS uses rustls, so the
+runtime excludes unused OpenSSL and compression libraries. There is no shell or package
 manager; probes and diagnostics must invoke the executable directly.
 Pull-request CI builds and checks all six images, including the real disabled
 collector entry point, heartbeat, scratch permissions and bounded SIGTERM. A
