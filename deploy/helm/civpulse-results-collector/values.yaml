@@ -1,0 +1,55 @@
+environment: dev
+image:
+  repository: registry.digitalocean.com/hatchk8s/civpulse-results-collector
+  digest: ''
+  pullPolicy: IfNotPresent
+  pullSecrets:
+  - registry-hatchk8s
+replicaCount: 1
+collection:
+  enabled: false
+  concurrency: 1
+  maxDownloadBytes: 536870912
+  maxScopeBytes: 67108864
+  electionId: ''
+  electionDate: ''
+  sourceUrl: ''
+  expectedJurisdictions: 160
+  expectedItems: 0
+  acceptedTopologies: []
+  topologyPolicy: ""
+acceptance:
+  approved: false
+  reference: ''
+secrets:
+  supabase: results-supabase
+  r2: results-r2
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+    ephemeral-storage: 2Gi
+  limits:
+    cpu: '1'
+    memory: 1Gi
+    ephemeral-storage: 3Gi
+scratchSizeLimit: 2Gi
+terminationGracePeriodSeconds: 120
+networkPolicy:
+  enabled: true
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+monitoring:
+  enabled: false
+  alertsEnabled: false
+  ntfyEnabled: false
+  ntfyUrl: https://ntfy.sh/CivPulse
+  emailSecret: results-alert-email
+  schedule: '* * * * *'
+  stateStorageSize: 1Gi
+  storageClass: do-block-storage-retain
+  initialIntervalSeconds: 300
+  intervalSeconds: 300
+  transitionAt: ''

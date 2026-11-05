@@ -1,0 +1,323 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "environment",
+    "image",
+    "replicaCount",
+    "collection",
+    "acceptance",
+    "secrets",
+    "resources",
+    "scratchSizeLimit",
+    "terminationGracePeriodSeconds",
+    "networkPolicy",
+    "nodeSelector",
+    "tolerations",
+    "affinity"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "environment": {
+      "type": "string",
+      "enum": [
+        "dev",
+        "test",
+        "prod"
+      ]
+    },
+    "image": {
+      "type": "object",
+      "required": [
+        "repository",
+        "digest",
+        "pullPolicy",
+        "pullSecrets"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "repository": {
+          "type": "string",
+          "const": "registry.digitalocean.com/hatchk8s/civpulse-results-collector"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "pullPolicy": {
+          "type": "string",
+          "enum": [
+            "IfNotPresent",
+            "Always"
+          ]
+        },
+        "pullSecrets": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "replicaCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4
+    },
+    "collection": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "concurrency",
+        "electionId",
+        "electionDate",
+        "sourceUrl",
+        "expectedJurisdictions",
+        "expectedItems"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "concurrency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "electionId": {
+          "type": "string",
+          "pattern": "^$|^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "electionDate": {
+          "type": "string",
+          "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "sourceUrl": {
+          "type": "string",
+          "pattern": "^$|^https://results\\.sos\\.ga\\.gov/cdn/results/Georgia/export-[A-Za-z0-9_-]+\\.json$"
+        },
+        "expectedJurisdictions": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 160
+        },
+        "topologyPolicy": {
+          "type": "string",
+          "enum": ["", "georgia-2026-11-03-v1"]
+        },
+        "acceptedTopologies": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        },
+        "expectedItems": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxDownloadBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 536870912
+        },
+        "maxScopeBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 67108864
+        }
+      }
+    },
+    "acceptance": {
+      "type": "object",
+      "required": [
+        "approved",
+        "reference"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "approved": {
+          "type": "boolean"
+        },
+        "reference": {
+          "type": "string",
+          "maxLength": 1024
+        }
+      }
+    },
+    "secrets": {
+      "type": "object",
+      "required": [
+        "supabase",
+        "r2"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "supabase": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9.-]*$"
+        },
+        "r2": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9.-]*$"
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "required": [
+        "requests",
+        "limits"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "requests": {
+          "type": "object",
+          "required": [
+            "cpu",
+            "memory",
+            "ephemeral-storage"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "cpu": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*m?$",
+              "default": "100m"
+            },
+            "memory": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*(Mi|Gi)$",
+              "default": "512Mi"
+            },
+            "ephemeral-storage": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*(Mi|Gi)$",
+              "default": "2Gi"
+            }
+          }
+        },
+        "limits": {
+          "type": "object",
+          "required": [
+            "cpu",
+            "memory",
+            "ephemeral-storage"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "cpu": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*m?$",
+              "default": "1"
+            },
+            "memory": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*(Mi|Gi)$",
+              "default": "1Gi"
+            },
+            "ephemeral-storage": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*(Mi|Gi)$",
+              "default": "3Gi"
+            }
+          }
+        }
+      }
+    },
+    "scratchSizeLimit": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]*(Mi|Gi)$"
+    },
+    "terminationGracePeriodSeconds": {
+      "type": "integer",
+      "minimum": 90,
+      "maximum": 600
+    },
+    "networkPolicy": {
+      "type": "object",
+      "required": [
+        "enabled"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "nodeSelector": {
+      "type": "object"
+    },
+    "tolerations": {
+      "type": "array"
+    },
+    "affinity": {
+      "type": "object"
+    },
+    "monitoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "alertsEnabled",
+        "emailSecret",
+        "schedule",
+        "stateStorageSize",
+        "storageClass",
+        "initialIntervalSeconds",
+        "intervalSeconds",
+        "transitionAt",
+        "ntfyEnabled",
+        "ntfyUrl"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "alertsEnabled": {
+          "type": "boolean"
+        },
+        "emailSecret": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9.-]*$"
+        },
+        "schedule": {
+          "type": "string",
+          "const": "* * * * *"
+        },
+        "stateStorageSize": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*(Mi|Gi)$"
+        },
+        "storageClass": {
+          "type": "string",
+          "minLength": 1
+        },
+        "initialIntervalSeconds": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 86400
+        },
+        "intervalSeconds": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 86400
+        },
+        "transitionAt": {
+          "type": "string",
+          "pattern": "^$|^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+        },
+        "ntfyEnabled": {
+          "type": "boolean"
+        },
+        "ntfyUrl": {
+          "type": "string",
+          "const": "https://ntfy.sh/CivPulse"
+        }
+      }
+    }
+  }
+}

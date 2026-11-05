@@ -1,0 +1,83 @@
+groups:
+  - name: civpulse-results
+    rules:
+      - alert: CivPulseResultsMonitorUnavailable
+        expr: civpulse_sos_monitor_success == 0 or absent_over_time(civpulse_sos_monitor_success[5m])
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: Results monitoring has stopped producing observations
+          description: Check the monitor process, credentials, and scrape or textfile bridge. This rule is useful only after the monitor is installed.
+      - alert: CivPulseResultsSourceChecksStale
+        expr: civpulse_sos_source_check_age_seconds > on (election_id) civpulse_sos_source_check_stale_after_seconds and on (election_id) civpulse_sos_source_checks_expected == 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Source checks are overdue in the configured polling window
+          description: Inspect the Supabase scheduler and poll function; unchanged source counts are healthy.
+      - alert: CivPulseResultsSuccessfulChecksStale
+        expr: civpulse_sos_successful_check_age_seconds > on (election_id) civpulse_sos_source_check_stale_after_seconds and on (election_id) civpulse_sos_source_checks_expected == 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: No recent successful source check
+          description: Inspect sanitized errors, rate limits and source availability; do not trigger a rebuild or rewrite the source identity.
+      - alert: CivPulseResultsInitialChecksMissing
+        expr: civpulse_sos_alert{kind=~"stale_source_checks|stale_successful_checks"} == 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: Active collection has not established timely checks
+          description: Inspect the reviewed polling window and coordinator; this also covers a feed that has never succeeded.
+      - alert: CivPulseResultsPublicationBacklog
+        expr: civpulse_sos_pending_age_seconds >= 900 and on (election_id) civpulse_sos_job_pending == 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: A durable results publication has remained pending for 15 minutes
+          description: Inspect the lease, bounded stage progress and outbox; repair or retry through the admin RPC instead of deleting evidence.
+      - alert: CivPulseResultsRepeatedErrors
+        expr: civpulse_sos_job_attempts >= 3 and on (election_id) civpulse_sos_error_present == 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Results collection is repeatedly failing
+          description: Inspect sanitized logs and durable job state before retrying; do not bypass validation or lease fencing.
+      - alert: CivPulseResultsJobQuarantined
+        expr: civpulse_sos_job_attempts >= 8 and on (election_id) civpulse_sos_job_pending == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Results collection exhausted its durable retry budget
+          description: Pause the feed, identify the cause, wait for lease expiry and use the reviewed retry or abandon runbook.
+      - alert: CivPulseResultsPointerDivergence
+        expr: civpulse_sos_pointer_matches_database == 0
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: Database and discovery pointer revisions have diverged
+          description: Inspect the pointer outbox and immutable assets through consistent S3; repair using the fenced worker, never an unconditional pointer overwrite.
+      - alert: CivPulseResultsPointerUnavailable
+        expr: civpulse_sos_pointer_matches_database == -1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: The consistent S3 discovery pointer could not be validated
+          description: Check environment-scoped R2 access and bounded object reads; CDN success does not establish S3 publication consistency.
+      - alert: CivPulseResultsJobStalled
+        expr: civpulse_sos_job_progress_age_seconds >= 900 and on (election_id) civpulse_sos_job_pending == 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Durable job progress and lease updates have stalled
+          description: Inspect the worker and lease before recovery; a fresh heartbeat does not clear a publication backlog.

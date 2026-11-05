@@ -1,0 +1,72 @@
+{
+  "scope": "actual isolated TEST visible native revision 4-to-5 same-Document correction only",
+  "website_revision": "341aa510af996998404ed9df4fd96e327d778b74",
+  "build_sha256": "d81b6301b2995d07b3c345a6b72d6062f1c8bb79bd6f5eeaefd0670325426ab9",
+  "image_digest": "sha256:34347050d7fa52aa23c06cde7ad4af400349e56adb9e31d71b523518559ddc65",
+  "rust_revision": "6b98d565bfdd74c3de0639aa19bea409c80ba096",
+  "observations": [
+    {
+      "stage": "visible-baseline-four",
+      "revision": "4",
+      "sourceCreatedAt": "2026-11-03T10:40:00Z",
+      "snapshotId": "fc57e5c1-0fd9-4911-92f5-afd1f1dbe8b5",
+      "checkedAt": "2026-11-03T22:13:38.559Z",
+      "documentUnchanged": true,
+      "defaultCounty": "13021",
+      "contestVisible": true,
+      "questionVisible": true,
+      "metricsVisible": 4,
+      "visible_correct_profile_link_count": 2
+    },
+    {
+      "stage": "visible-two",
+      "revision": "5",
+      "sourceCreatedAt": "2026-11-03T10:45:00Z",
+      "snapshotId": "0062de0c-f999-441e-8526-aba95b2b8867",
+      "checkedAt": "2026-11-03T22:16:21.057Z",
+      "documentUnchanged": true,
+      "defaultCounty": "13021",
+      "contestVisible": true,
+      "questionVisible": true,
+      "metricsVisible": 4,
+      "visible_correct_profile_link_count": 2
+    }
+  ],
+  "counts_before": [
+    115,
+    85
+  ],
+  "counts_after": [
+    110,
+    90
+  ],
+  "question_yes_before": null,
+  "question_yes_after": 0,
+  "visibleMetricAssertions": true,
+  "realCandidateProfileLinksVisible": true,
+  "privateAnonymousAndRealOrdinaryIsolation": true,
+  "privatePointer404": true,
+  "noBrowserRawSourceDownload": true,
+  "productionAcceptance": false,
+  "actual_job": {
+    "uid": "e7818aea-f997-4be0-a317-6103a1707ec0",
+    "duration_ms": 2988,
+    "cgroup_memory_peak_bytes": 6836224,
+    "restart_count": 0,
+    "public_objects_verified": 7,
+    "dirty_before": 37,
+    "dirty_after": 38
+  },
+  "final_state": {
+    "feed_enabled": false,
+    "source_checks_expected": false,
+    "pending_job": null,
+    "database_revision": "5",
+    "r2_revision": "5",
+    "dirty_revision": 38,
+    "daemon_replicas": 1,
+    "daemon_collection_enabled": false,
+    "monitor_alerts": []
+  },
+  "qualification": "No visible 3-to-4 transition claimed; earlier 795 DOM assertions alone did not establish visible mapped cards."
+}

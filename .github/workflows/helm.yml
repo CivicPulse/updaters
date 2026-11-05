@@ -1,0 +1,74 @@
+name: Helm
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: helm-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  chart:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4.3.1
+        with:
+          version: v3.19.2
+      - name: Install locked YAML test parser
+        run: python3 -m pip install --require-hashes -r .github/scripts/chart-requirements.txt
+      - name: Exercise rendering and activation guards
+        run: |
+          python3 .github/scripts/test-chart.py
+          python3 .github/scripts/test-monitor.py
+          python3 .github/scripts/test-supabase-bootstrap.py
+          python3 .github/scripts/test-supabase-render.py
+      - name: Validate authenticated API manifests and internal ingress
+        run: |
+          helm template traefik traefik --repo https://traefik.github.io/charts --version 42.3.0 --namespace civpulse-edge -f deploy/edge/traefik-values.yaml > "$RUNNER_TEMP/traefik.yaml"
+          python3 .github/scripts/test-webapi-deployment.py "$RUNNER_TEMP/traefik.yaml"
+          python3 .github/scripts/test-mcp-deployment.py
+      - name: Parse rendered byte caps using the real Rust admission code
+        run: |
+          cargo build --locked -p civpulse-results-collector --example check_admission
+          python3 .github/scripts/test-chart-admission.py
+      - name: Verify config initialization with the pinned Supabase image
+        run: |
+          python3 .github/scripts/test-supabase-init-image.py
+          python3 .github/scripts/test-supabase-db-startup.py
+      - name: Render disabled environment manifests
+        run: |
+          mkdir -p "$RUNNER_TEMP/collector-manifests"
+          for envname in dev test prod; do
+            helm template results deploy/helm/civpulse-results-collector \
+              --namespace "civpulse-$envname" -f "deploy/environments/$envname.yaml" \
+              --set-string image.digest=sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa \
+              > "$RUNNER_TEMP/collector-manifests/$envname.yaml"
+            helm template results deploy/helm/civpulse-results-collector \
+              --namespace "civpulse-$envname" -f "deploy/environments/$envname.yaml" \
+              --set-string image.digest=sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa \
+              --set monitoring.enabled=true --set monitoring.alertsEnabled=true \
+              > "$RUNNER_TEMP/collector-manifests/$envname-monitor.yaml"
+          done
+      - name: Scan rendered deployment security
+        uses: aquasecurity/trivy-action@8f28faec26515256b6d22074d1d2a8986f4cbd87
+        with:
+          version: v0.76.1
+          scan-type: config
+          scan-ref: ${{ runner.temp }}/collector-manifests
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+      - name: Install pinned disposable Kubernetes tool
+        run: bash .github/scripts/install-kind.sh
+      - name: Validate manifests against disposable Kubernetes API
+        run: |
+          kind create cluster --name collector-chart --image kindest/node:v1.37.0@sha256:a1ed56cfb0e7b93589bdf97c8cd566405a265939e3620fc4f5de89adff580ae5 --wait 120s
+          kubectl apply -f deploy/environments/namespaces.yaml
+          kubectl apply --dry-run=server -f "$RUNNER_TEMP/collector-manifests"
+      - name: Clean up disposable cluster
+        if: always()
+        run: kind delete cluster --name collector-chart

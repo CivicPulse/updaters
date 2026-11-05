@@ -1,0 +1,32 @@
+[package]
+name = "civpulse-results-collector"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+civpulse-results-source = { path = "../../crates/civpulse-results-source" }
+tempfile = "3"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json", "stream"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { workspace = true, features = ["time", "sync", "fs", "net", "io-util"] }
+tracing.workspace = true
+tracing-subscriber.workspace = true
+uuid = { version = "1", features = ["serde"] }
+
+civpulse-results-contract = { path = "../../crates/civpulse-results-contract" }
+aws-sigv4 = { version = "1.6", features = ["http1"] }
+aws-credential-types = "1"
+async-trait = "0.1"
+sha2 = "0.11"
+hex = "0.4"
+tokio-util = { version = "0.7", features = ["io"] }
+
+fs2 = "0.4"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std", "serde"] }
+
+[lints]
+workspace = true

@@ -1,0 +1,47 @@
+{
+  "scope": "actual isolated TEST fresh source GET/import/publication/readback; not production election publication",
+  "readback": {
+    "environment": "test",
+    "election_id": "993acd9a-542b-436b-880e-6fd1a88d9792",
+    "source_url": "https://results.sos.ga.gov/cdn/results/Georgia/export-11032026GeneralAndSpecialElection.json",
+    "rust_revision": "6b98d565bfdd74c3de0639aa19bea409c80ba096",
+    "image_digest": "sha256:34347050d7fa52aa23c06cde7ad4af400349e56adb9e31d71b523518559ddc65",
+    "revision": "1",
+    "snapshot_id": "2087094e-6055-4e73-8c0e-7c0a559757ef",
+    "raw_sha256": "d475b216f455e8fd54bf369d4d0b12df701f4a35b896c73971c81a60d358bde0",
+    "raw_bytes": 46362705,
+    "jurisdictions": 160,
+    "items": 4178,
+    "verified_objects": 323,
+    "raw_and_scoped_signed_S3_streaming_verified": true,
+    "public_hash_cache_CORS_verified": true,
+    "feed_paused": true,
+    "production_acceptance": false
+  },
+  "raw_public_url": "https://files-test.civpulse.org/elections/993acd9a-542b-436b-880e-6fd1a88d9792/raw/d475b216f455e8fd54bf369d4d0b12df701f4a35b896c73971c81a60d358bde0.json",
+  "oracle": {
+    "oracle_commit": "0408add4c47a8549c9ad76c680d9a5779a58a050",
+    "oracle_bun_version": "1.4.3",
+    "raw_bytes": 46362705,
+    "raw_sha256": "d475b216f455e8fd54bf369d4d0b12df701f4a35b896c73971c81a60d358bde0",
+    "oracle_fingerprint": "0614cf53ea737d3442020ca7c44cc46e44e8d213cf7ba8300906dfb075baa92e",
+    "rust_published_fingerprint": "0614cf53ea737d3442020ca7c44cc46e44e8d213cf7ba8300906dfb075baa92e",
+    "fingerprint_equal": true,
+    "jurisdictions": 160,
+    "items": 4178,
+    "ordered_jurisdiction_id_name_item_count_projection_equal": true,
+    "header_source_created_at": "2026-11-03T20:04:03.352971Z",
+    "manifest_source_created_at_equal": true,
+    "local_only": true,
+    "no_official_source_request": true
+  },
+  "actual_job": {
+    "uid": "a023ddc5-61d1-44d9-bdc6-2ce060ae5cca",
+    "duration_ms": 162719,
+    "cgroup_memory_peak_bytes": 322002944,
+    "restart_count": 0,
+    "completed_at": "2026-11-03T22:02:42Z"
+  },
+  "runtime_publish_run": "https://github.com/CivicPulse/updaters/actions/runs/41725765226",
+  "runtime_ci_run": "https://github.com/CivicPulse/updaters/actions/runs/41725765131"
+}

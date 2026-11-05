@@ -1,0 +1,119 @@
+{
+  "date": "2026-11-04",
+  "clusterId": "6a0f9045-853a-451b-b013-9a7202e76854",
+  "workerPool": {
+    "id": "85c2d144-8a70-445c-b560-836a77d50f4e",
+    "name": "pool-ld8qj5nlf",
+    "size": "s5-2vcpu-2gb-50gb",
+    "count": 3,
+    "tags": [
+      "k8s",
+      "k8s:6a0f9045-853a-451b-b013-9a7202e76854",
+      "k8s:worker"
+    ],
+    "auto_scale": true,
+    "min_nodes": 3,
+    "max_nodes": 4,
+    "nodes": [
+      {
+        "id": "d579394a-73f5-4dd3-864c-04fabf13b42f",
+        "name": "pool-ld8qj5nlf-3etu8a",
+        "status": {
+          "state": "running"
+        },
+        "droplet_id": "615516812",
+        "created_at": "2026-11-03T16:45:15Z",
+        "updated_at": "2026-11-03T16:50:56Z"
+      },
+      {
+        "id": "4649a2a4-ce97-4847-940e-07b1c80cb12d",
+        "name": "pool-ld8qj5nlf-3etu86",
+        "status": {
+          "state": "running"
+        },
+        "droplet_id": "615516813",
+        "created_at": "2026-11-03T16:45:15Z",
+        "updated_at": "2026-11-03T16:50:56Z"
+      },
+      {
+        "id": "c8be2366-dcff-45be-823f-c4b41c224a08",
+        "name": "pool-ld8qj5nlf-3etul1",
+        "status": {
+          "state": "running"
+        },
+        "droplet_id": "615516811",
+        "created_at": "2026-11-03T16:48:51Z",
+        "updated_at": "2026-11-03T16:50:56Z"
+      }
+    ]
+  },
+  "removedPoolId": "05167687-0ad8-4422-835b-17d585ccc3dc",
+  "providerDeletionComplete": true,
+  "beforeMonthlyWorkerUSD": 162.74,
+  "afterMonthlyWorkerUSD": 103.95,
+  "monthlyWorkerSavingsUSD": 58.79,
+  "autoscaleMonthlyWorkerCeilingUSD": 138.6,
+  "pricesExclude": "control plane, retained volumes, bandwidth and taxes",
+  "reason": "Nonproduction moved to Thor. Shared 4GB/6GB replacements rejected for regional capacity. Three existing shared 2GB workers retain capacity for production reservations after losing one worker.",
+  "availabilityChanges": [
+    "required hostname anti-affinity for API, tunnel and Traefik pairs",
+    "minAvailable=1 disruption budgets",
+    "Traefik requests 50m CPU and 128Mi memory",
+    "rolling API/tunnel updates retain ready replicas"
+  ],
+  "placements": {
+    "app=civpulse-webapi": [
+      {
+        "pod": "civpulse-webapi-695596fb7c-k7c5t",
+        "node": "pool-ld8qj5nlf-3etu8a"
+      },
+      {
+        "pod": "civpulse-webapi-695596fb7c-zsbr6",
+        "node": "pool-ld8qj5nlf-3etu86"
+      }
+    ],
+    "app=cloudflared": [
+      {
+        "pod": "cloudflared-5d6d66f898-hnjww",
+        "node": "pool-ld8qj5nlf-3etu86"
+      },
+      {
+        "pod": "cloudflared-5d6d66f898-m2jn4",
+        "node": "pool-ld8qj5nlf-3etu8a"
+      }
+    ],
+    "app.kubernetes.io/name=traefik": [
+      {
+        "pod": "traefik-66b6d8564d-8cp85",
+        "node": "pool-ld8qj5nlf-3etu8a"
+      },
+      {
+        "pod": "traefik-66b6d8564d-hlzpr",
+        "node": "pool-ld8qj5nlf-3etul1"
+      }
+    ]
+  },
+  "workerUsageSnapshot": [
+    {
+      "node": "pool-ld8qj5nlf-3etu8a",
+      "cpuMillicores": 142,
+      "memoryWorkingSetMiB": 972
+    },
+    {
+      "node": "pool-ld8qj5nlf-3etu86",
+      "cpuMillicores": 69,
+      "memoryWorkingSetMiB": 778
+    },
+    {
+      "node": "pool-ld8qj5nlf-3etul1",
+      "cpuMillicores": 155,
+      "memoryWorkingSetMiB": 1441
+    }
+  ],
+  "verification": [
+    "all production deployments ready",
+    "authenticated collector database health RPC passed",
+    "5 public API requests returned expected 401 JSON",
+    "no Pending pods"
+  ]
+}

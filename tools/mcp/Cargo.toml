@@ -24,6 +24,7 @@ url.workspace = true
 uuid.workspace = true
 
 [dev-dependencies]
+ring = "0.17"
 tower = { version = "0.5", features = ["util"] }
 
 [lints]

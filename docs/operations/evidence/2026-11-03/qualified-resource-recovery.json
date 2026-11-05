@@ -1,0 +1,113 @@
+{
+  "scope": "803 actual guarded-image resource harness plus actual isolated DB/R2 recovery; unchanged processing-code support for selected 343, not reruns on 343",
+  "resource_transport": "real parser/Publisher/worker::once with loopback RPC and disk Store doubles",
+  "resource": [
+    {
+      "source_receipt": "hosted-official-ac524e7.jsonl",
+      "measured_image_digest": "sha256:80329628ad1aa0e8bdb0a9d2aa622c7c0d44368da1fa81d7431681828efde51c",
+      "measurement": "local_offline_simulation",
+      "code_base_revision": "unrecorded",
+      "measurement_harness_sha256": "821c845a8e94f7687238c48096a5de262b05b061e4049f46c6d8170ac8ea18b1",
+      "source_bytes": 46363141,
+      "raw_sha256": "f464d3b037a82d594c893aef072042530a84b6b1cb3edb76b1e3873bed2dc3ba",
+      "semantic_sha256": "08145568d3e4ca710d32f831d71688205bd63ed1365dd2bdaff619e1e9c99bbb",
+      "jurisdictions": 160,
+      "items": 4178,
+      "duration_ms": 18155,
+      "staged_items": 4178,
+      "staged_batches": 173,
+      "largest_rpc_batch_bytes": 2087943,
+      "peak_rss_bytes": 355794944,
+      "sampled_peak_worker_scratch_bytes": 92725959,
+      "sampled_peak_total_local_bytes": 188072972,
+      "scratch_sample_interval_ms": 10,
+      "scratch_excludes_input": true,
+      "scratch_filesystem": "ext4",
+      "production_acceptance": false,
+      "cgroup": {
+        "cgroup_memory_peak_bytes": 395976704,
+        "cgroup_memory_limit_bytes": 1073741824,
+        "cgroup_memory_oom_events": 0,
+        "cgroup_memory_oom_kill_events": 0
+      }
+    },
+    {
+      "source_receipt": "hosted-near127-detail-ac524e7.jsonl",
+      "measured_image_digest": "sha256:80329628ad1aa0e8bdb0a9d2aa622c7c0d44368da1fa81d7431681828efde51c",
+      "measurement": "local_offline_simulation",
+      "code_base_revision": "unrecorded",
+      "measurement_harness_sha256": "821c845a8e94f7687238c48096a5de262b05b061e4049f46c6d8170ac8ea18b1",
+      "source_bytes": 133169152,
+      "raw_sha256": "a699b38ad3f78a928ac74a16e8e64ec8760f62e4572db2375ac008240ad6e3ef",
+      "semantic_sha256": "ed1cf78826652e9c67a8e7f1086137b01c0d99e6be6d16cb24f7a1da49986c5a",
+      "jurisdictions": 160,
+      "items": 4178,
+      "duration_ms": 42130,
+      "staged_items": 4178,
+      "staged_batches": 177,
+      "largest_rpc_batch_bytes": 2096065,
+      "peak_rss_bytes": 493142016,
+      "sampled_peak_worker_scratch_bytes": 266337981,
+      "sampled_peak_total_local_bytes": 535384042,
+      "scratch_sample_interval_ms": 10,
+      "scratch_excludes_input": true,
+      "scratch_filesystem": "ext4",
+      "production_acceptance": false,
+      "cgroup": {
+        "cgroup_memory_peak_bytes": 533032960,
+        "cgroup_memory_limit_bytes": 1073741824,
+        "cgroup_memory_oom_events": 0,
+        "cgroup_memory_oom_kill_events": 0
+      }
+    }
+  ],
+  "near_fixture_max_scope_bytes": 16515072,
+  "near_fixture_total_disk_including_input_before_other_overhead": 668553194,
+  "independent_harness_binding": "same SHA reconstructed from exact ac524e7 source",
+  "qualification": "CPU counters are same-pod cumulative. Disk peaks sampled every 10ms; node NoPressure is only after-run snapshot.",
+  "recovery": {
+    "image_digest": "sha256:80329628ad1aa0e8bdb0a9d2aa622c7c0d44368da1fa81d7431681828efde51c",
+    "source_revision": "ac524e7f6940b8d113ebecd96bd34a28bed29a77",
+    "initial": {
+      "database_revision": "1",
+      "r2_revision": "1",
+      "dirty_after": 32,
+      "interrupted_after_one_staged_item": true,
+      "stale_lease_rejected": true,
+      "actual_worker_phase": "Import",
+      "public_objects_passed": 7,
+      "pod_restarts": 0
+    },
+    "correction": {
+      "pre_repair_db_revision": "2",
+      "pre_repair_r2_revision": "1",
+      "actual_repair_worker_phase": "Pointer",
+      "no_import_staging_or_commit_during_repair": true,
+      "snapshot_and_item_counts_unchanged": true,
+      "dirty_after_commit": 33,
+      "dirty_after_repair": 33,
+      "public_objects_passed": 7,
+      "sustained15min_alert_claimed": false
+    },
+    "format": {
+      "database_revision": "3",
+      "r2_revision": "3",
+      "dirty_before": 33,
+      "dirty_after": 33,
+      "same_semantic_fingerprint": "d4ae5ffadf002a298e732e624c4b6349db012c85222064cc60663c3e99777a51",
+      "new_raw_sha256": "2f8bbd25a8fff110a03dd42bdfbc323f177e23f9638d04eb40dee11d0d18aa00",
+      "public_objects_passed": 7
+    },
+    "final_state": {
+      "feed_enabled": false,
+      "source_checks_expected": false,
+      "pending_job": null,
+      "database_revision": "3",
+      "r2_revision": "3",
+      "dirty_revision": 33,
+      "daemon_replicas": 1,
+      "daemon_collection_enabled": false,
+      "monitor_alerts": []
+    }
+  }
+}

@@ -1,0 +1,151 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: civpulse-prod
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: civpulse-webapi
+  namespace: civpulse-prod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: civpulse-webapi
+  template:
+    metadata:
+      labels:
+        app: civpulse-webapi
+    spec:
+      imagePullSecrets:
+      - name: registry-hatchk8s
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: webapi
+        image: registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:dc8b99be4e6e53dec70d6131b41434c24c3b0c112f21043b3c24dfdf5b61d3f1
+        ports:
+        - name: http
+          containerPort: 8080
+        env:
+        - name: API_BIND
+          value: 0.0.0.0:8080
+        - name: SUPABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: webapi-supabase
+              key: url
+        - name: SUPABASE_PUBLISHABLE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: webapi-supabase
+              key: publishable-key
+        readinessProbe:
+          tcpSocket:
+            port: http
+        livenessProbe:
+          tcpSocket:
+            port: http
+          initialDelaySeconds: 10
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: '1'
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app: civpulse-webapi
+            topologyKey: kubernetes.io/hostname
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: civpulse-webapi
+  namespace: civpulse-prod
+spec:
+  type: ClusterIP
+  selector:
+    app: civpulse-webapi
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: civpulse-webapi
+  namespace: civpulse-prod
+  annotations:
+    kubernetes.io/ingress.class: civpulse-internal
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: civpulse-internal
+  rules:
+  - host: webapi.civpulse.org
+    http:
+      paths:
+      - path: /api/v1
+        pathType: Prefix
+        backend:
+          service:
+            name: civpulse-webapi
+            port:
+              name: http
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: webapi-ingress
+  namespace: civpulse-prod
+spec:
+  podSelector:
+    matchLabels:
+      app: civpulse-webapi
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: civpulse-edge
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: traefik
+    ports:
+    - protocol: TCP
+      port: 8080
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: civpulse-webapi
+  namespace: civpulse-prod
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: civpulse-webapi

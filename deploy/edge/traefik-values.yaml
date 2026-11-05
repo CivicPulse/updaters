@@ -1,0 +1,48 @@
+# Install release "traefik" in namespace "civpulse-edge".
+deployment:
+  replicas: 2
+service:
+  spec:
+    type: ClusterIP
+ingressClass:
+  enabled: true
+  isDefaultClass: false
+  name: civpulse-internal
+providers:
+  kubernetesCRD:
+    enabled: false
+  kubernetesIngress:
+    enabled: true
+    ingressClass: civpulse-internal
+    publishedService:
+      enabled: false
+ports:
+  web:
+    port: 8000
+    exposedPort: 80
+  websecure:
+    expose:
+      default: false
+ingressRoute:
+  dashboard:
+    enabled: false
+log:
+  format: json
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: traefik
+          app.kubernetes.io/instance: traefik-civpulse-edge
+      topologyKey: kubernetes.io/hostname
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1

@@ -5,11 +5,16 @@ use axum::{
     http::{StatusCode, header},
     response::IntoResponse,
 };
+use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 use civpulse_mcp::{
     catalog,
     server::{Config, router},
 };
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode};
+use ring::{
+    rand::SystemRandom,
+    signature::{ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair, KeyPair},
+};
 use serde_json::{Value, json};
 use std::sync::{
     Arc, Mutex,
@@ -18,13 +23,34 @@ use std::sync::{
 use tower::ServiceExt;
 const ID: &str = "00000000-0000-4000-8000-000000000001";
 const SECRET: &[u8] = b"local-test-signing-secret-not-a-production-credential";
-#[derive(Default)]
 struct Auth {
+    signing_key: EncodingKey,
+    verifying_key: DecodingKey,
+    jwks: Value,
     accept_signature: AtomicBool,
     revoked: AtomicBool,
     admin: AtomicBool,
     calls: Mutex<Vec<String>>,
 }
+impl Auth {
+    fn new() -> Self {
+        let rng = SystemRandom::new();
+        let der = EcdsaKeyPair::generate_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, &rng).unwrap();
+        let key =
+            EcdsaKeyPair::from_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, der.as_ref(), &rng).unwrap();
+        let public = key.public_key().as_ref();
+        Self {
+            signing_key: EncodingKey::from_ec_der(der.as_ref()),
+            verifying_key: DecodingKey::from_ec_der(public),
+            jwks: json!({"keys":[{"kty":"EC","kid":"test-key","use":"sig","alg":"ES256","crv":"P-256","x":URL_SAFE_NO_PAD.encode(&public[1..33]),"y":URL_SAFE_NO_PAD.encode(&public[33..65])}]}),
+            accept_signature: AtomicBool::new(false),
+            revoked: AtomicBool::new(false),
+            admin: AtomicBool::new(false),
+            calls: Mutex::new(vec![]),
+        }
+    }
+}
+
 async fn upstream(State(state): State<Arc<Auth>>, request: Request) -> axum::response::Response {
     let path = request.uri().path().to_owned();
     state.calls.lock().unwrap().push(path.clone());
@@ -37,10 +63,7 @@ async fn upstream(State(state): State<Arc<Auth>>, request: Request) -> axum::res
         .strip_prefix("Bearer ")
         .unwrap_or("");
     if path == "/auth/v1/.well-known/jwks.json" {
-        return axum::Json(
-            serde_json::from_str::<Value>(include_str!("fixtures/test-jwks.json")).unwrap(),
-        )
-        .into_response();
+        return axum::Json(state.jwks.clone()).into_response();
     }
     let algorithm =
         jsonwebtoken::decode_header(token).map_or(jsonwebtoken::Algorithm::HS256, |h| h.alg);
@@ -52,8 +75,7 @@ async fn upstream(State(state): State<Arc<Auth>>, request: Request) -> axum::res
                 && decode::<Value>(
                     token,
                     &if algorithm == jsonwebtoken::Algorithm::ES256 {
-                        DecodingKey::from_ec_pem(include_bytes!("fixtures/test-ec-public.pem"))
-                            .unwrap()
+                        state.verifying_key.clone()
                     } else {
                         DecodingKey::from_secret(SECRET)
                     },
@@ -88,7 +110,7 @@ impl Drop for Harness {
 }
 impl Harness {
     async fn new() -> Self {
-        let auth = Arc::new(Auth::default());
+        let auth = Arc::new(Auth::new());
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
         let base = format!("http://{}", listener.local_addr().unwrap());
         let upstream = Router::new().fallback(upstream).with_state(auth.clone());
@@ -469,8 +491,8 @@ async fn asymmetric_tokens_verify_jwks_independently() {
     let claims = json!({"sub":ID,"aud":"authenticated","iss":h.issuer,"role":"authenticated","exp":chrono::Utc::now().timestamp()+600});
     let mut header = Header::new(jsonwebtoken::Algorithm::ES256);
     header.kid = Some("test-key".into());
-    let key = EncodingKey::from_ec_pem(include_bytes!("fixtures/test-ec-private.pem")).unwrap();
-    let token = encode(&header, &claims, &key).unwrap();
+    let key = &h.auth.signing_key;
+    let token = encode(&header, &claims, key).unwrap();
     assert_eq!(
         h.request(
             "/mcp/v2",
@@ -506,7 +528,7 @@ async fn asymmetric_tokens_verify_jwks_independently() {
         401
     );
     header.kid = Some("unknown-key".into());
-    let token = encode(&header, &claims, &key).unwrap();
+    let token = encode(&header, &claims, key).unwrap();
     assert_eq!(
         h.request(
             "/mcp/v2",

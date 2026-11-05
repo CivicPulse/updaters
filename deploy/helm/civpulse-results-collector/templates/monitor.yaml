@@ -1,0 +1,183 @@
+{{- if and .Values.monitoring.ntfyEnabled (ne .Values.environment "prod") }}
+{{- fail "Public ntfy notifications require the production environment" }}
+{{- end }}
+{{- if .Values.monitoring.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "collector.monitorName" . }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/resource-policy: keep
+  labels:
+    {{- include "collector.labels" . | nindent 4 }}
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: {{ .Values.monitoring.storageClass | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.monitoring.stateStorageSize | quote }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "collector.monitorName" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "collector.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: civpulse-results-monitor
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        app.kubernetes.io/name: civpulse-results-monitor
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/part-of: civpulse
+        civpulse.org/environment: {{ .Values.environment }}
+    spec:
+      automountServiceAccountToken: false
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 110
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      imagePullSecrets:
+        {{- range .Values.image.pullSecrets }}
+        - name: {{ . | quote }}
+        {{- end }}
+      containers:
+        - name: monitor
+          image: {{ printf "%s@%s" .Values.image.repository .Values.image.digest | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: [notify-daemon]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          envFrom:
+            - configMapRef:
+                name: {{ include "collector.fullname" . }}
+          env:
+            - {name: SOS_COLLECTOR_ENABLED, value: 'false'}
+            - {name: SOS_MONITOR_STATE, value: /state/observations.json}
+            - {name: SOS_ALERT_STATE, value: /state/alerts.json}
+            - {name: SOS_NTFY_STATE, value: /state/ntfy.json}
+            - name: SOS_NTFY_ENABLED
+              value: {{ .Values.monitoring.ntfyEnabled | quote }}
+            - name: SOS_NTFY_URL
+              value: {{ .Values.monitoring.ntfyUrl | quote }}
+            - name: SOS_ALERTS_ENABLED
+              value: {{ .Values.monitoring.alertsEnabled | quote }}
+            - name: SOS_POLL_INITIAL_INTERVAL_SECONDS
+              value: {{ .Values.monitoring.initialIntervalSeconds | quote }}
+            - name: SOS_POLL_TRANSITION_AT
+              value: {{ .Values.monitoring.transitionAt | quote }}
+            - name: SOS_POLL_INTERVAL_SECONDS
+              value: {{ .Values.monitoring.intervalSeconds | quote }}
+            {{- range $key := list "SUPABASE_URL" "SUPABASE_SERVICE_ROLE_KEY" }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.secrets.supabase }}
+                  key: {{ $key }}
+            {{- end }}
+            {{- range $key := list "R2_ENDPOINT" "R2_ACCESS_KEY_ID" "R2_SECRET_ACCESS_KEY" }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.secrets.r2 }}
+                  key: {{ $key }}
+            {{- end }}
+            - name: CLOUDFLARE_EMAIL_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.monitoring.emailSecret }}
+                  key: CLOUDFLARE_EMAIL_API_TOKEN
+                  optional: {{ not .Values.monitoring.alertsEnabled }}
+          startupProbe:
+            exec:
+              command: [/usr/local/bin/civpulse-tool, notify-liveness]
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 24
+          livenessProbe:
+            exec:
+              command: [/usr/local/bin/civpulse-tool, notify-liveness]
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command: [/usr/local/bin/civpulse-tool, notify-liveness]
+            periodSeconds: 10
+            timeoutSeconds: 3
+          resources:
+            requests: {cpu: 50m, memory: 64Mi, ephemeral-storage: 64Mi}
+            limits: {cpu: 250m, memory: 256Mi, ephemeral-storage: 128Mi}
+          volumeMounts:
+            - {name: state, mountPath: /state}
+            - {name: scratch, mountPath: /tmp}
+      volumes:
+        - name: state
+          persistentVolumeClaim:
+            claimName: {{ include "collector.monitorName" . }}
+        - name: scratch
+          emptyDir:
+            sizeLimit: 64Mi
+{{- if .Values.networkPolicy.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "collector.monitorName" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: civpulse-results-monitor
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  policyTypes: [Ingress, Egress]
+  ingress: []
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - {protocol: UDP, port: 53}
+        - {protocol: TCP, port: 53}
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16]
+      ports:
+        - {protocol: TCP, port: 443}
+    {{- if ne .Values.environment "prod" }}
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: supabase-kong
+              app.kubernetes.io/instance: supabase
+      ports:
+        - {protocol: TCP, port: 8000}
+    {{- end }}
+{{- end }}
+{{- end }}

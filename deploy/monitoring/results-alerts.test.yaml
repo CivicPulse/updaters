@@ -1,0 +1,101 @@
+rule_files:
+  - results-alerts.yaml
+evaluation_interval: 1m
+tests:
+  - name: unchanged reports with healthy checks never alert
+    interval: 1m
+    input_series:
+      - series: civpulse_sos_monitor_success
+        values: 1+0x40
+      - series: civpulse_sos_source_checks_expected{election_id="election"}
+        values: 1+0x40
+      - series: civpulse_sos_source_check_stale_after_seconds{election_id="election"}
+        values: 900+0x40
+      - series: civpulse_sos_source_check_age_seconds{election_id="election"}
+        values: 0+0x40
+      - series: civpulse_sos_successful_check_age_seconds{election_id="election"}
+        values: 0+0x40
+      - series: civpulse_sos_job_pending{election_id="election",job_id=""}
+        values: 0+0x40
+      - series: civpulse_sos_pointer_matches_database{election_id="election"}
+        values: 1+0x40
+    promql_expr_test:
+      - expr: sum(ALERTS{alertstate="firing"}) or vector(0)
+        eval_time: 30m
+        exp_samples:
+          - labels: '{}'
+            value: 0
+  - name: enabled feed outside polling window does not alert on old checks
+    interval: 1m
+    input_series:
+      - series: civpulse_sos_monitor_success
+        values: 1+0x40
+      - series: civpulse_sos_source_checks_expected{election_id="election"}
+        values: 0+0x40
+      - series: civpulse_sos_source_check_stale_after_seconds{election_id="election"}
+        values: 900+0x40
+      - series: civpulse_sos_source_check_age_seconds{election_id="election"}
+        values: 3600+60x40
+      - series: civpulse_sos_successful_check_age_seconds{election_id="election"}
+        values: 3600+60x40
+    promql_expr_test:
+      - expr: sum(ALERTS{alertstate="firing"}) or vector(0)
+        eval_time: 30m
+        exp_samples:
+          - labels: '{}'
+            value: 0
+  - name: sustained pointer mismatch fires after grace
+    interval: 1m
+    input_series:
+      - series: civpulse_sos_monitor_success
+        values: 1+0x20
+      - series: civpulse_sos_pointer_matches_database{election_id="election"}
+        values: 0+0x20
+    promql_expr_test:
+      - expr: ALERTS{alertname="CivPulseResultsPointerDivergence",alertstate="firing"}
+        eval_time: 10m
+        exp_samples: []
+      - expr: ALERTS{alertname="CivPulseResultsPointerDivergence",alertstate="firing"}
+        eval_time: 16m
+        exp_samples:
+          - labels: ALERTS{alertname="CivPulseResultsPointerDivergence",alertstate="firing",election_id="election",severity="critical"}
+            value: 1
+  - name: pending work fires independently of lease renewal timestamps
+    interval: 1m
+    input_series:
+      - series: civpulse_sos_monitor_success
+        values: 1+0x20
+      - series: civpulse_sos_job_pending{election_id="election",job_id="original-job"}
+        values: 1+0x20
+      - series: civpulse_sos_pending_age_seconds{election_id="election"}
+        values: 0+60x20
+    promql_expr_test:
+      - expr: ALERTS{alertname="CivPulseResultsPublicationBacklog",alertstate="firing"}
+        eval_time: 16m
+        exp_samples:
+          - labels: ALERTS{alertname="CivPulseResultsPublicationBacklog",alertstate="firing",election_id="election",severity="warning"}
+            value: 1
+  - name: hourly cadence remains quiet for 90 minutes and alerts after grace
+    interval: 1m
+    input_series:
+      - series: civpulse_sos_monitor_success
+        values: 1+0x140
+      - series: civpulse_sos_source_checks_expected{election_id="election"}
+        values: 1+0x140
+      - series: civpulse_sos_source_check_stale_after_seconds{election_id="election"}
+        values: 7500+0x140
+      - series: civpulse_sos_source_check_age_seconds{election_id="election"}
+        values: 0+60x140
+      - series: civpulse_sos_successful_check_age_seconds{election_id="election"}
+        values: 0+60x140
+    promql_expr_test:
+      - expr: sum(ALERTS{alertstate="firing"}) or vector(0)
+        eval_time: 90m
+        exp_samples:
+          - labels: '{}'
+            value: 0
+      - expr: sum(ALERTS{alertstate="firing"}) or vector(0)
+        eval_time: 132m
+        exp_samples:
+          - labels: '{}'
+            value: 2

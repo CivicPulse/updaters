@@ -1,0 +1,25 @@
+# Target: do-atl1-k8s-1-37-0-do-2-atl1-1793724241236, namespace civpulse-prod
+# Supply the scanned immutable image.digest at installation time.
+environment: prod
+collection:
+  enabled: false
+  maxDownloadBytes: 134217728
+  maxScopeBytes: 16777216
+  electionId: 295d864d-80c8-4a87-ab16-3f4f3fa5ddb7
+  electionDate: '2026-11-03'
+  sourceUrl: https://results.sos.ga.gov/cdn/results/Georgia/export-11032026GeneralAndSpecialElection.json
+  expectedJurisdictions: 160
+  expectedItems: 4178
+  # Reviewed known membership; optional whole single-option items, protected multi-option items.
+  # See docs/contracts/results-topology.md for pinned catalog and exact option exceptions.
+  acceptedTopologies: []
+  topologyPolicy: georgia-2026-11-03-v1
+acceptance:
+  approved: false
+  reference: ""
+monitoring:
+  ntfyEnabled: true
+  ntfyUrl: https://ntfy.sh/CivPulse
+  initialIntervalSeconds: 3600
+  intervalSeconds: 300
+  transitionAt: '2026-11-03T22:00:00Z'

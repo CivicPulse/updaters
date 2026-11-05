@@ -1,25 +1,79 @@
 name: CI
 on:
   push:
+    branches: [main]
   pull_request:
+  merge_group:
+  schedule:
+    - cron: '17 9 * * 1'
 permissions:
   contents: read
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   rust:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Install workspace toolchain
         run: rustup show
       - run: cargo fmt --all -- --check
-      - run: cargo clippy --locked --workspace --all-targets -- -D warnings
-      - run: cargo test --locked --workspace
+      - run: cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
+      - run: cargo test --locked --workspace --all-features
+      - run: cargo test --locked -p civpulse-results-collector --example resource_case
+      - name: Verify create-only measurement reports preserve source evidence
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts/measure/tests -v
+      - run: cargo doc --locked --workspace --no-deps --all-features
+        env:
+          RUSTDOCFLAGS: -D warnings
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Scan dependency vulnerabilities, secrets, and deployment configuration
+        uses: aquasecurity/trivy-action@8f28faec26515256b6d22074d1d2a8986f4cbd87
+        with:
+          version: v0.76.1
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          skip-dirs: .git,target
+          timeout: 10m
+      - name: Install pinned RustSec client
+        run: bash .github/scripts/install-cargo-audit.sh
+      - name: Audit all locked Rust dependencies
+        run: cargo audit --deny warnings
   containers:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
+      fail-fast: false
       matrix:
-        tool: [civpulse-download, civpulse-process, civpulse-upload, civpulse-mcp]
+        tool: [civpulse-download, civpulse-process, civpulse-upload, civpulse-results-collector, civpulse-webapi, civpulse-mcp]
     steps:
-      - uses: actions/checkout@v4
-      - run: docker build --build-arg TOOL=${{ matrix.tool }} -t ${{ matrix.tool }}:ci .
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: docker build --pull --build-arg TOOL=${{ matrix.tool }} -t ${{ matrix.tool }}:ci .
       - run: docker run --rm --read-only --cap-drop=ALL --security-opt=no-new-privileges ${{ matrix.tool }}:ci --check
+      - name: Exercise disabled collector daemon under pod constraints
+        if: matrix.tool == 'civpulse-results-collector'
+        run: bash .github/scripts/smoke-collector-container.sh "${{ matrix.tool }}:ci"
+      - name: Scan runtime image
+        uses: aquasecurity/trivy-action@8f28faec26515256b6d22074d1d2a8986f4cbd87
+        with:
+          version: v0.76.1
+          image-ref: ${{ matrix.tool }}:ci
+          scanners: vuln,secret
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          timeout: 10m

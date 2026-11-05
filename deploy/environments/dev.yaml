@@ -1,0 +1,10 @@
+# Target: thor, namespace civpulse-dev
+# Supply the scanned immutable image.digest at installation time.
+environment: dev
+collection:
+  enabled: false
+  maxDownloadBytes: 134217728
+  maxScopeBytes: 16777216
+acceptance:
+  approved: false
+  reference: ""

@@ -1,0 +1,7 @@
+{
+  "sourceCommit": "3a652ef4806b7584bbadbd5ea4f24069c8758385",
+  "image": "registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:dc8b99be4e6e53dec70d6131b41434c24c3b0c112f21043b3c24dfdf5b61d3f1",
+  "publicationRun": "https://github.com/CivicPulse/updaters/actions/runs/41940352035",
+  "sourcePullRequest": "https://github.com/CivicPulse/updaters/pull/34",
+  "validation": "GitHub main-branch image startup check and HIGH/CRITICAL vulnerability/secret scan passed before registry publication."
+}

@@ -94,8 +94,7 @@ only after those checks. No production configuration or traffic is changed by
 this repository change.
 
 The reference catalog and port derive from Kerry Hatcher’s MIT-licensed Civic
-Pulse source; see the repository LICENSE. Test signing keys are disposable
-fixtures used only by the local authentication tests.
+Pulse source; see the repository LICENSE. Authentication tests generate disposable signing keys in memory for each test.
 
 ## DigitalOcean deployment
 
