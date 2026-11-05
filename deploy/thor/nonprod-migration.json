@@ -1,0 +1,129 @@
+{
+  "date": "2026-11-04",
+  "sourceContext": "do-atl1-k8s-1-37-0-do-2-atl1-1793724241236",
+  "targetContext": "thor",
+  "environments": {
+    "civpulse-dev": {
+      "sourceReplicasBeforeMigration": [
+        {
+          "kind": "Deployment",
+          "name": "results-civpulse-results-collector",
+          "replicas": 1
+        },
+        {
+          "kind": "Deployment",
+          "name": "supabase-supabase-auth",
+          "replicas": 1
+        },
+        {
+          "kind": "Deployment",
+          "name": "supabase-supabase-kong",
+          "replicas": 1
+        },
+        {
+          "kind": "Deployment",
+          "name": "supabase-supabase-rest",
+          "replicas": 1
+        },
+        {
+          "kind": "Deployment",
+          "name": "supabase-supabase-storage",
+          "replicas": 1
+        },
+        {
+          "kind": "StatefulSet",
+          "name": "supabase-supabase-db",
+          "replicas": 1
+        }
+      ],
+      "persistentFileChecksumManifestSha256": "d55d6c8d55702e9164eec46cd782430c0082a9648b35fd879f73f1e43bc1c6a2",
+      "targetReleases": [
+        {
+          "name": "results",
+          "revision": "1",
+          "status": "deployed",
+          "chart": "civpulse-results-collector-0.1.0"
+        },
+        {
+          "name": "supabase",
+          "revision": "3",
+          "status": "deployed",
+          "chart": "supabase-0.8.0"
+        }
+      ]
+    },
+    "civpulse-test": {
+      "sourceReplicasBeforeMigration": [
+        {
+          "kind": "Deployment",
+          "name": "results-civpulse-results-collector",
+          "replicas": 1
+        },
+        {
+          "kind": "Deployment",
+          "name": "supabase-supabase-auth",
+          "replicas": 1
+        },
+        {
+          "kind": "Deployment",
+          "name": "supabase-supabase-kong",
+          "replicas": 1
+        },
+        {
+          "kind": "Deployment",
+          "name": "supabase-supabase-rest",
+          "replicas": 1
+        },
+        {
+          "kind": "Deployment",
+          "name": "supabase-supabase-storage",
+          "replicas": 1
+        },
+        {
+          "kind": "StatefulSet",
+          "name": "supabase-supabase-db",
+          "replicas": 1
+        }
+      ],
+      "persistentFileChecksumManifestSha256": "47a37315ee95765f94dfb4715abc4856fcb9b082fad9127be9225ea9e0512e1e",
+      "targetReleases": [
+        {
+          "name": "results",
+          "revision": "1",
+          "status": "deployed",
+          "chart": "civpulse-results-collector-0.1.0"
+        },
+        {
+          "name": "supabase",
+          "revision": "3",
+          "status": "deployed",
+          "chart": "supabase-0.8.0"
+        }
+      ]
+    }
+  },
+  "productionMoved": false,
+  "sourceVolumesRetained": true,
+  "sourceWorkloadsScaledToZero": true,
+  "nodePoolsChanged": false,
+  "storageClass": "local-path",
+  "storageCapacityPerEnvironmentGiB": 12,
+  "deploymentSourceCheckout": "/home/kwhatcher/.codex-workspaces/worktrees/updaters-issue-1",
+  "deploymentConfigurationChanges": [
+    "deploy/supabase/bootstrap.py: restrict nonproduction to context thor",
+    "deploy/supabase/values.yaml: local-path volumes",
+    "deploy/environments/dev.yaml and test.yaml: Thor targets",
+    "deployment instructions and bootstrap context regression checks"
+  ],
+  "rollback": "Stop Thor writers first. Original DigitalOcean volumes contain the migration-time snapshot. Resync subsequent Thor writes back before restoring source replicas if those writes must be retained. Never run both environment copies concurrently.",
+  "availability": "Thor is a single-node cluster using local persistent storage. Production stays on DigitalOcean.",
+  "verification": [
+    "byte-for-byte SHA-256 equality of all persistent files before destination startup",
+    "all source environment secret values preserved",
+    "clean PostgreSQL startup with pgsodium and Vault keys loaded",
+    "auth, storage and application schemas present; all 139 migration records present",
+    "authenticated collector database health RPC succeeds in each environment",
+    "all migrated workload replicas ready",
+    "production API continues returning 401 without credentials"
+  ]
+}

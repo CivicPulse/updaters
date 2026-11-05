@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tool: [civpulse-download, civpulse-process, civpulse-upload, civpulse-results-collector]
+        tool: [civpulse-download, civpulse-process, civpulse-upload, civpulse-results-collector, civpulse-webapi]
     env:
       TOOL: ${{ matrix.tool }}
       IMAGE: registry.digitalocean.com/hatchk8s/${{ matrix.tool }}:sha-${{ github.sha }}

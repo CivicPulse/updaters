@@ -19,10 +19,11 @@ assert max(migration_lock["files"]) == "20261125003800_sos_download_stop.sql"
 spec = importlib.util.spec_from_file_location("supabase_bootstrap", SCRIPT)
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
+assert module.CONTEXT == "thor"
 for environment in ("dev", "test"):
     with patch.object(sys, "argv", [str(SCRIPT), environment]), patch.object(module, "run", side_effect=AssertionError("dry run executed a command")):
         module.main()
-for arguments in (["prod", "--apply"], ["dev", "--context", "thor", "--apply"]):
+for arguments in (["prod", "--apply"], ["dev", "--context", "do-atl1-k8s-1-37-0-do-2-atl1-1793724241236", "--apply"]):
     result = subprocess.run([sys.executable, str(SCRIPT), *arguments], capture_output=True)
     assert result.returncode == 2
 try:
