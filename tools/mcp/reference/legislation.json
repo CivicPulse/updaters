@@ -1,0 +1,1291 @@
+{
+  "legislative_terms": {
+    "label": "Legislative terms",
+    "fields": [
+      {
+        "name": "jurisdiction",
+        "label": "jurisdiction",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "unspecified",
+          "federal",
+          "state"
+        ],
+        "default": "unspecified"
+      },
+      {
+        "name": "state_name",
+        "label": "state name (required for state terms)",
+        "type": "text"
+      },
+      {
+        "name": "organization_id",
+        "label": "organization",
+        "type": "uuid",
+        "required": true,
+        "reference": "organizations"
+      },
+      {
+        "name": "identifier",
+        "label": "identifier",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "name",
+        "label": "name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "starts_on",
+        "label": "starts on",
+        "type": "date",
+        "required": true
+      },
+      {
+        "name": "ends_on",
+        "label": "ends on",
+        "type": "date",
+        "required": false
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  },
+  "legislative_sessions": {
+    "label": "Sessions",
+    "fields": [
+      {
+        "name": "term_id",
+        "label": "legislative term",
+        "type": "uuid",
+        "required": true,
+        "reference": "legislative_terms"
+      },
+      {
+        "name": "identifier",
+        "label": "identifier",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "name",
+        "label": "name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "kind",
+        "label": "kind",
+        "type": "text",
+        "required": true,
+        "default": "regular",
+        "choices": [
+          "regular",
+          "special",
+          "extraordinary"
+        ]
+      },
+      {
+        "name": "starts_on",
+        "label": "starts on",
+        "type": "date",
+        "required": true
+      },
+      {
+        "name": "ends_on",
+        "label": "ends on",
+        "type": "date",
+        "required": false
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  },
+  "legislative_bodies": {
+    "label": "Chambers & committees",
+    "fields": [
+      {
+        "name": "organization_id",
+        "label": "organization",
+        "type": "uuid",
+        "required": true,
+        "reference": "organizations"
+      },
+      {
+        "name": "legislature_id",
+        "label": "legislature",
+        "type": "uuid",
+        "required": true,
+        "reference": "organizations"
+      },
+      {
+        "name": "kind",
+        "label": "kind",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "legislature",
+          "chamber",
+          "committee",
+          "subcommittee"
+        ]
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  },
+  "legislative_body_memberships": {
+    "label": "Memberships",
+    "fields": [
+      {
+        "name": "body_id",
+        "label": "chamber or committee",
+        "type": "uuid",
+        "required": true,
+        "reference": "legislative_bodies"
+      },
+      {
+        "name": "office_term_id",
+        "label": "member service",
+        "type": "uuid",
+        "required": true,
+        "reference": "office_terms"
+      },
+      {
+        "name": "role",
+        "label": "role",
+        "type": "text",
+        "required": true,
+        "default": "member"
+      },
+      {
+        "name": "starts_on",
+        "label": "starts on",
+        "type": "date",
+        "required": true
+      },
+      {
+        "name": "ends_on",
+        "label": "ends on",
+        "type": "date",
+        "required": false
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  },
+  "bills": {
+    "label": "Bills & resolutions",
+    "fields": [
+      {
+        "name": "term_id",
+        "label": "legislative term",
+        "type": "uuid",
+        "required": true,
+        "reference": "legislative_terms"
+      },
+      {
+        "name": "session_id",
+        "label": "session",
+        "type": "uuid",
+        "required": true,
+        "reference": "legislative_sessions"
+      },
+      {
+        "name": "body_id",
+        "label": "chamber or committee",
+        "type": "uuid",
+        "required": true,
+        "reference": "legislative_bodies"
+      },
+      {
+        "name": "numbering_context",
+        "label": "numbering context",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "identifier",
+        "label": "identifier",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "measure_type",
+        "label": "measure type",
+        "type": "text",
+        "required": true,
+        "default": "bill"
+      },
+      {
+        "name": "title",
+        "label": "title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "summary",
+        "label": "summary",
+        "type": "text",
+        "required": false
+      },
+      {
+        "name": "introduced_on",
+        "label": "introduced on",
+        "type": "date",
+        "required": true
+      },
+      {
+        "name": "status",
+        "label": "status",
+        "type": "text",
+        "required": true,
+        "default": "introduced"
+      },
+      {
+        "name": "source_status",
+        "label": "source status",
+        "type": "text",
+        "required": false
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  },
+  "bill_versions": {
+    "label": "Bill text versions",
+    "fields": [
+      {
+        "name": "bill_id",
+        "label": "bill",
+        "type": "uuid",
+        "required": true,
+        "reference": "bills"
+      },
+      {
+        "name": "identifier",
+        "label": "identifier",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "title",
+        "label": "title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "published_on",
+        "label": "published on",
+        "type": "date",
+        "required": true
+      },
+      {
+        "name": "text_url",
+        "label": "text url",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  },
+  "bill_amendments": {
+    "label": "Amendments",
+    "fields": [
+      {
+        "name": "bill_id",
+        "label": "bill",
+        "type": "uuid",
+        "required": true,
+        "reference": "bills"
+      },
+      {
+        "name": "version_id",
+        "label": "version",
+        "type": "uuid",
+        "required": false,
+        "reference": "bill_versions"
+      },
+      {
+        "name": "identifier",
+        "label": "identifier",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "title",
+        "label": "title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "offered_on",
+        "label": "offered on",
+        "type": "date",
+        "required": true
+      },
+      {
+        "name": "text_url",
+        "label": "text url",
+        "type": "text",
+        "required": false
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  },
+  "bill_actions": {
+    "label": "Bill timeline",
+    "fields": [
+      {
+        "name": "bill_id",
+        "label": "bill",
+        "type": "uuid",
+        "required": true,
+        "reference": "bills"
+      },
+      {
+        "name": "session_id",
+        "label": "session",
+        "type": "uuid",
+        "required": true,
+        "reference": "legislative_sessions"
+      },
+      {
+        "name": "body_id",
+        "label": "chamber or committee",
+        "type": "uuid",
+        "required": true,
+        "reference": "legislative_bodies"
+      },
+      {
+        "name": "occurred_on",
+        "label": "occurred on",
+        "type": "date",
+        "required": true
+      },
+      {
+        "name": "sequence",
+        "label": "sequence",
+        "type": "integer",
+        "default": "0",
+        "required": true
+      },
+      {
+        "name": "kind",
+        "label": "kind",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "description",
+        "label": "description",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "event_id",
+        "label": "event",
+        "type": "uuid",
+        "required": false,
+        "reference": "events"
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  },
+  "bill_relationships": {
+    "label": "Related bills",
+    "fields": [
+      {
+        "name": "bill_id",
+        "label": "bill",
+        "type": "uuid",
+        "required": true,
+        "reference": "bills"
+      },
+      {
+        "name": "related_bill_id",
+        "label": "related bill",
+        "type": "uuid",
+        "required": true,
+        "reference": "bills"
+      },
+      {
+        "name": "kind",
+        "label": "kind",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "companion",
+          "reintroduction",
+          "substitute",
+          "related"
+        ]
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  },
+  "bill_sponsorships": {
+    "label": "Sponsorships",
+    "fields": [
+      {
+        "name": "bill_id",
+        "label": "bill",
+        "type": "uuid",
+        "required": true,
+        "reference": "bills"
+      },
+      {
+        "name": "office_term_id",
+        "label": "member service",
+        "type": "uuid",
+        "required": true,
+        "reference": "office_terms"
+      },
+      {
+        "name": "role",
+        "label": "role",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "introducer",
+          "joint_introducer",
+          "primary_sponsor",
+          "cosponsor",
+          "floor_sponsor",
+          "other"
+        ]
+      },
+      {
+        "name": "source_role",
+        "label": "source role",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "starts_on",
+        "label": "starts on",
+        "type": "date",
+        "required": true
+      },
+      {
+        "name": "ends_on",
+        "label": "ends on",
+        "type": "date",
+        "required": false
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  },
+  "bill_positions": {
+    "label": "Documented positions",
+    "fields": [
+      {
+        "name": "bill_id",
+        "label": "bill",
+        "type": "uuid",
+        "required": true,
+        "reference": "bills"
+      },
+      {
+        "name": "person_id",
+        "label": "person",
+        "type": "uuid",
+        "required": true,
+        "reference": "people"
+      },
+      {
+        "name": "position",
+        "label": "position",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "support",
+          "oppose",
+          "neutral"
+        ]
+      },
+      {
+        "name": "stated_on",
+        "label": "stated on",
+        "type": "date",
+        "required": true
+      },
+      {
+        "name": "ends_on",
+        "label": "ends on",
+        "type": "date",
+        "required": false
+      },
+      {
+        "name": "description",
+        "label": "description",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "article_id",
+        "label": "article",
+        "type": "uuid",
+        "required": false,
+        "reference": "articles"
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  },
+  "legislative_votes": {
+    "label": "Votes",
+    "fields": [
+      {
+        "name": "session_id",
+        "label": "session",
+        "type": "uuid",
+        "required": true,
+        "reference": "legislative_sessions"
+      },
+      {
+        "name": "body_id",
+        "label": "chamber or committee",
+        "type": "uuid",
+        "required": true,
+        "reference": "legislative_bodies"
+      },
+      {
+        "name": "identifier",
+        "label": "identifier",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "occurred_on",
+        "label": "occurred on",
+        "type": "date",
+        "required": true
+      },
+      {
+        "name": "occurred_at",
+        "label": "occurred at",
+        "type": "timestamptz",
+        "required": false
+      },
+      {
+        "name": "question",
+        "label": "question",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "category",
+        "label": "category",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "method",
+        "label": "method",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "roll_call",
+          "voice",
+          "division",
+          "unanimous_consent",
+          "other"
+        ]
+      },
+      {
+        "name": "outcome",
+        "label": "outcome",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "threshold",
+        "label": "threshold",
+        "type": "text",
+        "required": false
+      },
+      {
+        "name": "reported_yes",
+        "label": "reported yes",
+        "type": "integer",
+        "required": false
+      },
+      {
+        "name": "reported_no",
+        "label": "reported no",
+        "type": "integer",
+        "required": false
+      },
+      {
+        "name": "reported_other",
+        "label": "reported other",
+        "type": "integer",
+        "required": false
+      },
+      {
+        "name": "coverage",
+        "label": "coverage",
+        "type": "text",
+        "required": true,
+        "default": "partial",
+        "choices": [
+          "complete",
+          "partial",
+          "no_individual_record"
+        ]
+      },
+      {
+        "name": "event_id",
+        "label": "event",
+        "type": "uuid",
+        "required": false,
+        "reference": "events"
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  },
+  "legislative_vote_bills": {
+    "label": "Bills affected by votes",
+    "fields": [
+      {
+        "name": "vote_id",
+        "label": "vote",
+        "type": "uuid",
+        "required": true,
+        "reference": "legislative_votes"
+      },
+      {
+        "name": "bill_id",
+        "label": "bill",
+        "type": "uuid",
+        "required": true,
+        "reference": "bills"
+      },
+      {
+        "name": "action_id",
+        "label": "action",
+        "type": "uuid",
+        "required": false,
+        "reference": "bill_actions"
+      },
+      {
+        "name": "version_id",
+        "label": "version",
+        "type": "uuid",
+        "required": false,
+        "reference": "bill_versions"
+      },
+      {
+        "name": "amendment_id",
+        "label": "amendment",
+        "type": "uuid",
+        "required": false,
+        "reference": "bill_amendments"
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  },
+  "legislative_vote_choices": {
+    "label": "Member votes",
+    "fields": [
+      {
+        "name": "vote_id",
+        "label": "vote",
+        "type": "uuid",
+        "required": true,
+        "reference": "legislative_votes"
+      },
+      {
+        "name": "office_term_id",
+        "label": "member service",
+        "type": "uuid",
+        "required": true,
+        "reference": "office_terms"
+      },
+      {
+        "name": "choice",
+        "label": "choice",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "yes",
+          "no",
+          "present",
+          "abstain",
+          "absent",
+          "excused",
+          "not_voting",
+          "paired",
+          "other"
+        ]
+      },
+      {
+        "name": "source_choice",
+        "label": "source choice",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "membership_review_note",
+        "label": "membership review note",
+        "type": "text",
+        "required": false
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  },
+  "article_bills": {
+    "label": "Media coverage",
+    "fields": [
+      {
+        "name": "article_id",
+        "label": "article",
+        "type": "uuid",
+        "required": true,
+        "reference": "articles"
+      },
+      {
+        "name": "bill_id",
+        "label": "bill",
+        "type": "uuid",
+        "required": true,
+        "reference": "bills"
+      },
+      {
+        "name": "role",
+        "label": "role",
+        "type": "text",
+        "required": true,
+        "default": "coverage",
+        "choices": [
+          "coverage",
+          "analysis",
+          "editorial",
+          "mention"
+        ]
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  },
+  "legislative_event_links": {
+    "label": "Calendar links",
+    "fields": [
+      {
+        "name": "event_id",
+        "label": "event",
+        "type": "uuid",
+        "required": true,
+        "reference": "events"
+      },
+      {
+        "name": "session_id",
+        "label": "session",
+        "type": "uuid",
+        "required": true,
+        "reference": "legislative_sessions"
+      },
+      {
+        "name": "body_id",
+        "label": "chamber or committee",
+        "type": "uuid",
+        "required": true,
+        "reference": "legislative_bodies"
+      },
+      {
+        "name": "visibility",
+        "label": "visibility",
+        "type": "text",
+        "required": true,
+        "choices": [
+          "public",
+          "unlisted",
+          "private"
+        ],
+        "default": "public"
+      },
+      {
+        "name": "source_url",
+        "label": "source URL",
+        "type": "text"
+      },
+      {
+        "name": "source_system",
+        "label": "source provider",
+        "type": "text"
+      },
+      {
+        "name": "source_id",
+        "label": "provider record ID",
+        "type": "text"
+      },
+      {
+        "name": "retrieved_at",
+        "label": "retrieved at",
+        "type": "timestamptz"
+      }
+    ]
+  }
+}

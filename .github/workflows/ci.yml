@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        tool: [civpulse-download, civpulse-process, civpulse-upload]
+        tool: [civpulse-download, civpulse-process, civpulse-upload, civpulse-mcp]
     steps:
       - uses: actions/checkout@v4
       - run: docker build --build-arg TOOL=${{ matrix.tool }} -t ${{ matrix.tool }}:ci .

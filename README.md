@@ -1,22 +1,27 @@
 # CivPulse updaters
 
 Cargo workspace for independently deployed Rust batch tools that download,
-process, and upload CivPulse data. These are starter commands: no source,
+process, and upload CivPulse data. The three batch tools are starter commands: no source,
 transformation, API, credentials, or pipeline orchestration is wired yet.
 
 ## Layout
 
 - `tools/download`: `civpulse-download` executable; future source-specific downloads.
 - `tools/process`: `civpulse-process` executable; future parsing and normalization.
+- `tools/mcp`: standalone Rust replacement for the 79-tool Supabase V2 MCP server;
+  see [configuration, compatibility checks and cutover](tools/mcp/README.md).
 - `tools/upload`: `civpulse-upload` executable; future CivPulse API uploads.
 - `crates/civpulse-runtime`: JSON logging, batch lifecycle, and SIGTERM/Ctrl-C handling.
-- `deploy/k8s`: one suspended Job template per executable.
+- `deploy/k8s`: suspended batch Job templates and an MCP Deployment/Service.
 
 Only executable crates get images and Kubernetes workloads. Shared library crates
 are linked into those binaries. Add source-specific tools under `tools/` and
 shared libraries under `crates/`; workspace glob membership picks them up.
 Dependency versions, metadata, and lint policy live in the root `Cargo.toml`.
 Workspace inheritance follows the [Cargo workspace reference](https://doc.rust-lang.org/cargo/reference/workspaces.html).
+
+The MCP executable is a long-running HTTP service; its Kubernetes Deployment and
+Service are in `deploy/k8s/mcp.yaml`. The other executables remain batch Jobs.
 
 ## Development
 
@@ -51,9 +56,9 @@ docker run --rm --read-only civpulse-download:dev --check
 
 The same Dockerfile builds one selected binary per image. Images include CA
 certificates for future HTTPS clients and run as an unprivileged numeric user.
-CI builds and checks all three images without pushing them.
+CI builds and checks all four images without pushing them.
 
-Job manifests are examples, suspended by default, with `--check` arguments. Set
+Batch Job manifests are examples, suspended by default, with `--check` arguments. Set
 an image available to your cluster (prefer a digest), namespace, resource sizing,
 and any needed configuration before use. For a scaffold smoke check, load/push
 the image, apply the selected manifest and explicitly unsuspend its Job. No
@@ -85,4 +90,6 @@ status must reflect incomplete work.
 
 Before enabling data operations, add source-specific configuration validation,
 provenance contracts, bounded network timeouts, and tests at the real I/O boundary.
-There are no database/API adapters or production deployment assumptions yet.
+The batch scaffolds have no database/API adapters. The MCP service uses the existing
+Civic Pulse Supabase schema and policies; its deployment contract is documented
+separately.

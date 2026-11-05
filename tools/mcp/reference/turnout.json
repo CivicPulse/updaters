@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "number",
+      "const": 1
+    },
+    "provider": {
+      "type": "string",
+      "const": "georgia-sos-turnout"
+    },
+    "election_id": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+    },
+    "election_date": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+    },
+    "status": {
+      "type": "string",
+      "const": "unofficial"
+    },
+    "source_url": {
+      "type": "string",
+      "const": "https://sos.ga.gov/page/election-data-hub-unofficial-turnout"
+    },
+    "app_id": {
+      "type": "string",
+      "const": "137c0a43-928b-427a-a267-eb55aa7fa8a9"
+    },
+    "capture_run_id": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+    },
+    "captured_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+    },
+    "upstream_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "tables": {
+      "minItems": 3,
+      "maxItems": 3,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "table": {
+            "type": "string",
+            "enum": [
+              "early",
+              "absentee",
+              "turnout"
+            ]
+          },
+          "object_id": {
+            "type": "string",
+            "enum": [
+              "7cc869cd-2124-43be-82f4-1c8d394dc6d8",
+              "CTgPMg",
+              "QDFdpV"
+            ]
+          },
+          "source_title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "as_of_label": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "as_of_timezone": {
+            "type": "string",
+            "const": "America/New_York"
+          },
+          "rows": {
+            "maxItems": 1000,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "county_fips": {
+                  "type": "string",
+                  "pattern": "^13\\d{3}$"
+                },
+                "county_label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "ballot_style": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "counting_group": {
+                  "type": "string",
+                  "enum": [
+                    "advance",
+                    "absentee_mail",
+                    "election_day"
+                  ]
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "measures": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "anyOf": [
+                          {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "display": {
+                        "type": "string",
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "value",
+                      "display"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "county_fips",
+                "county_label",
+                "ballot_style",
+                "counting_group",
+                "locator",
+                "measures"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "table",
+          "object_id",
+          "source_title",
+          "as_of_label",
+          "as_of",
+          "as_of_timezone",
+          "rows"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "provider",
+    "election_id",
+    "election_date",
+    "status",
+    "source_url",
+    "app_id",
+    "capture_run_id",
+    "captured_at",
+    "upstream_sha256",
+    "tables"
+  ],
+  "additionalProperties": false
+}
