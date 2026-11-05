@@ -178,7 +178,7 @@ async fn v2_oracle_requests_and_results() {
 }
 #[test]
 fn validation_and_defaults() {
-    assert_eq!(catalog::tools().len(), 79);
+    assert_eq!(catalog::tools().len(), 80);
     assert_eq!(
         catalog::arguments("search_site", json!({})).unwrap(),
         json!({"query":"","mode":"site","offset":0})
