@@ -2,7 +2,7 @@
 
 Use the Supabase-docs-linked [community Helm chart](https://github.com/supabase-community/supabase-kubernetes),
 version **0.8.0**, separately in `civpulse-dev` and `civpulse-test` on context
-`do-atl1-k8s-1-37-0-do-2-atl1-1793724241236`. Production continues to use the existing
+`thor`. Production continues to use the existing
 website Supabase deployment. No production database migration is applied here.
 CloudNativePG is unnecessary for this stack: the chart's Supabase Postgres image
 provides the platform initialization and extension support the contracts need.
@@ -28,7 +28,7 @@ Storage data use separate persistent volumes. Do not delete them to recover an
 application import. The upstream Postgres entrypoint initializes filesystem
 ownership as root and drops to the database account; its limited bootstrap
 capabilities are documented in values. An additional pinned init container fills missing configuration defaults after the
-upstream initializer: fresh DigitalOcean block volumes contain `lost+found`, which
+upstream initializer: fresh block volumes contain `lost+found`, which
 causes upstream’s empty-directory guard to skip its copy. The additional copy never
 overwrites existing files or symlinks, including pgsodium keys or customized
 configuration. It walks missing entries recursively because the pinned image’s

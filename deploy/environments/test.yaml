@@ -1,4 +1,4 @@
-# Target: do-atl1-k8s-1-37-0-do-2-atl1-1793724241236, namespace civpulse-test
+# Target: thor, namespace civpulse-test
 # Supply the scanned immutable image.digest at installation time.
 environment: test
 collection:

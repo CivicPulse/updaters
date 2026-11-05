@@ -241,7 +241,7 @@ deployment:
 persistence:
   db:
     enabled: true
-    storageClassName: do-block-storage
+    storageClassName: local-path
     size: 10Gi
   functions:
     enabled: false
@@ -253,13 +253,13 @@ persistence:
     enabled: false
   storage:
     enabled: true
-    storageClassName: do-block-storage
+    storageClassName: local-path
     size: 1Gi
   deno:
     enabled: false
   pgsodium:
     enabled: true
-    storageClassName: do-block-storage
+    storageClassName: local-path
     size: 1Gi
 ingress:
   enabled: false

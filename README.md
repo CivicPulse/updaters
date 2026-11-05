@@ -14,10 +14,11 @@ collection stays disabled until controlled operational acceptance completes.
 - `tools/results-collector`: durable queue consumer, local validation, and atomic publication.
 - `crates/civpulse-results-source`: bounded downloading, parsing and reference-compatible fingerprints.
 - `crates/civpulse-results-contract`: public asset contracts and pinned golden fixtures.
+- `crates/civpulse-webapi`: authenticated REST service.
 - `crates/civpulse-runtime`: JSON logging, batch lifecycle, and SIGTERM/Ctrl-C handling.
 - `deploy/k8s`: one suspended Job template per generic scaffold executable.
 - `deploy/helm/civpulse-results-collector`: disabled-by-default durable worker chart.
-- `deploy/environments`: separate dev/test/prod values for the shared DigitalOcean cluster.
+- `deploy/environments`: dev/test values targeting Thor and production values targeting DigitalOcean.
 - `deploy/supabase`: pinned, isolated dev/test database bootstrap and local replay evidence.
 
 Only executable crates get images and Kubernetes workloads. Shared library crates
@@ -58,6 +59,10 @@ The results collector defaults to a disabled daemon; its modes are described bel
 as JSON. Invalid logging filters fail startup.
 
 ## Containers and Kubernetes
+
+Development and test run on Thor; production runs on DigitalOcean Kubernetes.
+See the [hosting and environment overview](deploy/README.md) for contexts,
+namespaces, routing, storage, capacity, and rollback procedures.
 
 Build each executable separately from the repository root:
 
@@ -212,3 +217,28 @@ poll/rebuild Vault target or enabled feed. Local SQL replay evidence does not
 claim a Helm rollout or production acceptance.
 
 Operational acceptance, alerting and recovery: [results runbook](docs/operations/results-runbook.md).
+
+## REST API
+
+Run `cargo run --locked -p civpulse-webapi` with `SUPABASE_URL` and
+`SUPABASE_PUBLISHABLE_KEY` set. `API_BIND` defaults to `0.0.0.0:8080`.
+`--check` is an offline binary startup check and does not validate configuration.
+
+Every HTTP request requires `Authorization: Bearer <user access token>`.
+Tokens are validated with Supabase Auth on every request; anonymous sign-ins are
+rejected. No user-editable metadata or proxy identity headers grant permissions.
+Database requests use the caller's token, preserving existing grants and RLS,
+including the website's database-backed admin allowlist. No privileged backend
+key is used. Auth/data outages fail closed; credentials and backend error bodies
+are not logged or returned. API responses disable caching.
+
+Initial routes:
+- `GET /api/v1/me`: verified user ID.
+- `GET /api/v1/organizations`: at most 100 visible organizations, ordered by ID,
+  with id, slug and name. This is an initial bounded listing, without pagination
+  or writes. Future operations must retain caller identity and database policies.
+
+Production routing for `webapi.civpulse.org` uses an outbound Cloudflare Tunnel
+and internal Traefik services, with no DigitalOcean load balancer. See
+[deployment instructions](deploy/edge/README.md) for secrets, DNS, rollout,
+permission checks, and adding future microservices.

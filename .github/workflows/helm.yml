@@ -27,6 +27,10 @@ jobs:
           python3 .github/scripts/test-monitor.py
           python3 .github/scripts/test-supabase-bootstrap.py
           python3 .github/scripts/test-supabase-render.py
+      - name: Validate authenticated API manifests and internal ingress
+        run: |
+          helm template traefik traefik --repo https://traefik.github.io/charts --version 42.3.0 --namespace civpulse-edge -f deploy/edge/traefik-values.yaml > "$RUNNER_TEMP/traefik.yaml"
+          python3 .github/scripts/test-webapi-deployment.py "$RUNNER_TEMP/traefik.yaml"
       - name: Parse rendered byte caps using the real Rust admission code
         run: |
           cargo build --locked -p civpulse-results-collector --example check_admission

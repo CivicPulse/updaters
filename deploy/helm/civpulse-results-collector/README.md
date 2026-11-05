@@ -4,7 +4,8 @@ This chart runs the durable queue consumer. Supabase owns the five-minute source
 scheduler. It creates no CronJob, public Service, or Ingress. Database/R2 state is
 durable; `/tmp` is bounded, disk-backed scratch and may disappear at any restart.
 
-Use context `do-atl1-k8s-1-37-0-do-2-atl1-1793724241236` for every environment:
+Use context `thor` for dev/test and
+`do-atl1-k8s-1-37-0-do-2-atl1-1793724241236` for production:
 
 | Environment | Namespace | R2 bucket | Public file origin |
 | --- | --- | --- | --- |
@@ -25,15 +26,16 @@ The default image digest is deliberately empty: an unreviewed image cannot insta
 The all-`a` digest used in CI is a rendering fixture, never a deployment value.
 
 ```sh
-kubectl --context do-atl1-k8s-1-37-0-do-2-atl1-1793724241236 apply -f deploy/environments/namespaces.yaml
+kubectl --context thor create namespace civpulse-test --dry-run=client -o yaml | kubectl --context thor apply -f -
 helm upgrade --install results deploy/helm/civpulse-results-collector \
-  --kube-context do-atl1-k8s-1-37-0-do-2-atl1-1793724241236 \
+  --kube-context thor \
   --namespace civpulse-test -f deploy/environments/test.yaml \
   --set-string image.digest=sha256:<scanned-manifest-digest> \
   --wait --timeout 5m
 ```
 
-Repeat with the dev/prod namespace and corresponding environment file. Collection
+Repeat with the dev namespace and corresponding environment file. For production,
+use the DigitalOcean context and production namespace and values file. Collection
 is false in all committed environment values. A disabled daemon stays healthy
 without making database, SOS, or R2 requests. Credentials may be absent while
 disabled. Startup/readiness/liveness execute the local heartbeat command; a

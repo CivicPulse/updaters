@@ -19,7 +19,7 @@ import tempfile
 import time
 import urllib.request
 
-CONTEXT = "do-atl1-k8s-1-37-0-do-2-atl1-1793724241236"
+CONTEXT = "thor"
 HERE = Path(__file__).resolve().parent
 
 
