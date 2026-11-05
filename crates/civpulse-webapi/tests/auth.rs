@@ -254,6 +254,7 @@ async fn public_documentation_describes_secured_api() {
             );
         }
     }
+    assert_documented_constraints(&spec);
     for method in ["patch", "delete"] {
         let schema = &spec["paths"]["/api/v1/data/{resource}"][method]["requestBody"]["content"]["application/json"]
             ["schema"];
@@ -283,6 +284,20 @@ async fn public_documentation_describes_secured_api() {
         assert!(html.contains("/api/v1/openapi.json"));
         assert!(html.contains("persistAuthorization: false"));
     }
+    for path in ["/api/v1/docs", "/api/v1/openapi.json"] {
+        let response = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri(path)
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::METHOD_NOT_ALLOWED);
+    }
     let response = app
         .oneshot(
             Request::builder()
@@ -293,4 +308,25 @@ async fn public_documentation_describes_secured_api() {
         .await
         .unwrap();
     assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+}
+
+fn assert_documented_constraints(spec: &serde_json::Value) {
+    let parameters = spec["paths"]["/api/v1/data/{resource}"]["get"]["parameters"]
+        .as_array()
+        .unwrap();
+    for name in ["query", "limit", "offset"] {
+        let documented = &parameters.iter().find(|p| p["name"] == name).unwrap()["schema"];
+        let search = civpulse_civic::catalog::tools()
+            .iter()
+            .find(|t| t["name"] == "search_civic_data")
+            .unwrap();
+        assert_eq!(documented, &search["inputSchema"]["properties"][name]);
+    }
+    for code in ["400", "413", "415", "422"] {
+        assert_eq!(
+            spec["paths"]["/api/v1/data/{resource}"]["post"]["responses"][code]["content"]["text/plain"]
+                ["schema"]["type"],
+            "string"
+        );
+    }
 }

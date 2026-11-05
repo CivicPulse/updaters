@@ -119,7 +119,7 @@ impl IntoResponse for ApiError {
     }
 }
 
-/// Data routes, fallbacks, and method errors require authentication; documentation is public.
+/// Data routes and unknown paths require authentication; documentation routes are public.
 pub fn router(backend: Backend) -> Router {
     Router::new()
         .route("/api/v1/me", get(me))

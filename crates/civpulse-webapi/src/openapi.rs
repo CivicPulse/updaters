@@ -22,6 +22,15 @@ fn operation(summary: &str) -> Value {
             "502" => "Data service unavailable", _ => "Identity or data service unavailable"
         },"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"}}}});
     }
+    // Axum extractor rejections use text rather than the application error envelope.
+    for code in ["400", "413", "415", "422"] {
+        if responses.get(code).is_none() {
+            responses[code] = json!({"description":if code == "413" {
+                "Request body exceeds 40 MiB"
+            } else { "Expected application/json content type" }});
+        }
+        responses[code]["content"]["text/plain"] = json!({"schema":{"type":"string"}});
+    }
     json!({"summary":summary,"responses":responses})
 }
 
@@ -90,7 +99,11 @@ fn spec() -> Value {
         )]);
     }
     paths["/api/v1/data/{resource}"]["get"]["parameters"] = json!([
-        parameter("query", "query", json!({"type":"string","default":""})),
+        parameter(
+            "query",
+            "query",
+            json!({"type":"string","default":"","maxLength":500})
+        ),
         parameter(
             "filters",
             "query",
@@ -99,12 +112,12 @@ fn spec() -> Value {
         parameter(
             "limit",
             "query",
-            json!({"type":"integer","minimum":0,"default":20})
+            json!({"type":"integer","minimum":1,"maximum":100,"default":20})
         ),
         parameter(
             "offset",
             "query",
-            json!({"type":"integer","minimum":0,"default":0})
+            json!({"type":"integer","minimum":0,"maximum":100_000,"default":0})
         )
     ]);
     let mut invoke = operation("Invoke a catalog operation");
