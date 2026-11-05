@@ -69,7 +69,7 @@ its ClusterIP service.
 - Cluster: k8s-1-37-0-do-2-atl1-1793724241236
   (6a0f9045-853a-451b-b013-9a7202e76854).
 - API namespace: civpulse-prod; edge namespace: civpulse-edge.
-- API image: registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:12f02c8d6518e9bb69befb2883dc33ada94150b60ca9c915b91e2f4c2b110563.
+- API image: registry.digitalocean.com/hatchk8s/civpulse-webapi@sha256:dc8b99be4e6e53dec70d6131b41434c24c3b0c112f21043b3c24dfdf5b61d3f1.
 - Tunnel: civpulse-k8s-prod, b0e4ea46-c08a-4dfc-a6e2-1f506d4cf0ba.
 - Proxied CNAME webapi.civpulse.org points to that tunnel.
 - Cloudflare account: 6d837580a4d0641139ecada9e74076b8;
