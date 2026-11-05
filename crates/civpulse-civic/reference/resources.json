@@ -1,0 +1,6068 @@
+{
+  "source_repository": "https://github.com/kerryhatcher/www.civpulse.org",
+  "source_commit": "870a12dc60c780a4b0312060988b187d230b339f",
+  "schema_inspected_at": "2026-11-05",
+  "resources": [
+    {
+      "name": "article_bills",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "article_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "bill_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "article_organizations",
+      "rls": true,
+      "primary_key": [
+        "article_id",
+        "organization_id"
+      ],
+      "columns": [
+        {
+          "name": "article_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "read_related_records",
+        "save_relationship",
+        "delete_relationship"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "article_people",
+      "rls": true,
+      "primary_key": [
+        "article_id",
+        "person_id"
+      ],
+      "columns": [
+        {
+          "name": "article_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "person_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "read_related_records",
+        "save_relationship",
+        "delete_relationship"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "articles",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "url",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "fetched_on",
+          "type": "date",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "published_on",
+          "type": "date",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "site_search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "search_site",
+        "get_civic_record"
+      ],
+      "record_type": "article",
+      "read_requires_admin": false
+    },
+    {
+      "name": "ballot_questions",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "election_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "question_text",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "jurisdiction",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "choices",
+          "type": "text[]",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "position",
+          "type": "integer",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "site_search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "search_site",
+        "get_civic_record"
+      ],
+      "record_type": "ballot_question",
+      "read_requires_admin": true
+    },
+    {
+      "name": "bill_actions",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "bill_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "session_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "body_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "occurred_on",
+          "type": "date",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "sequence",
+          "type": "integer",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "kind",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "event_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "bill_amendments",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "bill_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "version_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "identifier",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "offered_on",
+          "type": "date",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "text_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "bill_positions",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "bill_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "person_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "position",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "stated_on",
+          "type": "date",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "ends_on",
+          "type": "date",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "article_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "bill_relationships",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "bill_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "related_bill_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "kind",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "bill_sponsorships",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "bill_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "office_term_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_role",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "starts_on",
+          "type": "date",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "ends_on",
+          "type": "date",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "bill_versions",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "bill_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "identifier",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "published_on",
+          "type": "date",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "text_url",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "bills",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "term_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "session_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "body_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "numbering_context",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "identifier",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "measure_type",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "summary",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "introduced_on",
+          "type": "date",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_status",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "calendars",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "slug",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "site_search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "search_site",
+        "get_civic_record"
+      ],
+      "record_type": "calendar",
+      "read_requires_admin": false
+    },
+    {
+      "name": "contest_candidates",
+      "rls": true,
+      "primary_key": [
+        "contest_id",
+        "person_id"
+      ],
+      "columns": [
+        {
+          "name": "contest_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "person_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "party",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "position",
+          "type": "integer",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "is_write_in",
+          "type": "boolean",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "read_related_records",
+        "save_relationship",
+        "delete_relationship"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "contests",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "election_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "office",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "district",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "seat",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "partisan",
+          "type": "boolean",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "position",
+          "type": "integer",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "site_search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "search_site",
+        "get_civic_record"
+      ],
+      "record_type": "contest",
+      "read_requires_admin": true
+    },
+    {
+      "name": "county_geographies",
+      "rls": true,
+      "primary_key": [
+        "fips"
+      ],
+      "columns": [
+        {
+          "name": "fips",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "slug",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "kind",
+          "type": "text",
+          "required": true,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [],
+      "read_requires_admin": false
+    },
+    {
+      "name": "county_statistic_indicators",
+      "rls": true,
+      "primary_key": [
+        "code"
+      ],
+      "columns": [
+        {
+          "name": "code",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "topic_id",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "label",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "unit",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "definition",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "position",
+          "type": "integer",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "headline_position",
+          "type": "integer",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [],
+      "read_requires_admin": false
+    },
+    {
+      "name": "county_statistic_sources",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "publisher",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "retrieved_on",
+          "type": "date",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "sha256",
+          "type": "text",
+          "required": true,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [],
+      "read_requires_admin": false
+    },
+    {
+      "name": "county_statistic_topics",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "note",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "position",
+          "type": "integer",
+          "required": true,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [],
+      "read_requires_admin": false
+    },
+    {
+      "name": "county_statistics",
+      "rls": true,
+      "primary_key": [
+        "county_fips",
+        "indicator_code"
+      ],
+      "columns": [
+        {
+          "name": "county_fips",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "indicator_code",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "value",
+          "type": "numeric",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "period",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_variables",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "numerator",
+          "type": "numeric",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "denominator",
+          "type": "numeric",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "margin_of_error",
+          "type": "numeric",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "lower_bound",
+          "type": "numeric",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "upper_bound",
+          "type": "numeric",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "confidence_level",
+          "type": "numeric",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "detail",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "components",
+          "type": "jsonb",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [],
+      "read_requires_admin": false
+    },
+    {
+      "name": "election_result_reports",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "election_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "scope",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "observed_at",
+          "type": "timestamp with time zone",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "snapshot",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "sources",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "supersedes",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "manage_election_results"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "elections",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "slug",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "election_date",
+          "type": "date",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "kind",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        },
+        {
+          "name": "site_search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        },
+        {
+          "name": "results_json_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "search_site",
+        "get_civic_record"
+      ],
+      "record_type": "election",
+      "read_requires_admin": false
+    },
+    {
+      "name": "events",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "calendar_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "starts_at",
+          "type": "timestamp with time zone",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "ends_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "all_day",
+          "type": "boolean",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "location",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        },
+        {
+          "name": "election_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "election_date_kind",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "site_search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        },
+        {
+          "name": "category",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "is_meeting",
+          "type": "boolean",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "meeting_notes",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "meeting_transcript",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "meeting_video_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "meeting_video_start_seconds",
+          "type": "integer",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "search_site",
+        "get_civic_record"
+      ],
+      "record_type": "event",
+      "read_requires_admin": true
+    },
+    {
+      "name": "georgia_turnout_counties",
+      "rls": true,
+      "primary_key": [
+        "fips"
+      ],
+      "columns": [
+        {
+          "name": "fips",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "get_county_statistic_catalog"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "layer_features",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "layer_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "position",
+          "type": "integer",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "feature_id",
+          "type": "jsonb",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "properties",
+          "type": "jsonb",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "geometry",
+          "type": "geometry(Geometry,4326)",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "site_search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "search_layer_features",
+        "get_layer_feature",
+        "save_layer_feature",
+        "delete_layer_feature"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "layers",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "style",
+          "type": "jsonb",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_type",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "site_search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        },
+        {
+          "name": "presentation",
+          "type": "jsonb",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "search_site",
+        "get_civic_record"
+      ],
+      "record_type": "layer",
+      "read_requires_admin": false
+    },
+    {
+      "name": "legislative_bodies",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "legislature_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "kind",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "legislative_body_memberships",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "body_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "office_term_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "starts_on",
+          "type": "date",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "ends_on",
+          "type": "date",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "legislative_event_links",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "event_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "session_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "body_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "legislative_sessions",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "term_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "identifier",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "kind",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "starts_on",
+          "type": "date",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "ends_on",
+          "type": "date",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "legislative_terms",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "identifier",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "starts_on",
+          "type": "date",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "ends_on",
+          "type": "date",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "jurisdiction",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "state_name",
+          "type": "text",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "legislative_vote_bills",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "vote_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "bill_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "action_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "version_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "amendment_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "legislative_vote_choices",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "vote_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "office_term_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "choice",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_choice",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "membership_review_note",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "legislative_votes",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "session_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "body_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "identifier",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "occurred_on",
+          "type": "date",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "occurred_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "question",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "category",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "method",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "outcome",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "threshold",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "reported_yes",
+          "type": "integer",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "reported_no",
+          "type": "integer",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "reported_other",
+          "type": "integer",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "coverage",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "event_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_system",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "browse_legislation",
+        "describe_legislative_resource",
+        "save_legislative_record",
+        "delete_legislative_record"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "map_layers",
+      "rls": true,
+      "primary_key": [
+        "map_id",
+        "layer_id"
+      ],
+      "columns": [
+        {
+          "name": "map_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "layer_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "position",
+          "type": "integer",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "style",
+          "type": "jsonb",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visible_by_default",
+          "type": "boolean",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "read_related_records",
+        "save_relationship",
+        "delete_relationship"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "maps",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "slug",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "base_map",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "site_search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        },
+        {
+          "name": "view_options",
+          "type": "jsonb",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "search_site",
+        "get_civic_record"
+      ],
+      "record_type": "map",
+      "read_requires_admin": false
+    },
+    {
+      "name": "meeting_attachments",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "meeting_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "file_name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "storage_path",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "mime_type",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "size_bytes",
+          "type": "bigint",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_provider",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_key",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "sha256",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "get_meeting",
+        "import_meeting_records"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "meeting_attendance",
+      "rls": true,
+      "primary_key": [
+        "meeting_id",
+        "person_id"
+      ],
+      "columns": [
+        {
+          "name": "meeting_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "person_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "note",
+          "type": "text",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "get_meeting",
+        "import_meeting_records"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "meeting_record_sources",
+      "rls": true,
+      "primary_key": [
+        "meeting_id",
+        "provider",
+        "source_key"
+      ],
+      "columns": [
+        {
+          "name": "meeting_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "provider",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_key",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "kind",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "person_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "vote_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "payload",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "import_meeting_records"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "meeting_vote_choices",
+      "rls": true,
+      "primary_key": [
+        "vote_id",
+        "person_id"
+      ],
+      "columns": [
+        {
+          "name": "vote_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "meeting_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "person_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "choice",
+          "type": "text",
+          "required": true,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "get_meeting",
+        "import_meeting_records"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "meeting_vote_outcome_observations",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "sequence",
+          "type": "bigint",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "vote_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "outcome",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "document_sha256",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "locator",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "supersedes_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "correction_reason",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "set_meeting_vote_outcome",
+        "get_person_meeting_votes"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "meeting_votes",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "meeting_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "subject",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "outcome",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "position",
+          "type": "integer",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "get_meeting",
+        "import_meeting_records"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "obligation_observations",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "report_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_key",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "vendor_person_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "vendor_organization_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "payload",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "browse_obligations",
+        "accept_obligation_report"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "obligation_reports",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "provider",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_key",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "supersedes_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "manifest",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "recorded_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "browse_obligations",
+        "accept_obligation_report"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "office_terms",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "person_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "selection_method",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "starts_on",
+          "type": "date",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "ends_on",
+          "type": "date",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "starts_on_precision",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "ends_on_precision",
+          "type": "text",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "read_related_records",
+        "save_office_term",
+        "delete_civic_data"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "officeholder_observations",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "provider",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_key",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "person_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "office_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "office_term_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "supersedes_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "payload",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "recorded_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "read_officeholder_observations",
+        "accept_officeholder_observations"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "offices",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "district",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "seat",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "list_offices",
+        "save_office",
+        "delete_civic_data"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "organization_relationships",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "related_organization_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "relationship",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "reverse_relationship",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "read_related_records",
+        "save_relationship",
+        "delete_relationship"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "organizations",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "slug",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "phone",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "address_line",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "website_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "social_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "logo_path",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        },
+        {
+          "name": "site_search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        },
+        {
+          "name": "sos_control_number",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "sos_business_type",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "sos_status",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "sos_formation_date",
+          "type": "date",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "sos_last_annual_registration",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "sos_principal_office",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "sos_registered_agent",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "sos_county",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "sos_naics_code",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "sos_officers",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "sos_record_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "search_site",
+        "get_civic_record"
+      ],
+      "record_type": "organization",
+      "read_requires_admin": false
+    },
+    {
+      "name": "people",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "slug",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "full_name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "kind",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "phone",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "website_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "social_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "image_path",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        },
+        {
+          "name": "address_line",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "address_line2",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "city",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "state",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "postal_code",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "fax",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "site_search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "search_site",
+        "get_civic_record"
+      ],
+      "record_type": "person",
+      "read_requires_admin": false
+    },
+    {
+      "name": "person_organizations",
+      "rls": true,
+      "primary_key": [
+        "person_id",
+        "organization_id"
+      ],
+      "columns": [
+        {
+          "name": "person_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "read_related_records",
+        "save_relationship",
+        "delete_relationship"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "person_relationships",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "person_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "related_person_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "relationship",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "reverse_relationship",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": true
+      },
+      "workflows": [
+        "read_related_records",
+        "save_relationship",
+        "delete_relationship"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "profiles",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "display_name",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": true,
+        "update": true,
+        "delete": false
+      },
+      "workflows": [
+        "get_my_profile",
+        "update_my_profile"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "public_document_meetings",
+      "rls": true,
+      "primary_key": [
+        "document_id",
+        "meeting_id"
+      ],
+      "columns": [
+        {
+          "name": "document_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "meeting_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "get_public_document",
+        "link_public_document_meeting"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "public_documents",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "sha256",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "file_name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "extension",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "mime_type",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "size_bytes",
+          "type": "bigint",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "document_kind",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "text_origin",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": true
+        },
+        {
+          "name": "publication_claim",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "claimed_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        }
+      ],
+      "table_operations": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "list_public_documents",
+        "get_public_document",
+        "publish_meeting_document",
+        "withdraw_public_document"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "records_request_fees",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "request_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "kind",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "amount",
+          "type": "numeric(12,2)",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "occurred_on",
+          "type": "date",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "note",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "get_records_request",
+        "add_records_request_item",
+        "remove_records_request_item"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "records_request_files",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "request_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "file_name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "storage_path",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "mime_type",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "size_bytes",
+          "type": "bigint",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "is_private",
+          "type": "boolean",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "get_records_request",
+        "add_records_request_item",
+        "remove_records_request_item",
+        "manage_records_request_file"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "records_request_links",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "request_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "url",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "get_records_request",
+        "add_records_request_item",
+        "remove_records_request_item"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "records_request_owners",
+      "rls": true,
+      "primary_key": [
+        "request_id"
+      ],
+      "columns": [
+        {
+          "name": "request_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "get_records_request",
+        "transfer_records_request"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "records_request_transfers",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "request_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "from_user_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "to_user_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "actor_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "get_records_request",
+        "transfer_records_request"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "records_request_updates",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "request_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "occurred_on",
+          "type": "date",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "kind",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "body",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "get_records_request",
+        "add_records_request_item",
+        "remove_records_request_item"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "records_requests",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "request_type",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "target_organization_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_organization_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "stage",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "outcome",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "submitted_on",
+          "type": "date",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "next_follow_up_on",
+          "type": "date",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "reference_number",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        }
+      ],
+      "table_operations": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "search_records_requests",
+        "get_records_request",
+        "save_records_request",
+        "transfer_records_request"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "school_finance_recipients",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "name_key",
+          "type": "text",
+          "required": false,
+          "generated": true
+        },
+        {
+          "name": "kind",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "person_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "is_stub",
+          "type": "boolean",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "identity_review_required",
+          "type": "boolean",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "review_note",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "school_finances"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "school_finance_releases",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "dataset",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "fiscal_year",
+          "type": "integer",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_organization",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_organization_id",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "county_fips",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_sha256",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_filename",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_filters",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "retrieved_at",
+          "type": "timestamp with time zone",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "parser_version",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "expected_rows",
+          "type": "integer",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "expected_amount",
+          "type": "numeric",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "expected_travel",
+          "type": "numeric",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "supersedes",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "school_finances"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "school_finance_rows",
+      "rls": true,
+      "primary_key": [
+        "release_id",
+        "row_number"
+      ],
+      "columns": [
+        {
+          "name": "release_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "row_number",
+          "type": "integer",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_row_number",
+          "type": "integer",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "person_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "identity_review_required",
+          "type": "boolean",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "amount",
+          "type": "numeric",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "travel",
+          "type": "numeric",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "payment_count",
+          "type": "integer",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "search_document",
+          "type": "tsvector",
+          "required": false,
+          "generated": true
+        },
+        {
+          "name": "recipient_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "person_is_stub",
+          "type": "boolean",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "identity_review_note",
+          "type": "text",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "school_finances"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "short_link_stats",
+      "rls": true,
+      "primary_key": [
+        "link_id"
+      ],
+      "columns": [
+        {
+          "name": "link_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "redirect_count",
+          "type": "bigint",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "last_visited_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "search_civic_data"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "short_links",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "code",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "target_url",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "save_short_link"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "sos_ballot_links",
+      "rls": true,
+      "primary_key": [
+        "election_id",
+        "jurisdiction_id",
+        "source_contest_id"
+      ],
+      "columns": [
+        {
+          "name": "election_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "jurisdiction_id",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_contest_id",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "contest_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "question_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "choices",
+          "type": "jsonb",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "reviewed_by",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "reviewed_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": false,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "get_sos_results_mappings",
+        "put_sos_results_mapping",
+        "delete_sos_results_mapping"
+      ],
+      "read_requires_admin": false
+    },
+    {
+      "name": "sos_result_items",
+      "rls": true,
+      "primary_key": [
+        "snapshot_id",
+        "jurisdiction_index",
+        "item_index"
+      ],
+      "columns": [
+        {
+          "name": "snapshot_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "jurisdiction_index",
+          "type": "integer",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "item_index",
+          "type": "integer",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "data",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "manage_election_results",
+        "read_official_election_results",
+        "get_sos_results",
+        "begin_sos_results",
+        "stage_sos_results",
+        "publish_sos_results"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "sos_result_snapshots",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "election_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_url",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_sha256",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "header",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "jurisdictions",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "supersedes",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "manage_election_results",
+        "read_official_election_results",
+        "get_sos_results",
+        "begin_sos_results",
+        "stage_sos_results",
+        "publish_sos_results"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "structured_turnout_reports",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "election_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "captured_at",
+          "type": "timestamp with time zone",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "document",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "sha256",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "tables",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "metadata",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "supersedes",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "manage_election_results"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "user_fee_observations",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "report_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "fee_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_key",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "payload",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "browse_user_fees",
+        "accept_user_fee_report"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "user_fee_reports",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "provider",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_key",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "visibility",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "supersedes_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "manifest",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "recorded_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "browse_user_fees",
+        "accept_user_fee_report"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "user_fees",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "provider",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_key",
+          "type": "text",
+          "required": true,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "browse_user_fees",
+        "accept_user_fee_report"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "voter_roll_imports",
+      "rls": true,
+      "primary_key": [
+        "id"
+      ],
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "county_fips",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "snapshot_date",
+          "type": "date",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_filename",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_sha512",
+          "type": "text",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "expected_records",
+          "type": "integer",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "supersedes_id",
+          "type": "uuid",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        },
+        {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "required": false,
+          "generated": false
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "begin_voter_roll_import",
+        "append_voter_roll_records",
+        "complete_voter_roll_import",
+        "get_voter_roll_history"
+      ],
+      "read_requires_admin": true
+    },
+    {
+      "name": "voter_roll_records",
+      "rls": true,
+      "primary_key": [
+        "import_id",
+        "registration_number"
+      ],
+      "columns": [
+        {
+          "name": "import_id",
+          "type": "uuid",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "source_row",
+          "type": "integer",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "data",
+          "type": "jsonb",
+          "required": true,
+          "generated": false
+        },
+        {
+          "name": "registration_number",
+          "type": "text",
+          "required": false,
+          "generated": true
+        }
+      ],
+      "table_operations": {
+        "read": true,
+        "create": false,
+        "update": false,
+        "delete": false
+      },
+      "workflows": [
+        "get_voter_roll_history",
+        "append_voter_roll_records"
+      ],
+      "read_requires_admin": true
+    }
+  ],
+  "excluded": {
+    "admins": "Account role membership is managed through existing administrator tools.",
+    "frontend_rebuild_state": "Internal frontend build coordination.",
+    "sos_automation_feeds": "Internal collector scheduling and lease state.",
+    "sos_automation_jobs": "Internal collector jobs and lease state.",
+    "meeting_upload_sessions": "Durable upload capabilities are available only through guarded upload tools."
+  },
+  "views": {
+    "county_statistic_records": "Derived county statistic projection, accessed through search_county_statistics; no independent writes."
+  },
+  "schema_source_commit": "32a1491fd29ff4898185344901e28da49fda2f52"
+}

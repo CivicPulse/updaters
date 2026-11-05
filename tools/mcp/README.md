@@ -1,7 +1,7 @@
 # Civic Pulse V2 MCP
 
 Standalone Rust HTTP replacement for the compact Civic Pulse Supabase Edge
-Function. It serves all 79 V2 tools, including fee reports, obligations, officeholder observations and checked
+Function. It serves the 79 upstream V2 tools plus native civic CRUD/search and workflow extensions, including fee reports, obligations, officeholder observations and checked
 meeting-source imports, using the same PostgREST RPCs, tables,
 Storage buckets, document archive and Georgia legislative source adapter.
 It does not forward calls to the old MCP server or require Bun/Deno at runtime.
@@ -10,7 +10,7 @@ The port targets `kerryhatcher/www.civpulse.org` commit
 `870a12dc60c780a4b0312060988b187d230b339f`, `apps/mcp/src` and
 `apps/web/src/lib/legislation.ts`. The frozen tool schemas, descriptions,
 annotations, trimming rules, legislative fields and turnout evidence schema
-are under `reference/`. Existing database migrations, visibility RPCs, RLS,
+are under `crates/civpulse-civic/reference/`. Existing database migrations, visibility RPCs, RLS,
 admin checks, audit trails and storage policies remain required. This crate
 creates no schema and uses no service-role key.
 
@@ -168,3 +168,14 @@ nonroot distroless Debian 13 image. Its Trivy HIGH/CRITICAL vulnerability and
 secret scan passed before publication and rollout. The replacement completed a
 zero-unavailable rollout, and the authenticated public MCP/API smoke checks
 passed again. The receipt records the new image/source and prior digest.
+
+
+## Complete authenticated civic access
+
+The shared `civpulse-civic` library now powers both MCP and the REST API. See
+[the resource and operation contract](../../docs/contracts/civic-data-access.md)
+for the reviewed schema inventory, CRUD routes, composite keys, search and
+owner/admin permission rules. `list_civic_resources` describes available fields,
+table operations and guarded workflows. API callers can discover the identical
+catalog at authenticated `GET /api/v1/operations` and invoke any operation using
+`POST /api/v1/operations/{name}` with its advertised JSON arguments.

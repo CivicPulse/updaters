@@ -1,0 +1,1646 @@
+[
+  {
+    "name": "read_official_election_results",
+    "description": "Read current official Georgia election vote totals. Resolve election_id with election search first. Filter query by candidate or contest name (case insensitive substring); matching contests retain all opponents. Returns source timestamp, checksum, reported status, voting methods and vote shares. Does not establish certification. Empty matches are not zero votes. Supports configured Georgia General and Special Election exports.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "election_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 200,
+          "default": ""
+        }
+      },
+      "required": [
+        "election_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    }
+  },
+  {
+    "name": "list_civic_resources",
+    "description": "Discover every civic resource, its fields, primary keys, RLS-backed table operations and guarded workflows. Capabilities describe possible operations, not permission grants; the caller must still be authorized. Internal job/lease state is excluded.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "search_civic_data",
+    "description": "Search/browse an allowlisted civic resource with stable pagination. Core records use existing full-text search and listed/visibility gates; core filters belong in search_site. Other resources use case-insensitive substring search across text fields and exact scalar filters under RLS. Workflow-only resources advertise dedicated readers in list_civic_resources.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "resource": {
+          "type": "string",
+          "enum": [
+            "article_bills",
+            "article_organizations",
+            "article_people",
+            "articles",
+            "ballot_questions",
+            "bill_actions",
+            "bill_amendments",
+            "bill_positions",
+            "bill_relationships",
+            "bill_sponsorships",
+            "bill_versions",
+            "bills",
+            "calendars",
+            "contest_candidates",
+            "contests",
+            "county_geographies",
+            "county_statistic_indicators",
+            "county_statistic_sources",
+            "county_statistic_topics",
+            "county_statistics",
+            "election_result_reports",
+            "elections",
+            "events",
+            "georgia_turnout_counties",
+            "layer_features",
+            "layers",
+            "legislative_bodies",
+            "legislative_body_memberships",
+            "legislative_event_links",
+            "legislative_sessions",
+            "legislative_terms",
+            "legislative_vote_bills",
+            "legislative_vote_choices",
+            "legislative_votes",
+            "map_layers",
+            "maps",
+            "meeting_attachments",
+            "meeting_attendance",
+            "meeting_record_sources",
+            "meeting_vote_choices",
+            "meeting_vote_outcome_observations",
+            "meeting_votes",
+            "obligation_observations",
+            "obligation_reports",
+            "office_terms",
+            "officeholder_observations",
+            "offices",
+            "organization_relationships",
+            "organizations",
+            "people",
+            "person_organizations",
+            "person_relationships",
+            "profiles",
+            "public_document_meetings",
+            "public_documents",
+            "records_request_fees",
+            "records_request_files",
+            "records_request_links",
+            "records_request_owners",
+            "records_request_transfers",
+            "records_request_updates",
+            "records_requests",
+            "school_finance_recipients",
+            "school_finance_releases",
+            "school_finance_rows",
+            "short_link_stats",
+            "short_links",
+            "sos_ballot_links",
+            "sos_result_items",
+            "sos_result_snapshots",
+            "structured_turnout_reports",
+            "user_fee_observations",
+            "user_fee_reports",
+            "user_fees",
+            "voter_roll_imports",
+            "voter_roll_records"
+          ]
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 500,
+          "default": ""
+        },
+        "filters": {
+          "type": "object",
+          "default": {},
+          "maxProperties": 10
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000,
+          "default": 0
+        }
+      },
+      "required": [
+        "resource"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "get_civic_data",
+    "description": "Read one civic record by its complete primary key. Core records use existing visibility-aware readers. Composite keys require every key column. Workflow-only resources expose dedicated readers in list_civic_resources.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "resource": {
+          "type": "string",
+          "enum": [
+            "article_bills",
+            "article_organizations",
+            "article_people",
+            "articles",
+            "ballot_questions",
+            "bill_actions",
+            "bill_amendments",
+            "bill_positions",
+            "bill_relationships",
+            "bill_sponsorships",
+            "bill_versions",
+            "bills",
+            "calendars",
+            "contest_candidates",
+            "contests",
+            "county_geographies",
+            "county_statistic_indicators",
+            "county_statistic_sources",
+            "county_statistic_topics",
+            "county_statistics",
+            "election_result_reports",
+            "elections",
+            "events",
+            "georgia_turnout_counties",
+            "layer_features",
+            "layers",
+            "legislative_bodies",
+            "legislative_body_memberships",
+            "legislative_event_links",
+            "legislative_sessions",
+            "legislative_terms",
+            "legislative_vote_bills",
+            "legislative_vote_choices",
+            "legislative_votes",
+            "map_layers",
+            "maps",
+            "meeting_attachments",
+            "meeting_attendance",
+            "meeting_record_sources",
+            "meeting_vote_choices",
+            "meeting_vote_outcome_observations",
+            "meeting_votes",
+            "obligation_observations",
+            "obligation_reports",
+            "office_terms",
+            "officeholder_observations",
+            "offices",
+            "organization_relationships",
+            "organizations",
+            "people",
+            "person_organizations",
+            "person_relationships",
+            "profiles",
+            "public_document_meetings",
+            "public_documents",
+            "records_request_fees",
+            "records_request_files",
+            "records_request_links",
+            "records_request_owners",
+            "records_request_transfers",
+            "records_request_updates",
+            "records_requests",
+            "school_finance_recipients",
+            "school_finance_releases",
+            "school_finance_rows",
+            "short_link_stats",
+            "short_links",
+            "sos_ballot_links",
+            "sos_result_items",
+            "sos_result_snapshots",
+            "structured_turnout_reports",
+            "user_fee_observations",
+            "user_fee_reports",
+            "user_fees",
+            "voter_roll_imports",
+            "voter_roll_records"
+          ]
+        },
+        "keys": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 4
+        }
+      },
+      "required": [
+        "resource",
+        "keys"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "create_civic_data",
+    "description": "Create one civic row under existing RLS and constraints; never upserts. Generated/system columns cannot be set. Workflow-only and immutable records must use their advertised guarded operations. No permissions are granted by this tool.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "resource": {
+          "type": "string",
+          "enum": [
+            "article_bills",
+            "article_organizations",
+            "article_people",
+            "articles",
+            "ballot_questions",
+            "bill_actions",
+            "bill_amendments",
+            "bill_positions",
+            "bill_relationships",
+            "bill_sponsorships",
+            "bill_versions",
+            "bills",
+            "calendars",
+            "contest_candidates",
+            "contests",
+            "county_geographies",
+            "county_statistic_indicators",
+            "county_statistic_sources",
+            "county_statistic_topics",
+            "county_statistics",
+            "election_result_reports",
+            "elections",
+            "events",
+            "georgia_turnout_counties",
+            "layer_features",
+            "layers",
+            "legislative_bodies",
+            "legislative_body_memberships",
+            "legislative_event_links",
+            "legislative_sessions",
+            "legislative_terms",
+            "legislative_vote_bills",
+            "legislative_vote_choices",
+            "legislative_votes",
+            "map_layers",
+            "maps",
+            "meeting_attachments",
+            "meeting_attendance",
+            "meeting_record_sources",
+            "meeting_vote_choices",
+            "meeting_vote_outcome_observations",
+            "meeting_votes",
+            "obligation_observations",
+            "obligation_reports",
+            "office_terms",
+            "officeholder_observations",
+            "offices",
+            "organization_relationships",
+            "organizations",
+            "people",
+            "person_organizations",
+            "person_relationships",
+            "profiles",
+            "public_document_meetings",
+            "public_documents",
+            "records_request_fees",
+            "records_request_files",
+            "records_request_links",
+            "records_request_owners",
+            "records_request_transfers",
+            "records_request_updates",
+            "records_requests",
+            "school_finance_recipients",
+            "school_finance_releases",
+            "school_finance_rows",
+            "short_link_stats",
+            "short_links",
+            "sos_ballot_links",
+            "sos_result_items",
+            "sos_result_snapshots",
+            "structured_turnout_reports",
+            "user_fee_observations",
+            "user_fee_reports",
+            "user_fees",
+            "voter_roll_imports",
+            "voter_roll_records"
+          ]
+        },
+        "data": {
+          "type": "object",
+          "minProperties": 1
+        }
+      },
+      "required": [
+        "resource",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "update_civic_data",
+    "description": "Patch exactly one civic row by its complete primary key, preserving omitted fields. Never upserts or changes primary keys. Existing RLS and constraints apply. Immutable evidence and workflow-only rows cannot be patched.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "resource": {
+          "type": "string",
+          "enum": [
+            "article_bills",
+            "article_organizations",
+            "article_people",
+            "articles",
+            "ballot_questions",
+            "bill_actions",
+            "bill_amendments",
+            "bill_positions",
+            "bill_relationships",
+            "bill_sponsorships",
+            "bill_versions",
+            "bills",
+            "calendars",
+            "contest_candidates",
+            "contests",
+            "county_geographies",
+            "county_statistic_indicators",
+            "county_statistic_sources",
+            "county_statistic_topics",
+            "county_statistics",
+            "election_result_reports",
+            "elections",
+            "events",
+            "georgia_turnout_counties",
+            "layer_features",
+            "layers",
+            "legislative_bodies",
+            "legislative_body_memberships",
+            "legislative_event_links",
+            "legislative_sessions",
+            "legislative_terms",
+            "legislative_vote_bills",
+            "legislative_vote_choices",
+            "legislative_votes",
+            "map_layers",
+            "maps",
+            "meeting_attachments",
+            "meeting_attendance",
+            "meeting_record_sources",
+            "meeting_vote_choices",
+            "meeting_vote_outcome_observations",
+            "meeting_votes",
+            "obligation_observations",
+            "obligation_reports",
+            "office_terms",
+            "officeholder_observations",
+            "offices",
+            "organization_relationships",
+            "organizations",
+            "people",
+            "person_organizations",
+            "person_relationships",
+            "profiles",
+            "public_document_meetings",
+            "public_documents",
+            "records_request_fees",
+            "records_request_files",
+            "records_request_links",
+            "records_request_owners",
+            "records_request_transfers",
+            "records_request_updates",
+            "records_requests",
+            "school_finance_recipients",
+            "school_finance_releases",
+            "school_finance_rows",
+            "short_link_stats",
+            "short_links",
+            "sos_ballot_links",
+            "sos_result_items",
+            "sos_result_snapshots",
+            "structured_turnout_reports",
+            "user_fee_observations",
+            "user_fee_reports",
+            "user_fees",
+            "voter_roll_imports",
+            "voter_roll_records"
+          ]
+        },
+        "keys": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 4
+        },
+        "data": {
+          "type": "object",
+          "minProperties": 1
+        }
+      },
+      "required": [
+        "resource",
+        "keys",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "delete_civic_data",
+    "description": "Delete exactly one civic row by its complete primary key under existing RLS and foreign-key constraints. Immutable evidence and workflow-only records cannot be deleted here. No bulk deletion or permission elevation.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "resource": {
+          "type": "string",
+          "enum": [
+            "article_bills",
+            "article_organizations",
+            "article_people",
+            "articles",
+            "ballot_questions",
+            "bill_actions",
+            "bill_amendments",
+            "bill_positions",
+            "bill_relationships",
+            "bill_sponsorships",
+            "bill_versions",
+            "bills",
+            "calendars",
+            "contest_candidates",
+            "contests",
+            "county_geographies",
+            "county_statistic_indicators",
+            "county_statistic_sources",
+            "county_statistic_topics",
+            "county_statistics",
+            "election_result_reports",
+            "elections",
+            "events",
+            "georgia_turnout_counties",
+            "layer_features",
+            "layers",
+            "legislative_bodies",
+            "legislative_body_memberships",
+            "legislative_event_links",
+            "legislative_sessions",
+            "legislative_terms",
+            "legislative_vote_bills",
+            "legislative_vote_choices",
+            "legislative_votes",
+            "map_layers",
+            "maps",
+            "meeting_attachments",
+            "meeting_attendance",
+            "meeting_record_sources",
+            "meeting_vote_choices",
+            "meeting_vote_outcome_observations",
+            "meeting_votes",
+            "obligation_observations",
+            "obligation_reports",
+            "office_terms",
+            "officeholder_observations",
+            "offices",
+            "organization_relationships",
+            "organizations",
+            "people",
+            "person_organizations",
+            "person_relationships",
+            "profiles",
+            "public_document_meetings",
+            "public_documents",
+            "records_request_fees",
+            "records_request_files",
+            "records_request_links",
+            "records_request_owners",
+            "records_request_transfers",
+            "records_request_updates",
+            "records_requests",
+            "school_finance_recipients",
+            "school_finance_releases",
+            "school_finance_rows",
+            "short_link_stats",
+            "short_links",
+            "sos_ballot_links",
+            "sos_result_items",
+            "sos_result_snapshots",
+            "structured_turnout_reports",
+            "user_fee_observations",
+            "user_fee_reports",
+            "user_fees",
+            "voter_roll_imports",
+            "voter_roll_records"
+          ]
+        },
+        "keys": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 4
+        }
+      },
+      "required": [
+        "resource",
+        "keys"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "search_records_requests",
+    "description": "Search records requests using the existing public or owner/admin-managed visibility gate. managed=true includes only requests the caller can manage. Pages contain at most 25 rows.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "maxLength": 500,
+          "default": ""
+        },
+        "stage": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "draft",
+            "submitted",
+            "initial_response",
+            "in_progress",
+            "appeal",
+            "closed",
+            null
+          ],
+          "default": null
+        },
+        "organization_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "managed": {
+          "type": "boolean",
+          "default": false
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000,
+          "default": 0
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "get_records_request",
+    "description": "Read a records request and its updates, links, fees and permitted files. Ownership and transfer identities are returned only to managers. Private requests retain the existing access gate.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "save_records_request",
+    "description": "Create (id omitted/null; admin only) or replace editable request values (existing owner/admin). This is the existing form-save operation: supply all desired values; omissions take database defaults, not patch semantics. Ownership is never accepted in values.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "values": {
+          "type": "object",
+          "properties": {
+            "title": {},
+            "description": {},
+            "request_type": {},
+            "target_organization_id": {},
+            "source_organization_id": {},
+            "visibility": {},
+            "stage": {},
+            "outcome": {},
+            "submitted_on": {},
+            "next_follow_up_on": {},
+            "reference_number": {}
+          },
+          "required": [
+            "title"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "values"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "transfer_records_request",
+    "description": "Transfer an existing request to another existing user, retaining the audited transfer record. Only an existing owner/admin can transfer. The database rechecks ownership under its parent-row lock.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "to_user_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 1000,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "to_user_id",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "add_records_request_item",
+    "description": "Add a note/update, link, fee or already-uploaded file to a request using the existing owner/admin workflow. Values and storage existence are validated by the database. Request ownership is rechecked under lock.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "update",
+            "link",
+            "fee",
+            "file"
+          ]
+        },
+        "values": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "values"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "remove_records_request_item",
+    "description": "Remove one note/update, link, fee or file metadata record through the existing owner/admin gate. Generated stage history is protected. Does not delete source storage objects.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "update",
+            "link",
+            "fee",
+            "file"
+          ]
+        },
+        "item_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "item_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "get_object_history",
+    "description": "Read visibility-aware audit history with existing identity redaction. History is immutable. before paginates revision IDs.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "table": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "article_bills",
+            "article_organizations",
+            "article_people",
+            "articles",
+            "ballot_questions",
+            "bill_actions",
+            "bill_amendments",
+            "bill_positions",
+            "bill_relationships",
+            "bill_sponsorships",
+            "bill_versions",
+            "bills",
+            "calendars",
+            "contest_candidates",
+            "contests",
+            "county_geographies",
+            "county_statistic_indicators",
+            "county_statistic_sources",
+            "county_statistic_topics",
+            "county_statistics",
+            "election_result_reports",
+            "elections",
+            "events",
+            "georgia_turnout_counties",
+            "layer_features",
+            "layers",
+            "legislative_bodies",
+            "legislative_body_memberships",
+            "legislative_event_links",
+            "legislative_sessions",
+            "legislative_terms",
+            "legislative_vote_bills",
+            "legislative_vote_choices",
+            "legislative_votes",
+            "map_layers",
+            "maps",
+            "meeting_attachments",
+            "meeting_attendance",
+            "meeting_record_sources",
+            "meeting_vote_choices",
+            "meeting_vote_outcome_observations",
+            "meeting_votes",
+            "obligation_observations",
+            "obligation_reports",
+            "office_terms",
+            "officeholder_observations",
+            "offices",
+            "organization_relationships",
+            "organizations",
+            "people",
+            "person_organizations",
+            "person_relationships",
+            "profiles",
+            "public_document_meetings",
+            "public_documents",
+            "records_request_fees",
+            "records_request_files",
+            "records_request_links",
+            "records_request_owners",
+            "records_request_transfers",
+            "records_request_updates",
+            "records_requests",
+            "school_finance_recipients",
+            "school_finance_releases",
+            "school_finance_rows",
+            "short_link_stats",
+            "short_links",
+            "sos_ballot_links",
+            "sos_result_items",
+            "sos_result_snapshots",
+            "structured_turnout_reports",
+            "user_fee_observations",
+            "user_fee_reports",
+            "user_fees",
+            "voter_roll_imports",
+            "voter_roll_records",
+            null
+          ],
+          "default": null
+        },
+        "object_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200,
+          "default": null
+        },
+        "before": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "default": null
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 25
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "save_short_link",
+    "description": "Create (id omitted/null) or replace an existing short link (admin only). The database generates collision-safe codes. Set active=false to deactivate; direct delete is not permitted by existing rules.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 300,
+          "minLength": 1
+        },
+        "target_url": {
+          "type": "string",
+          "maxLength": 2000,
+          "format": "uri"
+        },
+        "active": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "title",
+        "target_url"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "admin"
+    }
+  },
+  {
+    "name": "get_voter_roll_history",
+    "description": "Read historical voter-roll observations (admin only), including effective corrections and missing snapshots. Registration number is required. Never available to ordinary users.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "registration_number": {
+          "type": "string",
+          "maxLength": 20,
+          "pattern": "^[0-9]{1,20}$"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 100
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000,
+          "default": 0
+        }
+      },
+      "required": [
+        "registration_number"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "admin"
+    }
+  },
+  {
+    "name": "begin_voter_roll_import",
+    "description": "Begin a sourced voter-roll snapshot (admin only). Source checksum and expected counts are required; completed corrections must reference a completed snapshot for the same county/date. Existing immutable import rules apply.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "county_fips": {
+          "type": "string",
+          "maxLength": 5,
+          "pattern": "^13[0-9]{3}$"
+        },
+        "snapshot_date": {
+          "type": "string",
+          "maxLength": 10,
+          "format": "date"
+        },
+        "source_filename": {
+          "type": "string",
+          "maxLength": 500,
+          "minLength": 1
+        },
+        "source_sha512": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-f0-9]{128}$"
+        },
+        "expected_records": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "supersedes_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "county_fips",
+        "snapshot_date",
+        "source_filename",
+        "source_sha512",
+        "expected_records"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "admin"
+    }
+  },
+  {
+    "name": "append_voter_roll_records",
+    "description": "Append original source rows to an incomplete voter snapshot (admin only). At most 1,000 rows and 2 MiB; all 53 SOS string columns are required. Completed snapshots cannot change; conflicting replays fail.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "import_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1000,
+          "items": {
+            "type": "object",
+            "properties": {
+              "source_row": {
+                "type": "integer",
+                "minimum": 2
+              },
+              "data": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "source_row",
+              "data"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "import_id",
+        "rows"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "admin"
+    }
+  },
+  {
+    "name": "complete_voter_roll_import",
+    "description": "Complete a voter-roll snapshot only after exact expected rows and contiguous source positions validate (admin only). Completed snapshots are immutable.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "import_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "import_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "admin"
+    }
+  },
+  {
+    "name": "manage_records_request_file",
+    "description": "Upload an original request file (up to 3 MiB inline), get an authorized signed download URL, or delete a file and its metadata. Existing request owner/admin rules control mutations; the existing visible-file projection controls downloads. Supply a stable storage_path of request UUID/file UUID.extension when uploading; no overwrite/upsert. Larger originals can be uploaded using the existing authenticated Storage API before add_records_request_item. A failed metadata save retains the private uploaded object for reconciliation.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "upload",
+            "url",
+            "delete"
+          ]
+        },
+        "request_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "file_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "storage_path": {
+          "type": "string",
+          "maxLength": 150,
+          "pattern": "^[a-f0-9-]{36}/[a-f0-9-]{36}\\.[a-z0-9]+$"
+        },
+        "file_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "mime_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 150
+        },
+        "data_base64": {
+          "type": "string",
+          "maxLength": 4194304
+        },
+        "is_private": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "action",
+        "request_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "get_sos_results",
+    "description": "Read a published, stored SOS result snapshot through the election visibility gate. Returns source provenance, jurisdictions and at most 10 ballot items per page. No snapshot is a distinct empty status, never zero votes.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "election_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "snapshot_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "jurisdiction_index": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 159,
+          "default": null
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000,
+          "default": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "default": 10
+        }
+      },
+      "required": [
+        "election_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "get_sos_results_mappings",
+    "description": "Read reviewed mappings between SOS ballot items and Civic Pulse contests/questions. Existing election and candidate visibility gates apply; review identities are not returned.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "election_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "election_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "database"
+    }
+  },
+  {
+    "name": "put_sos_results_mapping",
+    "description": "Create or replace a reviewed SOS ballot mapping (admin only). Exactly one contest_id or question_id is required. Choices must reference candidates already in that contest or valid question labels. Existing audited/reviewed mapping workflow is retained.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "election_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "jurisdiction_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "source_contest_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "contest_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "question_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "choices": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "properties": {
+              "source_choice_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "person_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "choice_label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            },
+            "required": [
+              "source_choice_id"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "election_id",
+        "jurisdiction_id",
+        "source_contest_id",
+        "choices"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "admin"
+    }
+  },
+  {
+    "name": "delete_sos_results_mapping",
+    "description": "Delete one reviewed SOS ballot mapping (admin only), preserving the election, contest/question and source evidence.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "election_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "jurisdiction_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "source_contest_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "election_id",
+        "jurisdiction_id",
+        "source_contest_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "admin"
+    }
+  },
+  {
+    "name": "begin_sos_results",
+    "description": "Begin an immutable SOS snapshot import (admin only). The exact configured election/source URL, original checksum, matching source header and jurisdiction manifest are required. Does not activate collection or publish data.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "election_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2000
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "header": {
+          "type": "object"
+        },
+        "jurisdictions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 160,
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "required": [
+        "election_id",
+        "source_url",
+        "sha256",
+        "header",
+        "jurisdictions"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "admin"
+    }
+  },
+  {
+    "name": "stage_sos_results",
+    "description": "Stage at most 100 original ballot items / 4 MiB in an incomplete SOS snapshot (admin only). Existing item indexing, immutable conflict checks and source identity validation apply.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "snapshot_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "properties": {
+              "jurisdiction_index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 159
+              },
+              "item_index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "data": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "jurisdiction_index",
+              "item_index",
+              "data"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "snapshot_id",
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "admin"
+    }
+  },
+  {
+    "name": "publish_sos_results",
+    "description": "Publish a complete staged SOS snapshot (admin only), with expected-current-snapshot compare-and-swap and source timestamp checks. Existing collector-managed feeds refuse manual publication. Does not enable automation.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "snapshot_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_snapshot_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "snapshot_id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "_meta": {
+      "civpulse/authorization": "admin"
+    }
+  }
+]

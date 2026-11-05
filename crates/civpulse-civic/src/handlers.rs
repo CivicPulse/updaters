@@ -3,11 +3,11 @@ use anyhow::{Context, Result, bail};
 use reqwest::Method;
 use serde_json::{Value, json};
 #[must_use]
-pub fn text<'a>(v: &'a Value, key: &str) -> &'a str {
+pub(crate) fn text<'a>(v: &'a Value, key: &str) -> &'a str {
     v[key].as_str().unwrap_or("")
 }
 #[must_use]
-pub fn fields(v: &Value, names: &[&str]) -> Value {
+pub(crate) fn fields(v: &Value, names: &[&str]) -> Value {
     names
         .iter()
         .map(|key| {
@@ -26,6 +26,10 @@ fn without(v: &Value, keys: &[&str]) -> Value {
         .map(|(k, v)| (k.clone(), v.clone()))
         .collect()
 }
+/// Invoke a reviewed operation using the authenticated caller's credentials.
+///
+/// # Errors
+/// Returns validation errors, permission denials and upstream service errors.
 #[allow(clippy::too_many_lines)] // Explicit allowlist for the complete V2 catalog.
 pub async fn call(b: &Backend, name: &str, a: Value) -> Result<Value> {
     let a = catalog::arguments(name, a)?;
@@ -34,10 +38,40 @@ pub async fn call(b: &Backend, name: &str, a: Value) -> Result<Value> {
         .find(|t| t["name"] == name)
         .context("Unknown tool")?;
     // The mixed school tool permits browse; every other mutation requires admin.
-    if tool["annotations"]["readOnlyHint"] == false && name != "school_finances" {
+    if tool["_meta"]["civpulse/authorization"] == "admin"
+        || (tool["annotations"]["readOnlyHint"] == false
+            && tool["_meta"]["civpulse/authorization"] != "database"
+            && name != "school_finances")
+    {
         b.admin().await?;
     }
     match name {
+        "list_civic_resources"
+        | "search_civic_data"
+        | "get_civic_data"
+        | "create_civic_data"
+        | "update_civic_data"
+        | "delete_civic_data" => crate::resources::call(b, name, &a).await,
+        "search_records_requests"
+        | "get_records_request"
+        | "save_records_request"
+        | "transfer_records_request"
+        | "add_records_request_item"
+        | "remove_records_request_item"
+        | "get_object_history"
+        | "save_short_link"
+        | "get_voter_roll_history"
+        | "begin_voter_roll_import"
+        | "append_voter_roll_records"
+        | "complete_voter_roll_import"
+        | "get_sos_results"
+        | "get_sos_results_mappings"
+        | "put_sos_results_mapping"
+        | "delete_sos_results_mapping"
+        | "begin_sos_results"
+        | "stage_sos_results"
+        | "publish_sos_results" => crate::resources::workflow(b, name, &a).await,
+        "manage_records_request_file" => crate::resources::file(b, &a).await,
         "read_official_election_results" => {
             let key = reqwest::header::HeaderValue::from_str(&b.key)?;
             let bearer = reqwest::header::HeaderValue::from_str(&format!("Bearer {}", b.token))?;

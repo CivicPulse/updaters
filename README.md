@@ -13,6 +13,7 @@ collection stays disabled until controlled operational acceptance completes.
 - `tools/mcp`: standalone 79-tool V2 MCP service; see [configuration and production deployment](tools/mcp/README.md).
 - `tools/upload`: `civpulse-upload` executable; future CivPulse API uploads.
 - `tools/results-collector`: durable queue consumer, local validation, and atomic publication.
+- `crates/civpulse-civic`: shared authenticated CRUD, search, relationship and workflow operations for MCP and REST.
 - `crates/civpulse-results-source`: bounded downloading, parsing and reference-compatible fingerprints.
 - `crates/civpulse-results-contract`: public asset contracts and pinned golden fixtures.
 - `crates/civpulse-webapi`: authenticated REST service.
@@ -252,3 +253,9 @@ The production MCP service shares the API's DigitalOcean cluster, namespace and
 Traefik router at `https://webapi.civpulse.org/mcp/v2`. The API retains `/api/v1`.
 See [the MCP deployment and rollback guide](tools/mcp/README.md) and
 [release receipt](deploy/k8s/mcp-release.json).
+
+
+Civic data CRUD, search and permissions are documented in
+[the civic access contract](docs/contracts/civic-data-access.md). Both services
+use the same operation catalog and caller credentials, with no service-role
+credential or anonymous civic access.

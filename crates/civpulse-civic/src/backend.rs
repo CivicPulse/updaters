@@ -3,6 +3,19 @@ use reqwest::{Client, Method, RequestBuilder};
 use serde_json::{Value, json};
 use url::Url;
 
+/// Backend status retained for the REST transport without exposing database internals.
+#[derive(Debug)]
+pub struct BackendError {
+    pub status: u16,
+    pub message: String,
+}
+impl std::fmt::Display for BackendError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.message)
+    }
+}
+impl std::error::Error for BackendError {}
+
 /// Caller-scoped backend; never constructed with a service-role credential.
 #[derive(Clone)]
 pub struct Backend {
@@ -15,7 +28,7 @@ pub struct Backend {
     pub georgia: Option<Url>,
 }
 impl Backend {
-    pub fn request(&self, method: Method, path: &str) -> Result<RequestBuilder> {
+    pub(crate) fn request(&self, method: Method, path: &str) -> Result<RequestBuilder> {
         let url = self.base.join(path)?;
         Ok(self
             .client
@@ -23,7 +36,7 @@ impl Backend {
             .header("apikey", &self.key)
             .bearer_auth(&self.token))
     }
-    pub async fn send(request: RequestBuilder) -> Result<Value> {
+    pub(crate) async fn send(request: RequestBuilder) -> Result<Value> {
         let response = request.send().await.context("Backend request failed")?;
         let status = response.status();
         let bytes = response
@@ -32,31 +45,37 @@ impl Backend {
             .context("Backend response unavailable")?;
         let value: Value = serde_json::from_slice(&bytes).unwrap_or(Value::Null);
         if !status.is_success() {
-            bail!(
-                "{}",
-                value
+            return Err(BackendError {
+                status: status.as_u16(),
+                message: value
                     .get("message")
                     .or_else(|| value.get("error"))
                     .and_then(Value::as_str)
                     .unwrap_or("Backend request rejected")
-            );
+                    .to_owned(),
+            }
+            .into());
         }
         Ok(value)
     }
-    pub async fn rpc(&self, name: &str, args: Value) -> Result<Value> {
+    pub(crate) async fn rpc(&self, name: &str, args: Value) -> Result<Value> {
         Self::send(
             self.request(Method::POST, &format!("/rest/v1/rpc/{name}"))?
                 .json(&args),
         )
         .await
     }
-    pub async fn admin(&self) -> Result<()> {
+    pub(crate) async fn admin(&self) -> Result<()> {
         if self.rpc("is_admin", json!({})).await? != true {
-            bail!("Admin access required");
+            return Err(BackendError {
+                status: 403,
+                message: "Admin access required".into(),
+            }
+            .into());
         }
         Ok(())
     }
-    pub async fn table(
+    pub(crate) async fn table(
         &self,
         table: &str,
         method: Method,
@@ -84,7 +103,7 @@ impl Backend {
         }
         Self::send(request).await
     }
-    pub async fn storage(
+    pub(crate) async fn storage(
         &self,
         method: Method,
         suffix: &str,
@@ -97,14 +116,14 @@ impl Backend {
         Self::send(request).await
     }
     #[must_use]
-    pub fn object_path(bucket: &str, path: &str) -> String {
+    pub(crate) fn object_path(bucket: &str, path: &str) -> String {
         let mut url = Url::parse("https://storage.invalid/").expect("literal URL");
         url.path_segments_mut()
             .expect("hierarchical URL")
             .extend(std::iter::once(bucket).chain(path.split('/')));
         url.path().trim_start_matches('/').to_owned()
     }
-    pub fn public_url(&self, bucket: &str, path: &str) -> Result<String> {
+    pub(crate) fn public_url(&self, bucket: &str, path: &str) -> Result<String> {
         Ok(self
             .base
             .join(&format!(
@@ -113,7 +132,7 @@ impl Backend {
             ))?
             .to_string())
     }
-    pub async fn upload(
+    pub(crate) async fn upload(
         &self,
         bucket: &str,
         path: &str,
@@ -132,7 +151,7 @@ impl Backend {
         )
         .await
     }
-    pub async fn download(&self, bucket: &str, path: &str) -> Result<Vec<u8>> {
+    pub(crate) async fn download(&self, bucket: &str, path: &str) -> Result<Vec<u8>> {
         let response = self
             .request(
                 Method::GET,
@@ -154,7 +173,7 @@ impl Backend {
         }
         Ok(bytes)
     }
-    pub async fn remove_object(&self, bucket: &str, path: &str) -> Result<Value> {
+    pub(crate) async fn remove_object(&self, bucket: &str, path: &str) -> Result<Value> {
         self.storage(
             Method::DELETE,
             &format!("object/{bucket}"),
@@ -162,7 +181,7 @@ impl Backend {
         )
         .await
     }
-    pub async fn signed_url(
+    pub(crate) async fn signed_url(
         &self,
         bucket: &str,
         path: &str,
