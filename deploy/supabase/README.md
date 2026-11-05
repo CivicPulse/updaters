@@ -76,6 +76,11 @@ python3 deploy/supabase/bootstrap.py dev --apply
 python3 deploy/supabase/bootstrap.py test --apply
 ```
 
+For stdin-based SQL replay on Thor, bootstrap defaults kubectl exec to SPDY
+(`KUBECTL_REMOTE_COMMAND_WEBSOCKETS=false`). This avoids newer clients leaving
+stdin open against Thor's k3s 1.34 API. An explicitly supplied environment setting
+is preserved.
+
 The bootstrap accepts only dev/test and the exact configured context. It verifies
 the context's cluster mapping, namespace, chart checksum and every SQL checksum.
 It generates distinct per-environment cryptographic secrets directly into
