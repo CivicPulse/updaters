@@ -162,3 +162,9 @@ check authenticated MCP/API reads; optionally set `MCP_SMOKE_USER_ID` to assert
 the exact account. Never put bearer tokens in command arguments or commit them.
 The script does not create accounts or content. For an internal candidate,
 port-forward the MCP Service and add `--base http://127.0.0.1:18789 --skip-api`.
+
+PR validation upgraded the initial runtime to the workspace's digest-pinned
+nonroot distroless Debian 13 image. Its Trivy HIGH/CRITICAL vulnerability and
+secret scan passed before publication and rollout. The replacement completed a
+zero-unavailable rollout, and the authenticated public MCP/API smoke checks
+passed again. The receipt records the new image/source and prior digest.
