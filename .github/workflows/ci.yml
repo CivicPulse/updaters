@@ -38,7 +38,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Scan dependency vulnerabilities, secrets, and deployment configuration
-        uses: aquasecurity/trivy-action@8f28faec26515256b6d22074d1d2a8986f4cbd87
+        uses: aquasecurity/trivy-action@38b337fff0a2f984d5be173c99e3f633438167ec
         with:
           version: v0.76.1
           scan-type: fs
@@ -69,7 +69,7 @@ jobs:
         if: matrix.tool == 'civpulse-results-collector'
         run: bash .github/scripts/smoke-collector-container.sh "${{ matrix.tool }}:ci"
       - name: Scan runtime image
-        uses: aquasecurity/trivy-action@8f28faec26515256b6d22074d1d2a8986f4cbd87
+        uses: aquasecurity/trivy-action@38b337fff0a2f984d5be173c99e3f633438167ec
         with:
           version: v0.76.1
           image-ref: ${{ matrix.tool }}:ci
