@@ -14,7 +14,7 @@ RUN case "$TOOL" in civpulse-download|civpulse-process|civpulse-upload|civpulse-
 # Rust uses rustls, so OpenSSL and its compression dependencies are unnecessary.
 # Retain libgcc for unwinding, along with its license and scanner inventory.
 FROM gcr.io/distroless/cc-debian13:nonroot@sha256:08476c244888bfb425bae1ae4dd7c17f093e972aab8426883d97f3c6f280f7c1 AS runtime-libs
-FROM gcr.io/distroless/base-nossl-debian13:nonroot@sha256:e6b0f82595aa1edde72c8054de7a9dca30f0f8f54820c37a167c0ddfc21c5c67 AS runtime
+FROM gcr.io/distroless/base-nossl-debian13:nonroot@sha256:89815d620ac01d8de13cdaf04d19ed874447ca2296d4985b14b818f6e5e47854 AS runtime
 COPY --from=runtime-libs /usr/lib/*-linux-gnu/libgcc_s.so.1 /lib/libgcc_s.so.1
 COPY --from=runtime-libs /var/lib/dpkg/status.d/libgcc-s1 /var/lib/dpkg/status.d/libgcc-s1
 COPY --from=runtime-libs /var/lib/dpkg/status.d/gcc-14-base /var/lib/dpkg/status.d/gcc-14-base
